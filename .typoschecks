@@ -1,0 +1,25 @@
+# 除外パターン
+dist/
+node_modules/
+*.min.js
+venv/
+.venv/
+data/
+__pycache__/
+**/__pycache__/*
+.vscode/
+CHANGELOG.md
+
+.env
+requirements.txt
+
+
+# 除外しないパターン（対象ファイル）
+
+!src/**/*.ts
+!src/**/*.tsx
+!scripts/**/*.py
+!.github/
+
+!*.py
+!*.md
