@@ -4,6 +4,7 @@ import threading
 import time
 import sys
 import os
+import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 from colorama import init, Fore, Style
@@ -50,6 +51,16 @@ def enqueue_output(pipe):
 # ===========================
 # Bot制御
 # ===========================
+def get_command():
+    try:
+        # 標準入力があれば入力を受け付ける
+        return input("Command: ").strip().lower()
+    except EOFError:
+        # 非対話環境では環境変数 BOT_COMMAND を使う
+        cmd = os.environ.get("BOT_COMMAND", "exit")
+        print(f"\n入力なし → 環境変数 BOT_COMMAND を使用: {cmd}")
+        return cmd.lower()
+
 def start_bot():
     global bot_process
     if bot_process and bot_process.poll() is None:
@@ -101,6 +112,26 @@ def send_command(cmd):
         print(Fore.RED + "⚠ Botが起動していません。")
 
 # ===========================
+# 毎日自動再起動スレッド
+# ===========================
+def daily_restart(hour=0, minute=0):
+    """
+    毎日指定した時刻に restart_bot() を呼ぶ
+    hour, minute は24時間表記
+    """
+    while True:
+        now = datetime.datetime.now()
+        # 今日の指定時刻
+        target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        # もしすでに過ぎていたら翌日に
+        if now >= target:
+            target += datetime.timedelta(days=1)
+        # 待機時間
+        wait_seconds = (target - now).total_seconds()
+        time.sleep(wait_seconds)
+        print(Fore.CYAN + f"\n⏰ {hour:02d}:{minute:02d}になったので自動再起動します。")
+        restart_bot()
+# ===========================
 # メニュー・ログ表示
 # ===========================
 def show_menu():
@@ -129,10 +160,14 @@ def show_menu():
 # ===========================
 def main():
     global stop_flag
+
+    # 自動再起動スレッド開始（例：毎日0時に実行）
+    threading.Thread(target=daily_restart, args=(0, 0), daemon=True).start()
+
     start_bot()
     while not stop_flag:
         show_menu()
-        cmd = input("Command: ").strip().lower()
+        cmd = get_command()  # ← input() を置き換え
         if cmd == "start":
             start_bot()
         elif cmd == "stop":
@@ -153,6 +188,8 @@ def main():
         else:
             print(Fore.RED + "❌ 不明なコマンドです。")
             time.sleep(1)
+
+
 
 if __name__ == "__main__":
     main()
