@@ -1,0 +1,19 @@
+# キャッシュ・一時ファイル
+/__pycache__/
+*/__pycache__/
+/cogs/__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# 仮想環境
+.env/
+.venv/
+venv/
+
+# ログファイル
+*.log
+
+# OS 固有ファイル
+*.DS_Store
+*/Thumbs.db
