@@ -18,4 +18,9 @@ six==1.17.0
 urllib3==2.5.0
 yarl==1.20.1
 janome
+pytz
+wikipedia
+deep_translator
+pyshorteners
 packaging
+
