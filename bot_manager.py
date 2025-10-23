@@ -104,7 +104,7 @@ def send_command(cmd):
 # メニュー・ログ表示
 # ===========================
 def show_menu():
-    os.system("cls")  # 画面クリア
+    os.system("cls" if os.name == "nt" else "clear")  # 画面クリア
     status = Fore.GREEN + "🟢 Running" if bot_process and bot_process.poll() is None else Fore.RED + "🔴 Stopped"
     print("="*40)
     print("       Bot Control Menu")
