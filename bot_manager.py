@@ -26,7 +26,6 @@ BOT_PATH = BASE_DIR / BOT_FILE
 # .env からトークンを読み込む
 load_dotenv(BASE_DIR / ".env")
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
-TOKEN = "MTQxNjcxODc2NjIwMDMyODI4Mw.GLxk_-.qcgWMuJ86AsmQV70dU-m3JuFXquTYDSJB4afgY"
 if not TOKEN:
     print(Fore.RED + "❌ Botトークンが設定されていません。 .env に DISCORD_BOT_TOKEN を設定してください。")
     sys.exit(1)

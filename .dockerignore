@@ -1,33 +1,26 @@
-# Python 仮想環境
-.venv/
+# ベースイメージ
+FROM python:3.13-slim
 
-# キャッシュ・一時ファイル
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# 環境変数
+ENV PYTHONUNBUFFERED=1
+ENV TERM=xterm
 
-# ログファイル
-*.log
+# 作業ディレクトリ
+WORKDIR /app
 
-# OS 固有ファイル
-.DS_Store
-Thumbs.db
+# 必要なツールをインストール
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Git 関連
-.git/
-.gitignore
+# 依存関係をコピーしてインストール
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
-# 環境変数ファイル（秘密情報）
-.env
+# Bot のソースコードをコピー
+COPY . .
 
-# ドキュメント
-README.md
-GEMINI.md
-
-# ツール
-.typoschecks
-
-# 開発ツール
-Dockerfile
-bot_start.bat
+# コンテナ起動時に bot_manager.py を実行
+CMD ["python", "bot_manager.py"]
