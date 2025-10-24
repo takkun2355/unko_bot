@@ -16,7 +16,7 @@ init(autoreset=True)  # colorama 初期化
 # ===========================
 BOT_FILE = "bot.py"
 LOG_FILE = "bot_output.log"
-MAX_LOG_LINES = 500
+MAX_LOG_LINES = 555
 RESTART_DELAY = 2  # 自動再起動待機秒数
 
 # bot_manager.py と同じフォルダを基準にする
@@ -136,23 +136,23 @@ def daily_restart(hour=0, minute=0):
 def show_menu():
     os.system("cls" if os.name == "nt" else "clear")  # 画面クリア
     status = Fore.GREEN + "🟢 Running" if bot_process and bot_process.poll() is None else Fore.RED + "🔴 Stopped"
-    print("="*40)
+    print("="*50)
     print("       Bot Control Menu")
-    print("="*40)
+    print("="*50)
     print(f"Bot Status: {status}")
     print("Type a command below.")
-    print("-"*40)
+    print("-"*50)
     print("start       - Start the Bot")
     print("stop        - Stop the Bot")
     print("restart     - Restart the Bot")
     print("help        - Show this menu")
     print("exit        - Close this menu")
     print("aga         - She is smell!!!")
-    print("-"*40)
-    print(f"----- Bot Log (最新{MAX_LOG_LINES}行) -----")
+    print("-"*50)
+    print(f"---------- Bot Log (最新{MAX_LOG_LINES}行) ----------")
     for line in log_lines[-MAX_LOG_LINES:]:
         print(line)
-    print("------------------------------")
+    print("----------------------------------------")
 
 # ===========================
 # メインループ

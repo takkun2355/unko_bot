@@ -4,6 +4,7 @@ import asyncio
 import traceback
 import discord
 import time
+from datetime import datetime, timedelta
 import bot_markov as mu
 from discord.ext import commands
 
@@ -92,15 +93,37 @@ async def handle_stdin(bot_instance):
         else:
             print(f"Unknown command from stdin: {command_name}")
 
+async def daily_midnight_task(bot_instance):
+    """0時に自動で実行される処理"""
+    await bot_instance.wait_until_ready()
+    while not bot_instance.is_closed():
+        now = datetime.now()
+        # 次の0時までの秒数
+        next_run = datetime.combine(now.date(), datetime.min.time()) + timedelta(days=1)
+        wait_seconds = (next_run - now).total_seconds()
+        await asyncio.sleep(wait_seconds)
+
+        # 0時処理をここに書く
+        try:
+            channel_id = 1416694818339291147  # 送信先チャンネル
+            channel = bot_instance.get_channel(channel_id)
+            if channel:
+                await channel.send("🌙 0時のサイキ処理を実行しました！")
+        except Exception as e:
+            print(f"0時処理でエラー: {e}")
+            
 # =========================================
 # Cog をロードして起動
 # =========================================
 async def main():
     async with bot:
-        # Start the stdin handler as a background task
+        # 0時定時タスクをバックグラウンドで起動
+        asyncio.create_task(daily_midnight_task(bot))
+
+        # stdin handler
         stdin_task = asyncio.create_task(handle_stdin(bot))
 
-        # Cog を追加
+        # Cogロード
         cogs = [
             "cogs.roulette",
             "cogs.weather",
@@ -151,11 +174,10 @@ async def main():
                 await bot.load_extension(cog)
                 print(f"Loaded cog: {cog}")
             except Exception as e:
-                error_text = "".join(traceback.format_exception(type(e), e, e.__traceback__))
-                FAILED_COGS.append((cog, error_text))
-                print(f"Failed to load cog {cog}:\n{error_text}")
+                FAILED_COGS.append((cog, "".join(traceback.format_exception(type(e), e, e.__traceback__))))
+                print(f"Failed to load cog {cog}")
 
-        # トークン取得
+        # Docker 環境変数からトークン取得
         TOKEN = os.getenv("DISCORD_BOT_TOKEN")
         if not TOKEN:
             print("❌ Botトークンが設定されていません！")

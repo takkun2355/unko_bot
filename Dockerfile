@@ -1,15 +1,27 @@
-# Python 3.13.7 公式イメージ
-FROM python:3.13.7
+# ベースイメージ
+FROM python:3.13-slim
+
+# 環境変数
+ENV PYTHONUNBUFFERED=1
+ENV TERM=xterm
 
 # 作業ディレクトリ
 WORKDIR /app
 
-# OS パッケージ更新（脆弱性軽減）
-RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/*
+# 必要なツールをインストール
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY . /app
+# 依存関係をコピーしてインストール
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
-# 1. 依存関係のインストール
-RUN pip install -r requirements.txt
+# Bot のソースコードをコピー
+COPY . .
 
-CMD [ "./script/start_bot.sh" ]
+# コンテナ起動時に bot.py を実行
+CMD ["python", "bot.py"]
+
