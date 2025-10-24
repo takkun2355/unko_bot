@@ -1,26 +1,42 @@
-# ベースイメージ
-FROM python:3.13-slim
+# Python 関連
+__pycache__
+*.pyc
+*.pyo
+venv/
 
-# 環境変数
-ENV PYTHONUNBUFFERED=1
-ENV TERM=xterm
+# Git 関連
+.git
+.gitignore
 
-# 作業ディレクトリ
-WORKDIR /app
+# ログや一時データ
+logs/
+chatlog.txt
+special_log.txt
+saved_file.txt
+choices.txt
+custom_words.txt
+achievements.json
+rooms.jsom
+valorant_agent.txt
+valorant_map.txt
 
-# 必要なツールをインストール
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# cogs ソースはビルドに必要なら除外しない
+# cogs/
 
-# 依存関係をコピーしてインストール
-COPY requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+# バッチや設定ファイル
+*.bat
+.env
+.env.example
+.typoschecks
 
-# Bot のソースコードをコピー
-COPY . .
+# Docker 関連
+.dockerignore
+Dockerfile
 
-# コンテナ起動時に bot_manager.py を実行
-CMD ["python", "bot_manager.py"]
+# ドキュメント・参考ファイル（任意で除外可能）
+CHANGELOG.md
+README.md
+GEMINI.md
+
+# bot 関連コードはコピーするので除外しない
+# bot.py, bot_markov.py, bot_manager.py
