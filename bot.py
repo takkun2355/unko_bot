@@ -167,6 +167,7 @@ async def main():
             "cogs.MagicSpellBot",
             "cogs.SpamOwnerCog",
             "cogs.random_name_auto",
+            "cogs.PinManeger",
             "cogs.IconCog"
         ]
         for cog in cogs:

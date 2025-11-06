@@ -22,9 +22,10 @@ class RandomNameAuto(commands.Cog):
         await self.change_name_once()
 
     @commands.command()
-    async def name(self):
+    async def name(self, ctx):
         await self.change_name_once()
-       
+        await ctx.send("✅ ニックネームを変更しました。")
+        
     async def change_name_once(self):
         """実際の変更処理"""
         # ===== 設定ここ =====
@@ -40,21 +41,21 @@ class RandomNameAuto(commands.Cog):
 
         guild = self.bot.get_guild(guild_id)
         if not guild:
-            print("❌ サーバーが見つかりません。guild_idを確認してください。")
+            print("none! サーバーが見つかりません。guild_idを確認してください。")
             return
 
         member = guild.get_member(user_id)
         if not member:
-            print("❌ メンバーが見つかりません。user_idを確認してください。")
+            print("none! メンバーが見つかりません。user_idを確認してください。")
             return
 
         try:
             await member.edit(nick=new_name)
             print(f"🎲 {member.name} のニックネームを「{new_name}」に変更しました。")
         except discord.Forbidden:
-            print("⚠️ 権限不足。ニックネームを変更できません。")
+            print("[Warning] : 権限不足。ニックネームを変更できません。")
         except Exception as e:
-            print(f"⚠️ エラー発生: {e}")
+            print(f"[Warning] : {e}")
 
 async def setup(bot):
     await bot.add_cog(RandomNameAuto(bot))

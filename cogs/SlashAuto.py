@@ -39,7 +39,7 @@ class SlashAuto(commands.Cog):
                 params = list(sig.parameters.items())[1:]  # selfを飛ばす
 
                 # クロージャで固定
-                def make_slash_callback(command, cog):
+                def make_slash_callback(command, cog, params):
                     async def slash_cmd(interaction: discord.Interaction, **kwargs):
                         class DummyCtx:
                             def __init__(self, interaction):
@@ -59,6 +59,7 @@ class SlashAuto(commands.Cog):
                         await command.callback(cog, ctx, **kwargs)
 
                     return slash_cmd
+
 
 
                 callback = make_slash_callback(command, cog, params)
