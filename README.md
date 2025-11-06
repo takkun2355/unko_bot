@@ -94,3 +94,5 @@ python bot_manager.py
 この手順により、`bot_manager.py`が新しいバージョンを検知できるようになります。
 
 ```
+
+a
