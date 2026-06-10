@@ -1,4 +1,0 @@
-cd C:\Users\takku\Documents\bots\unkoman_bot\unko_bot
-.\venv\Scripts\Activate.ps1
-python bot_manager.py
-fuck!
