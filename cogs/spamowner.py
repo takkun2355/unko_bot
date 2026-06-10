@@ -28,7 +28,7 @@ class SpamOwnerCog(commands.Cog):
     @spam1.error
     async def spam_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("使用法: `!spam @ユーザー名 [回数] [遅延]`")
+            await ctx.send("使用法: `^^spam @ユーザー名 [回数] [遅延]`")
         elif isinstance(error, commands.BadArgument):
             await ctx.send("指定されたユーザーが見つかりません。")
         elif isinstance(error, commands.NotOwner):

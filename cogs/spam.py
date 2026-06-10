@@ -12,8 +12,8 @@ class SpamCog(commands.Cog):
         """
         指定したユーザーに繰り返しメンションを送信します。
 
-        使用法: !spam @ユーザー名 [回数] [遅延(秒)]
-        例: !spam @User 20 0.5
+        使用法: ^^spam @ユーザー名 [回数] [遅延(秒)]
+        例: ^^spam @User 20 0.5
 
         パラメータ:
         - member: メンションするユーザー (必須)
@@ -43,7 +43,7 @@ class SpamCog(commands.Cog):
     @spam.error
     async def spam_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("使用法: `!spam @ユーザー名 [回数] [遅延]`")
+            await ctx.send("使用法: `^^spam @ユーザー名 [回数] [遅延]`")
         elif isinstance(error, commands.BadArgument):
             await ctx.send("指定されたユーザーが見つかりません。")
         elif isinstance(error, commands.MissingPermissions):

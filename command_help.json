@@ -1,0 +1,1325 @@
+{
+  "meta": {
+    "prefix": "^^",
+    "bot_name": "Unkoman Bot",
+    "description": "Discord bot command help data",
+    "schema_version": 2
+  },
+  "sections": [
+    {
+      "name": "基本コマンド",
+      "source": "basic_commands",
+      "groups": [
+        {
+          "name": "基本",
+          "commands": [
+            {
+              "name": "help",
+              "category": "basic_commands",
+              "group": "基本",
+              "usage": "^^help [コマンド名]",
+              "description": "ヘルプを表示します。"
+            },
+            {
+              "name": "hello",
+              "category": "basic_commands",
+              "group": "基本",
+              "usage": "^^hello",
+              "description": "Botが挨拶します。"
+            },
+            {
+              "name": "talk",
+              "category": "basic_commands",
+              "group": "基本",
+              "usage": "^^talk [生成文字数] [n-gram]",
+              "description": "Markovモデルで学習済みログから文章を生成します。",
+              "notes": [
+                "bot.py本体側のコマンドです。"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "お楽しみ系",
+          "commands": [
+            {
+              "name": "team",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^team <チーム人数> <@メンバー...>",
+              "description": "指定したメンバーをランダムにチーム分けします。",
+              "examples": [
+                {
+                  "usage": "^^team 2 @A @B @C @D",
+                  "description": ""
+                }
+              ]
+            },
+            {
+              "name": "randname",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^randname",
+              "description": "ランダムな名前を生成します。"
+            },
+            {
+              "name": "dice",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^dice [面数]",
+              "description": "指定した面数のサイコロを振ります。未指定時は6面です。",
+              "examples": [
+                {
+                  "usage": "^^dice",
+                  "description": "6面ダイスを振ります。"
+                },
+                {
+                  "usage": "^^dice 20",
+                  "description": "20面ダイスを振ります。"
+                }
+              ]
+            },
+            {
+              "name": "coin",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^coin",
+              "description": "コインを投げて表/裏を返します。"
+            },
+            {
+              "name": "omikuji",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^omikuji [@メンバー]",
+              "description": "指定メンバーまたは実行者のおみくじを引きます。"
+            },
+            {
+              "name": "fortune",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^fortune [@メンバー]",
+              "description": "指定メンバーまたは実行者の運勢ランクを返します。"
+            },
+            {
+              "name": "janken",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^janken <グー|チョキ|パー>",
+              "description": "Botとじゃんけんします。"
+            },
+            {
+              "name": "slot",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^slot",
+              "description": "3リールのスロットを回します。"
+            },
+            {
+              "name": "riddle",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^riddle",
+              "description": "ランダムななぞなぞを出題します。30秒以内に回答します。"
+            },
+            {
+              "name": "reactiongame",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^reactiongame",
+              "description": "指定リアクションを誰が一番早く押せるか競います。"
+            },
+            {
+              "name": "roast",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^roast",
+              "description": "ランダムな質問に yes/no で答える対話コマンドです。"
+            },
+            {
+              "name": "pizza",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "",
+              "description": "ピザのベースとトッピングをランダム生成します。",
+              "notes": [
+                "PizzaGenerator.py内で pizza3 は重複定義されていますが、ヘルプでは1件に統合しています。"
+              ],
+              "subcommands": [
+                {
+                  "name": "pizza1",
+                  "category": "basic_commands",
+                  "group": "お楽しみ系",
+                  "usage": "^^pizza1",
+                  "description": "トッピングセット1個分で生成します。"
+                },
+                {
+                  "name": "pizza2",
+                  "category": "basic_commands",
+                  "group": "お楽しみ系",
+                  "usage": "^^pizza2",
+                  "description": "トッピングセット2個分で生成します。"
+                },
+                {
+                  "name": "pizza3",
+                  "category": "basic_commands",
+                  "group": "お楽しみ系",
+                  "usage": "^^pizza3",
+                  "description": "トッピングセット3個分で生成します。"
+                },
+                {
+                  "name": "pizza4",
+                  "category": "basic_commands",
+                  "group": "お楽しみ系",
+                  "usage": "^^pizza4",
+                  "description": "トッピングセット4個分で生成します。"
+                },
+                {
+                  "name": "pizza5",
+                  "category": "basic_commands",
+                  "group": "お楽しみ系",
+                  "usage": "^^pizza5",
+                  "description": "トッピングセット5個分で生成します。"
+                },
+                {
+                  "name": "pizza6",
+                  "category": "basic_commands",
+                  "group": "お楽しみ系",
+                  "usage": "^^pizza6",
+                  "description": "トッピングセット6個分で生成します。"
+                },
+                {
+                  "name": "pizza7",
+                  "category": "basic_commands",
+                  "group": "お楽しみ系",
+                  "usage": "^^pizza7",
+                  "description": "トッピングセット7個分で生成します。"
+                },
+                {
+                  "name": "pizza8",
+                  "category": "basic_commands",
+                  "group": "お楽しみ系",
+                  "usage": "^^pizza8",
+                  "description": "トッピングセット8個分で生成します。"
+                },
+                {
+                  "name": "pizza9",
+                  "category": "basic_commands",
+                  "group": "お楽しみ系",
+                  "usage": "^^pizza9",
+                  "description": "トッピングセット9個分で生成します。"
+                },
+                {
+                  "name": "pizza10",
+                  "category": "basic_commands",
+                  "group": "お楽しみ系",
+                  "usage": "^^pizza10",
+                  "description": "トッピングセット10個分で生成します。"
+                }
+              ]
+            },
+            {
+              "name": "quote",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^quote",
+              "description": "ランダムな名言を表示します。"
+            },
+            {
+              "name": "iqquote",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^iqquote",
+              "description": "ランダムなIQ低下系の名言を表示します。"
+            },
+            {
+              "name": "onion",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^onion",
+              "description": "今日の皮むき度をランダム表示します。"
+            },
+            {
+              "name": "cast",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^cast <文>",
+              "description": "入力文をもとにランダムな呪文を生成します。"
+            },
+            {
+              "name": "freeze",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^freeze <文>",
+              "description": "入力文を凍った演出で返します。"
+            },
+            {
+              "name": "wish",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^wish <願い事>",
+              "description": "願い事に対してランダムな返答を返します。"
+            },
+            {
+              "name": "hentai_rank",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^hentai_rank",
+              "description": "今日のサーバーメンバーランキングをランダム生成します。"
+            },
+            {
+              "name": "chen",
+              "category": "basic_commands",
+              "group": "お楽しみ系",
+              "usage": "^^chen",
+              "description": "ランダムなチェンのgifを表示します。"
+            }
+          ]
+        },
+        {
+          "name": "ゲーム系",
+          "commands": [
+            {
+              "name": "numbers",
+              "category": "basic_commands",
+              "group": "ゲーム系",
+              "usage": "",
+              "description": "1から100までの数当てゲームです。",
+              "subcommands": [
+                {
+                  "name": "start_number",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^start_number",
+                  "description": "数当てゲームを開始します。"
+                },
+                {
+                  "name": "guess",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^guess <数字>",
+                  "description": "数字を回答します。"
+                }
+              ]
+            },
+            {
+              "name": "blackjack",
+              "category": "basic_commands",
+              "group": "ゲーム系",
+              "usage": "",
+              "description": "ユーザーごとのブラックジャックを進行します。",
+              "subcommands": [
+                {
+                  "name": "blackjack",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^blackjack [種類番号]",
+                  "description": "カードを引き、手札と合計をDMで表示します。"
+                },
+                {
+                  "name": "blackjack_reset",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^blackjack_reset",
+                  "description": "自分のブラックジャックゲームをリセットします。"
+                }
+              ]
+            },
+            {
+              "name": "RPG",
+              "category": "basic_commands",
+              "group": "ゲーム系",
+              "usage": "",
+              "description": "RPGデータを作成してクエストや戦闘を進めます。",
+              "subcommands": [
+                {
+                  "name": "RPG開始",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^RPG開始",
+                  "description": "キャラクター作成またはデータ読み込みを行います。"
+                },
+                {
+                  "name": "RPG終了",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^RPG終了",
+                  "description": "RPGデータを保存して終了します。"
+                },
+                {
+                  "name": "クエスト",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^クエスト",
+                  "description": "ランダムなクエストとモンスターを発生させます。"
+                },
+                {
+                  "name": "攻撃",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^攻撃",
+                  "description": "戦闘中のモンスターへ攻撃します。"
+                },
+                {
+                  "name": "防御",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^防御",
+                  "description": "戦闘中に防御して被ダメージを軽減します。"
+                },
+                {
+                  "name": "アイテム使用",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^アイテム使用 <アイテム名>",
+                  "description": "所持アイテムを使用します。"
+                },
+                {
+                  "name": "逃げる",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^逃げる",
+                  "description": "戦闘から逃走を試みます。"
+                },
+                {
+                  "name": "自動戦闘",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^自動戦闘",
+                  "description": "戦闘が終わるまで自動で攻撃します。"
+                },
+                {
+                  "name": "攻撃_PvP",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^攻撃_PvP",
+                  "description": "PvP中の相手を攻撃します。"
+                }
+              ]
+            },
+            {
+              "name": "shiritori",
+              "category": "basic_commands",
+              "group": "ゲーム系",
+              "usage": "",
+              "description": "部屋制のしりとりゲームです。",
+              "notes": [
+                "join/leave は music_full.py の同名コマンドと衝突する可能性があります。"
+              ],
+              "subcommands": [
+                {
+                  "name": "create",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^create <部屋名> <password>",
+                  "description": "しりとり用の部屋を作成します。"
+                },
+                {
+                  "name": "join",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^join <部屋名> <password>",
+                  "description": "しりとり部屋に参加します。"
+                },
+                {
+                  "name": "leave",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^leave <部屋名>",
+                  "description": "しりとり部屋から退出します。"
+                },
+                {
+                  "name": "start",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^start <部屋名> [word_mode] [bot]",
+                  "description": "しりとりゲームを開始します。"
+                },
+                {
+                  "name": "rank",
+                  "category": "basic_commands",
+                  "group": "ゲーム系",
+                  "usage": "^^rank <部屋名>",
+                  "description": "指定部屋のランキングを表示します。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "aga22s(ゴミコマンド)",
+          "commands": [
+            {
+              "name": "agaurl",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^agaurl",
+              "description": "Aさん関連SNSリンクを表示します。"
+            },
+            {
+              "name": "agasns",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^agasns",
+              "description": "Aさん関連SNSリンクを表示します。"
+            },
+            {
+              "name": "agariurl",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^agariurl",
+              "description": "Aさん関連SNSリンクを表示します。"
+            },
+            {
+              "name": "agarisns",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^agarisns",
+              "description": "Aさん関連SNSリンクを表示します。"
+            },
+            {
+              "name": "nanahoshimuseum",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^nanahoshimuseum",
+              "description": "NNHS博物館サイトのリンクを表示します。"
+            },
+            {
+              "name": "aganame",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^aganame",
+              "description": "Aさん専用のランダム名前ジェネレーターです。"
+            },
+            {
+              "name": "name",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^name",
+              "description": "設定対象ユーザーのニックネームをランダム変更します。"
+            },
+            {
+              "name": "korosuzo",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^korosuzo",
+              "description": "固定メッセージを返します。"
+            },
+            {
+              "name": "tp_stock",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^tp_stock",
+              "description": "現在のトイレットペーパー在庫を確認します。"
+            },
+            {
+              "name": "tp_buy",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^tp_buy <個数>",
+              "description": "トイレットペーパー在庫から指定個数を購入します。"
+            },
+            {
+              "name": "tp_restock",
+              "category": "basic_commands",
+              "group": "aga22s(ゴミコマンド)",
+              "usage": "^^tp_restock <個数>",
+              "description": "トイレットペーパー在庫を補充します。"
+            }
+          ]
+        },
+        {
+          "name": "便利系",
+          "commands": [
+            {
+              "name": "weather",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "",
+              "description": "Open-Meteo/JMA情報から天気・警報・台風情報を表示します。",
+              "subcommands": [
+                {
+                  "name": "",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^weather",
+                  "description": "日本の主要地点の天気を表示します。"
+                },
+                {
+                  "name": "",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^weather <地域名|都道府県名>",
+                  "description": "指定地域の現在天気・警報・台風情報を表示します。",
+                  "examples": [
+                    {
+                      "usage": "^^weather 東京",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^weather details <地域名|都道府県名>",
+                  "description": "今日・明日の6時間ごとの詳細天気も表示します。",
+                  "examples": [
+                    {
+                      "usage": "^^weather details 東京",
+                      "description": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "roulette",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "",
+              "description": "候補からランダムに当選者を選ぶルーレットです。",
+              "modes": [
+                {
+                  "name": "fast",
+                  "description": "即結果表示モードです。"
+                },
+                {
+                  "name": "topN<number>",
+                  "description": "上位N位まで表示します。例: topN3"
+                },
+                {
+                  "name": "countdown",
+                  "description": "開始前にカウントダウンします。"
+                },
+                {
+                  "name": "duplicate",
+                  "description": "候補の重複当選を許可します。"
+                },
+                {
+                  "name": "gif",
+                  "description": "回転中の演出テキストを表示します。"
+                },
+                {
+                  "name": "background",
+                  "description": "背景演出テキストを表示します。"
+                },
+                {
+                  "name": "winner",
+                  "description": "勝者エフェクトを付けます。"
+                },
+                {
+                  "name": "sound",
+                  "description": "音声通知風のテキストを表示します。"
+                },
+                {
+                  "name": "history",
+                  "description": "結果を履歴に保存します。"
+                },
+                {
+                  "name": "time:HH:MM",
+                  "description": "指定時刻にルーレットを予約します。"
+                }
+              ],
+              "subcommands": [
+                {
+                  "name": "",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^roulette [モード...] <候補1> <候補2> ...",
+                  "description": "1回ルーレットを実行します。",
+                  "examples": [
+                    {
+                      "usage": "^^roulette 牛丼 カレー ラーメン",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^roulette loop <候補1> <候補2> ... <回数>",
+                  "description": "複数回ルーレットを実行します。",
+                  "examples": [
+                    {
+                      "usage": "^^roulette loop 牛丼 カレー ラーメン 3",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "roulettehistory",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^roulettehistory",
+                  "description": "直近10件のルーレット履歴を表示します。"
+                }
+              ]
+            },
+            {
+              "name": "translate",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "",
+              "description": "文章を指定言語へ翻訳します。",
+              "subcommands": [
+                {
+                  "name": "translate",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^translate <言語コード> <文>",
+                  "description": "自動検出した原文を指定言語へ翻訳します。",
+                  "examples": [
+                    {
+                      "usage": "^^translate en こんにちは",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "languages",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^languages",
+                  "description": "利用可能な言語コード一覧を表示します。"
+                }
+              ]
+            },
+            {
+              "name": "URL",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "",
+              "description": "",
+              "subcommands": [
+                {
+                  "name": "shorten",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^shorten <URL>",
+                  "description": "URLを短縮します。"
+                },
+                {
+                  "name": "expand",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^expand <短縮URL>",
+                  "description": "短縮URLを展開します。"
+                }
+              ]
+            },
+            {
+              "name": "serverstatus",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "^^serverstatus",
+              "description": "サーバーの人間/Bot/合計人数を表示します。"
+            },
+            {
+              "name": "Icons",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "",
+              "description": "",
+              "subcommands": [
+                {
+                  "name": "icon",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^icon [@ユーザー]",
+                  "description": "指定ユーザーまたは実行者のアイコンを表示します。"
+                },
+                {
+                  "name": "servericon",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^servericon [招待リンク|サーバーID]",
+                  "description": "現在または指定サーバーのアイコンを表示します。"
+                }
+              ]
+            },
+            {
+              "name": "time",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "^^time <都市名>",
+              "description": "対応都市の現在時刻を表示します。",
+              "examples": [
+                {
+                  "usage": "^^time Tokyo",
+                  "description": ""
+                }
+              ]
+            },
+            {
+              "name": "wiki",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "^^wiki <キーワード>",
+              "description": "日本語Wikipediaから概要を取得します。",
+              "examples": [
+                {
+                  "usage": "^^wiki Python",
+                  "description": ""
+                }
+              ]
+            },
+            {
+              "name": "calc",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "",
+              "description": "数式計算と計算ヘルプを提供します。",
+              "subcommands": [
+                {
+                  "name": "calc",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^calc <数式>",
+                  "description": "math関数対応の計算結果を返します。",
+                  "examples": [
+                    {
+                      "usage": "^^calc 2^8 + sqrt(16)",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "calc_help",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^calc_help",
+                  "description": "使用可能な演算子・関数・定数一覧を表示します。"
+                }
+              ]
+            },
+            {
+              "name": "pin",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "",
+              "description": "チャンネルごとの固定表示ピンを作成・編集・再送します。",
+              "subcommands": [
+                {
+                  "name": "pin",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^pin <内容> [時間]",
+                  "description": "現在チャンネルにピンを設定します。時間指定は 10s/30m/24h/2d 形式です。",
+                  "examples": [
+                    {
+                      "usage": "^^pin ようこそ！\\nルールを守って 24h",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "editpin",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^editpin <新しい内容>",
+                  "description": "現在チャンネルのピン本文を編集します。"
+                },
+                {
+                  "name": "removepin",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^removepin",
+                  "description": "現在チャンネルのピンを削除します。"
+                },
+                {
+                  "name": "pininfo",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^pininfo",
+                  "description": "現在チャンネルのピン情報を表示します。"
+                }
+              ],
+              "admin_subcommands": [
+                {
+                  "name": "pinlist",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^pinlist",
+                  "description": "サーバー内の全ピン一覧を表示します。"
+                },
+                {
+                  "name": "pinlogchannel",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^pinlogchannel [#チャンネル]",
+                  "description": "ピン操作ログの送信先を設定または解除します。"
+                },
+                {
+                  "name": "pinrepost",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^pinrepost [#チャンネル]",
+                  "description": "全チャンネルまたは指定チャンネルのピンを再送します。"
+                },
+                {
+                  "name": "refreshpin",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^refreshpin",
+                  "description": "保存済みピンを順次再送します。"
+                }
+              ]
+            },
+            {
+              "name": "vote",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "^^vote [サブコマンド] [オプション]",
+              "description": "投票機能の管理画面を開きます。",
+              "options": [
+                {
+                  "usage": "^^vote -l /l live",
+                  "description": "リアルタイム結果表示を有効にします。"
+                },
+                {
+                  "usage": "^^vote -m /m multi",
+                  "description": "複数投票を有効にします。"
+                },
+                {
+                  "usage": "^^vote -a /a anonymous",
+                  "description": "匿名投票にします。"
+                },
+                {
+                  "usage": "^^vote -p /p public",
+                  "description": "投票者公開を有効にします。"
+                },
+                {
+                  "usage": "^^vote -r /r role",
+                  "description": "投票可能ロールを指定します。"
+                },
+                {
+                  "usage": "^^vote -c /c channel",
+                  "description": "投票可能チャンネルを指定します。"
+                },
+                {
+                  "usage": "^^vote -d /d duration",
+                  "description": "投票期間を指定します。"
+                },
+                {
+                  "usage": "^^vote -mx /mx max",
+                  "description": "最大選択数を指定します。"
+                }
+              ],
+              "subcommands": [
+                {
+                  "name": "help",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^vote help",
+                  "description": "voteコマンドのヘルプを表示します。"
+                },
+                {
+                  "name": "create",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^vote create",
+                  "description": "投票作成画面を開きます。",
+                  "examples": [
+                    {
+                      "usage": "^^vote create -m -d 1h30m",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "edit",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^vote edit [投票ID]",
+                  "description": "投票編集画面を開きます。",
+                  "examples": [
+                    {
+                      "usage": "^^vote edit 123",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "delete",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^vote delete [投票ID]",
+                  "description": "投票削除画面を開きます。",
+                  "examples": [
+                    {
+                      "usage": "^^vote delete 123",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "close",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^vote close [投票ID]",
+                  "description": "投票を終了します。",
+                  "examples": [
+                    {
+                      "usage": "^^vote close 123",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "reopen",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^vote reopen [投票ID]",
+                  "description": "投票を再開します。",
+                  "examples": [
+                    {
+                      "usage": "^^vote reopen 123",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "result",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^vote result [投票ID]",
+                  "description": "投票結果を表示します。",
+                  "examples": [
+                    {
+                      "usage": "^^vote result 123",
+                      "description": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "birthday",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "",
+              "description": "誕生日登録と一覧表示を行います。",
+              "subcommands": [
+                {
+                  "name": "set_birthday",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^set_birthday <月> <日>",
+                  "description": "自分の誕生日を登録します。"
+                },
+                {
+                  "name": "birthday_list",
+                  "category": "basic_commands",
+                  "group": "便利系",
+                  "usage": "^^birthday_list",
+                  "description": "登録済み誕生日一覧を表示します。"
+                }
+              ]
+            },
+            {
+              "name": "titles",
+              "category": "basic_commands",
+              "group": "便利系",
+              "usage": "^^titles [@メンバー]",
+              "description": "発言数・リアクション数で獲得した称号を表示します。"
+            }
+          ]
+        },
+        {
+          "name": "音楽系",
+          "commands": [
+            {
+              "name": "join",
+              "category": "basic_commands",
+              "group": "音楽系",
+              "usage": "^^join",
+              "description": "実行者が入っているVCへBotを参加させます。",
+              "notes": [
+                "shiritori.py の join と同名です。"
+              ]
+            },
+            {
+              "name": "leave",
+              "category": "basic_commands",
+              "group": "音楽系",
+              "usage": "^^leave",
+              "description": "VCから退出し、キューや再生表示を片付けます。",
+              "notes": [
+                "shiritori.py の leave と同名です。"
+              ]
+            },
+            {
+              "name": "play",
+              "category": "basic_commands",
+              "group": "音楽系",
+              "usage": "^^play <URLまたはファイルパス>",
+              "description": "音声をキューへ追加し、未再生なら再生を開始します。"
+            },
+            {
+              "name": "queue",
+              "category": "basic_commands",
+              "group": "音楽系",
+              "usage": "^^queue",
+              "description": "現在の音楽キューを表示します。"
+            }
+          ]
+        },
+        {
+          "name": "運用系",
+          "commands": [
+            {
+              "name": "guilds",
+              "category": "basic_commands",
+              "group": "運用系",
+              "usage": "^^guilds",
+              "description": "Botが参加しているサーバー名とIDをDMへ送信します。"
+            },
+            {
+              "name": "invite_from_id",
+              "category": "basic_commands",
+              "group": "運用系",
+              "usage": "^^invite_from_id <サーバーID>",
+              "description": "Bot参加済みサーバーの招待リンクを作成します。"
+            },
+            {
+              "name": "invite_clone",
+              "category": "basic_commands",
+              "group": "運用系",
+              "usage": "^^invite_clone <招待URL> [作成数]",
+              "description": "指定招待先と同じサーバーの招待リンクを複数作成します。作成数は1から10です。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "管理者権限",
+      "source": "management_commands",
+      "groups": [
+        {
+          "name": "bot_control",
+          "commands": [
+            {
+              "name": "commandstop",
+              "category": "管理者権限",
+              "group": "bot_control",
+              "usage": "^^commandstop [all|server|category|channel] [対象]",
+              "description": "実行中コマンドを強制終了し、指定スコープのコマンド受付を停止します。all はBotオーナー専用です。",
+              "aliases": [
+                "cmdstop",
+                "コマンド停止"
+              ]
+            },
+            {
+              "name": "pause",
+              "category": "管理者権限",
+              "group": "bot_control",
+              "usage": "^^pause [all|server|category|channel] [対象]",
+              "description": "指定スコープの新規コマンド受付を一時停止します。実行中のものは継続します。",
+              "aliases": [
+                "一時停止"
+              ]
+            },
+            {
+              "name": "resume",
+              "category": "管理者権限",
+              "group": "bot_control",
+              "usage": "^^resume [all|server|category|channel] [対象]",
+              "description": "commandstop/pause 状態から指定スコープを再開します。",
+              "aliases": [
+                "再開"
+              ]
+            },
+            {
+              "name": "cmdinitstats",
+              "category": "管理者権限",
+              "group": "bot_control",
+              "usage": "^^cmdinitstats",
+              "description": "現在チャンネルに適用されているBot制御状態を表示します。",
+              "aliases": [
+                "cmdinit",
+                "状態"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "files",
+          "commands": [
+            {
+              "name": "files",
+              "category": "管理者権限",
+              "group": "files",
+              "usage": "^^files [フォルダ名|.拡張子|address]",
+              "description": "cogsフォルダ基準でファイル/フォルダ一覧を表示します。管理者または登録オーナーのみ使用可能です。",
+              "examples": [
+                {
+                  "usage": "^^files",
+                  "description": "基準フォルダ直下を表示します。"
+                },
+                {
+                  "usage": "^^files .txt",
+                  "description": ".txtファイルだけ表示します。"
+                },
+                {
+                  "usage": "^^files address",
+                  "description": "フルパス表示にします。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "pin",
+          "commands": [
+            {
+              "name": "pinlist",
+              "category": "管理者権限",
+              "group": "pin",
+              "usage": "^^pinlist",
+              "description": "サーバー内の全ピン一覧を表示します。"
+            },
+            {
+              "name": "pinlogchannel",
+              "category": "管理者権限",
+              "group": "pin",
+              "usage": "^^pinlogchannel [#チャンネル]",
+              "description": "ピン操作ログの送信先を設定または解除します。"
+            },
+            {
+              "name": "pinrepost",
+              "category": "管理者権限",
+              "group": "pin",
+              "usage": "^^pinrepost [#チャンネル]",
+              "description": "全チャンネルまたは指定チャンネルのピンを再送します。"
+            },
+            {
+              "name": "refreshpin",
+              "category": "管理者権限",
+              "group": "pin",
+              "usage": "^^refreshpin",
+              "description": "保存済みピンを順次再送します。"
+            }
+          ]
+        },
+        {
+          "name": "spam",
+          "commands": [
+            {
+              "name": "spam",
+              "category": "管理者権限",
+              "group": "spam",
+              "usage": "^^spam @ユーザー [回数] [遅延秒]",
+              "description": "指定ユーザーへのメンションを繰り返し送信します。"
+            },
+            {
+              "name": "flood",
+              "category": "管理者権限",
+              "group": "spam",
+              "usage": "^^flood @ユーザー [表示用合計数]",
+              "description": "指定ユーザーのメンションを1メッセージに詰め込みます。"
+            },
+            {
+              "name": "countup",
+              "category": "管理者権限",
+              "group": "spam",
+              "usage": "^^countup <回数> [遅延秒]",
+              "description": "指定回数まで数字をカウントアップ送信します。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "オーナー権限",
+      "source": "management_commands",
+      "groups": [
+        {
+          "name": "bot_process",
+          "commands": [
+            {
+              "name": "stop",
+              "category": "オーナー権限",
+              "group": "bot_process",
+              "usage": "^^stop",
+              "description": "Botを停止します。"
+            },
+            {
+              "name": "restart",
+              "category": "オーナー権限",
+              "group": "bot_process",
+              "usage": "^^restart",
+              "description": "Botプロセスを再起動します。"
+            }
+          ]
+        },
+        {
+          "name": "cog_management",
+          "commands": [
+            {
+              "name": "reload",
+              "category": "オーナー権限",
+              "group": "cog_management",
+              "usage": "^^reload <all|Cog名[,Cog名...]>",
+              "description": "指定Cogをリロードします。未ロードならロードします。",
+              "aliases": [
+                "re"
+              ]
+            },
+            {
+              "name": "load",
+              "category": "オーナー権限",
+              "group": "cog_management",
+              "usage": "^^load <all|Cog名[,Cog名...]>",
+              "description": "指定Cogをロードします。"
+            },
+            {
+              "name": "unload",
+              "category": "オーナー権限",
+              "group": "cog_management",
+              "usage": "^^unload <all|Cog名[,Cog名...]>",
+              "description": "指定Cogをアンロードします。Reload Cog 自身は保護されます。",
+              "aliases": [
+                "un"
+              ]
+            },
+            {
+              "name": "cogs",
+              "category": "オーナー権限",
+              "group": "cog_management",
+              "usage": "^^cogs",
+              "description": "Cogのロード済み/未ロード一覧を表示します。"
+            }
+          ]
+        },
+        {
+          "name": "spam",
+          "commands": [
+            {
+              "name": "spam1",
+              "category": "オーナー権限",
+              "group": "spam",
+              "usage": "^^spam1 @ユーザー [回数] [遅延秒]",
+              "description": "Botオーナー専用のメンション繰り返し送信です。"
+            },
+            {
+              "name": "flood1",
+              "category": "オーナー権限",
+              "group": "spam",
+              "usage": "^^flood1 @ユーザー [表示用合計数]",
+              "description": "Botオーナー専用のメンション詰め込み送信です。"
+            },
+            {
+              "name": "countup1",
+              "category": "オーナー権限",
+              "group": "spam",
+              "usage": "^^countup1 <回数> [遅延秒]",
+              "description": "Botオーナー専用のカウントアップ送信です。"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
