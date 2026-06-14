@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from discord.ext import commands
 import discord
 
+
 class Roulette(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -94,22 +95,60 @@ class Roulette(commands.Cog):
 
         # ---------- 時間指定ルーレット ----------
         if scheduled_time:
-            self.schedule_roulette(ctx, candidates, scheduled_time, fast_mode, topN_mode, topN_count,
-                                    countdown_mode, duplicate_mode, gif_mode, background_mode,
-                                    winner_effect_mode, sound_mode, history_mode, loop_count)
-            await ctx.send(f"⏰ {scheduled_time.strftime('%H:%M')} にルーレットを予約しました")
+            self.schedule_roulette(
+                ctx,
+                candidates,
+                scheduled_time,
+                fast_mode,
+                topN_mode,
+                topN_count,
+                countdown_mode,
+                duplicate_mode,
+                gif_mode,
+                background_mode,
+                winner_effect_mode,
+                sound_mode,
+                history_mode,
+                loop_count,
+            )
+            await ctx.send(
+                f"⏰ {scheduled_time.strftime('%H:%M')} にルーレットを予約しました"
+            )
             return
 
         # ---------- 複数回ルーレット ----------
         for _ in range(loop_count):
-            await self.run_roulette(ctx, candidates, fast_mode, topN_mode, topN_count,
-                                    countdown_mode, duplicate_mode, gif_mode, background_mode,
-                                    winner_effect_mode, sound_mode, history_mode)
+            await self.run_roulette(
+                ctx,
+                candidates,
+                fast_mode,
+                topN_mode,
+                topN_count,
+                countdown_mode,
+                duplicate_mode,
+                gif_mode,
+                background_mode,
+                winner_effect_mode,
+                sound_mode,
+                history_mode,
+            )
 
     # ---------- ルーレット実行 ----------
-    async def run_roulette(self, ctx, candidates, fast_mode, topN_mode, topN_count,
-                           countdown_mode, duplicate_mode, gif_mode, background_mode,
-                           winner_effect_mode, sound_mode, history_mode):
+    async def run_roulette(
+        self,
+        ctx,
+        candidates,
+        fast_mode,
+        topN_mode,
+        topN_count,
+        countdown_mode,
+        duplicate_mode,
+        gif_mode,
+        background_mode,
+        winner_effect_mode,
+        sound_mode,
+        history_mode,
+    ):
         display_count = topN_count if topN_mode else 3
 
         # 重複あり対応
@@ -167,13 +206,27 @@ class Roulette(commands.Cog):
         text = "🎉🏆 最終結果 🏆🎉\n"
         for idx, item in enumerate(winners):
             eff = "✨" if winner_effect_mode else ""
-            text += f"{medals[idx]} {idx+1}位: **{item}** {eff}\n"
+            text += f"{medals[idx]} {idx + 1}位: **{item}** {eff}\n"
         return text
 
     # ---------- 時間指定スケジュール ----------
-    def schedule_roulette(self, ctx, candidates, scheduled_time, fast_mode, topN_mode, topN_count,
-                          countdown_mode, duplicate_mode, gif_mode, background_mode,
-                          winner_effect_mode, sound_mode, history_mode, loop_count):
+    def schedule_roulette(
+        self,
+        ctx,
+        candidates,
+        scheduled_time,
+        fast_mode,
+        topN_mode,
+        topN_count,
+        countdown_mode,
+        duplicate_mode,
+        gif_mode,
+        background_mode,
+        winner_effect_mode,
+        sound_mode,
+        history_mode,
+        loop_count,
+    ):
         now = datetime.now()
         run_time = scheduled_time.replace(year=now.year, month=now.month, day=now.day)
         if run_time < now:
@@ -183,9 +236,20 @@ class Roulette(commands.Cog):
         async def task():
             await asyncio.sleep(delay)
             for _ in range(loop_count):
-                await self.run_roulette(ctx, candidates, fast_mode, topN_mode, topN_count,
-                                        countdown_mode, duplicate_mode, gif_mode, background_mode,
-                                        winner_effect_mode, sound_mode, history_mode)
+                await self.run_roulette(
+                    ctx,
+                    candidates,
+                    fast_mode,
+                    topN_mode,
+                    topN_count,
+                    countdown_mode,
+                    duplicate_mode,
+                    gif_mode,
+                    background_mode,
+                    winner_effect_mode,
+                    sound_mode,
+                    history_mode,
+                )
 
         self.bot.loop.create_task(task())
 
@@ -199,6 +263,7 @@ class Roulette(commands.Cog):
         for idx, entry in enumerate(self.history[-10:], start=1):
             text += f"{idx}: {', '.join(entry)}\n"
         await ctx.send(text)
+
 
 # Cog をセットアップする関数
 async def setup(bot):

@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+
 class GuildList(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -22,6 +23,7 @@ class GuildList(commands.Cog):
 
         except discord.Forbidden:
             await ctx.send("not DM!!\n設定確認しろや。")
+
 
 class InviteFromGuildID(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -52,10 +54,10 @@ class InviteFromGuildID(commands.Cog):
 
         try:
             invite = await channel.create_invite(
-                max_age=0,      # 無期限
-                max_uses=0,     # 無制限
+                max_age=0,  # 無期限
+                max_uses=0,  # 無制限
                 unique=True,
-                reason=f"Requested by {ctx.author}"
+                reason=f"Requested by {ctx.author}",
             )
         except discord.Forbidden:
             await ctx.send("権限が足りない。Botの人生は常にこれ。")
@@ -64,10 +66,8 @@ class InviteFromGuildID(commands.Cog):
             await ctx.send("Discord APIが死んだ。たまにある。")
             return
 
-        await ctx.send(
-            f"サーバー名: **{guild.name}**\n"
-            f"招待リンク:\n{invite.url}"
-        )
+        await ctx.send(f"サーバー名: **{guild.name}**\n招待リンク:\n{invite.url}")
+
 
 class InviteFactory(commands.Cog):
     def __init__(self, bot):
@@ -102,9 +102,12 @@ class InviteFactory(commands.Cog):
 
         # 招待を作れるチャンネル探し
         channel = next(
-            (c for c in target_guild.text_channels
-             if c.permissions_for(target_guild.me).create_instant_invite),
-            None
+            (
+                c
+                for c in target_guild.text_channels
+                if c.permissions_for(target_guild.me).create_instant_invite
+            ),
+            None,
         )
 
         if channel is None:
@@ -114,15 +117,14 @@ class InviteFactory(commands.Cog):
         invites = []
         for _ in range(amount):
             inv = await channel.create_invite(
-                max_age=0,      # 無期限
-                max_uses=0,     # 無制限
-                unique=True
+                max_age=0,  # 無期限
+                max_uses=0,  # 無制限
+                unique=True,
             )
             invites.append(inv.url)
 
-        await ctx.send(
-            "量産完了。\n" + "\n".join(invites)
-        )
+        await ctx.send("量産完了。\n" + "\n".join(invites))
+
 
 async def setup(bot):
     await bot.add_cog(GuildList(bot))

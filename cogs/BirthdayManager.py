@@ -6,6 +6,7 @@ import os
 
 BIRTHDAY_FILE = "birthdays.json"
 
+
 class BirthdayManager(commands.Cog):
     """サーバー誕生日イベント＋一覧ページCog"""
 
@@ -33,9 +34,18 @@ class BirthdayManager(commands.Cog):
                 if bday == today:
                     member = guild.get_member(int(user_id))
                     if member:
-                        channel = guild.system_channel or next((c for c in guild.text_channels if c.permissions_for(guild.me).send_messages), None)
+                        channel = guild.system_channel or next(
+                            (
+                                c
+                                for c in guild.text_channels
+                                if c.permissions_for(guild.me).send_messages
+                            ),
+                            None,
+                        )
                         if channel:
-                            await channel.send(f"🎉 {member.mention} さん、お誕生日おめでとうございます！🎂（起動時チェック）")
+                            await channel.send(
+                                f"🎉 {member.mention} さん、お誕生日おめでとうございます！🎂（起動時チェック）"
+                            )
 
     def cog_unload(self):
         self.check_birthdays.cancel()
@@ -49,9 +59,18 @@ class BirthdayManager(commands.Cog):
                 if bday == today:
                     member = guild.get_member(int(user_id))
                     if member:
-                        channel = guild.system_channel or next((c for c in guild.text_channels if c.permissions_for(guild.me).send_messages), None)
+                        channel = guild.system_channel or next(
+                            (
+                                c
+                                for c in guild.text_channels
+                                if c.permissions_for(guild.me).send_messages
+                            ),
+                            None,
+                        )
                         if channel:
-                            await channel.send(f"🎉 {member.mention} さん、お誕生日おめでとうございます！🎂")
+                            await channel.send(
+                                f"🎉 {member.mention} さん、お誕生日おめでとうございます！🎂"
+                            )
 
     @commands.command(name="set_birthday")
     async def set_birthday(self, ctx, month: int, day: int):
@@ -62,7 +81,9 @@ class BirthdayManager(commands.Cog):
         self.birthdays[str(ctx.author.id)] = f"{month:02d}-{day:02d}"
         with open(BIRTHDAY_FILE, "w", encoding="utf-8") as f:
             json.dump(self.birthdays, f, ensure_ascii=False, indent=2)
-        await ctx.send(f"✅ {ctx.author.name} の誕生日を {month}月{day}日 に登録しました。")
+        await ctx.send(
+            f"✅ {ctx.author.name} の誕生日を {month}月{day}日 に登録しました。"
+        )
 
     @commands.command(name="birthday_list")
     async def birthday_list(self, ctx):
@@ -81,11 +102,12 @@ class BirthdayManager(commands.Cog):
         message = "📋 **メンバー誕生日一覧** 📋\n" + "\n".join(lines)
         if len(message) > 1900:
             # 複数分割して送信
-            chunks = [lines[i:i+20] for i in range(0, len(lines), 20)]
+            chunks = [lines[i : i + 20] for i in range(0, len(lines), 20)]
             for chunk in chunks:
                 await ctx.send("📋 **メンバー誕生日一覧** 📋\n" + "\n".join(chunk))
         else:
             await ctx.send(message)
+
 
 # CogをBotに登録
 async def setup(bot):

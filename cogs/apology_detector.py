@@ -5,10 +5,11 @@ import re
 import random
 from discord.ext import commands
 
+
 class ApologyDetector(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+
         self.chen_gifs = [
             "https://tenor.com/view/endfield-endfield-meme-endfield-chen-chen-chen-qianyu-gif-280722021857689086",
             "https://tenor.com/view/freaky-chen-arknights-endfield-arknights-endfield-gif-5344401584532729035",
@@ -101,7 +102,7 @@ class ApologyDetector(commands.Cog):
             r"erroneous",
             r"mistaken",
         ]
-        
+
         target = (
             r"(?:"
             r"らむ(?:ちゃん|さん|様|さま|氏|くん|君|殿|先輩|先生)?|"
@@ -120,10 +121,8 @@ class ApologyDetector(commands.Cog):
             r")"
         )
 
-        self.whatramdoing = [
-            rf"{target}[\s\S]*?{question}"
-        ]
-        
+        self.whatramdoing = [rf"{target}[\s\S]*?{question}"]
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.author.bot:
@@ -158,11 +157,11 @@ class ApologyDetector(commands.Cog):
                     f"{random.choice(self.chen_gifs)}"
                 )
                 return
-            
-    
+
     @commands.command(name="chen")
     async def chen(self, ctx):
         await ctx.send(f"{random.choice(self.chen_gifs)}")
+
 
 async def setup(bot):
     await bot.add_cog(ApologyDetector(bot))

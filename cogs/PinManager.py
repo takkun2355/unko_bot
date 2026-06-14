@@ -29,6 +29,7 @@ _EMBED_HEX = "f62e36"  # 先頭0xや#は不要
 _EMBED_COLOR_VALUE = int("0x" + _EMBED_HEX, 16)
 _EMBED_COLOR = discord.Color(_EMBED_COLOR_VALUE)
 
+
 # ファイル・ディレクトリ操作系ユーティリティ
 def ensure_dir(path: str) -> None:
     """
@@ -41,8 +42,9 @@ def ensure_dir(path: str) -> None:
         # 作成失敗しても上位でハンドリングされるはずなので静かに通す
         pass
 
+
 def safe_listdir(path: str) -> typing.List[str]:
-    """ 指定パスの中身を返す。ただし存在しない場合は空リストを返す """
+    """指定パスの中身を返す。ただし存在しない場合は空リストを返す"""
     if not os.path.exists(path):
         return []
     try:
@@ -50,8 +52,9 @@ def safe_listdir(path: str) -> typing.List[str]:
     except Exception:
         return []
 
+
 def load_json(path: str) -> dict:
-    """ JSON をロード。失敗時は空辞書を返す（壊れたファイルは上書き対象になる） """
+    """JSON をロード。失敗時は空辞書を返す（壊れたファイルは上書き対象になる）"""
     try:
         if not os.path.exists(path):
             return {}
@@ -61,8 +64,9 @@ def load_json(path: str) -> dict:
         # 読み込み失敗なら空辞書
         return {}
 
+
 def save_json(path: str, data: dict) -> None:
-    """ JSON を保存する。ディレクトリを必要に応じて作る """
+    """JSON を保存する。ディレクトリを必要に応じて作る"""
     try:
         dirpath = os.path.dirname(path)
         ensure_dir(dirpath)
@@ -72,17 +76,20 @@ def save_json(path: str, data: dict) -> None:
         # 保存失敗は致命的ではないがログを残す
         traceback.print_exc()
 
+
 def remove_file(path: str) -> None:
-    """ ファイル削除（存在チェックあり） """
+    """ファイル削除（存在チェックあり）"""
     try:
         if os.path.exists(path):
             os.remove(path)
     except Exception:
         traceback.print_exc()
 
+
 def iso_now() -> str:
-    """ 現在時刻（UTC）の ISO フォーマット文字列 """
+    """現在時刻（UTC）の ISO フォーマット文字列"""
     return datetime.datetime.utcnow().isoformat()
+
 
 def parse_duration_string(s: str) -> typing.Optional[datetime.timedelta]:
     """
@@ -108,8 +115,9 @@ def parse_duration_string(s: str) -> typing.Optional[datetime.timedelta]:
         return datetime.timedelta(days=num)
     return None
 
+
 def fmt_timedelta_short(td: datetime.timedelta) -> str:
-    """ timedelta を "X時間Y分" のように短く整形 """
+    """timedelta を "X時間Y分" のように短く整形"""
     total = int(td.total_seconds())
     if total <= 0:
         return "0秒"
@@ -128,13 +136,17 @@ def fmt_timedelta_short(td: datetime.timedelta) -> str:
         parts.append(f"{seconds}秒")
     return "".join(parts) if parts else "0秒"
 
+
 # path helpers
-def pin_path_for(guild_id: typing.Union[int, str], channel_id: typing.Union[int, str]) -> str:
+def pin_path_for(
+    guild_id: typing.Union[int, str], channel_id: typing.Union[int, str]
+) -> str:
     g = str(guild_id)
     c = str(channel_id)
     base = os.path.join(DATA_PATH, g, c)
     ensure_dir(base)
     return os.path.join(base, "pindata.json")
+
 
 def settings_path_for(guild_id: typing.Union[int, str]) -> str:
     g = str(guild_id)
@@ -142,15 +154,17 @@ def settings_path_for(guild_id: typing.Union[int, str]) -> str:
     ensure_dir(base)
     return os.path.join(base, "settings.json")
 
+
 # ---------------------------------------------------------------------
 # 大量の「補助関数」を入れてコードを膨らませる（機能には影響しない）
 # ---------------------------------------------------------------------
 def noop_many_times(n: int = 1):
-    """ 意味はないが行数を増やすためのダミー処理 """
+    """意味はないが行数を増やすためのダミー処理"""
     x = 0
     for _ in range(n):
         x += 0
     return x
+
 
 def long_docstring_dummy():
     """
@@ -158,6 +172,7 @@ def long_docstring_dummy():
     読む人の時間を奪うためだけに存在する。内容は無意味。
     """
     return None
+
 
 # ---------------------------------------------------------------------
 # Cog 本体：機能はここにまとめられている（ただしコメント多め）
@@ -195,21 +210,32 @@ class PinManager(commands.Cog):
     # ----------------------------------------
     # 低レベルファイル操作ラッパー（Cog 内部）
     # ----------------------------------------
-    def _pin_file(self, guild_id: typing.Union[int, str], channel_id: typing.Union[int, str]) -> str:
+    def _pin_file(
+        self, guild_id: typing.Union[int, str], channel_id: typing.Union[int, str]
+    ) -> str:
         return pin_path_for(guild_id, channel_id)
 
     def _settings_file(self, guild_id: typing.Union[int, str]) -> str:
         return settings_path_for(guild_id)
 
-    def _load_pin(self, guild_id: typing.Union[int, str], channel_id: typing.Union[int, str]) -> dict:
+    def _load_pin(
+        self, guild_id: typing.Union[int, str], channel_id: typing.Union[int, str]
+    ) -> dict:
         p = self._pin_file(guild_id, channel_id)
         return load_json(p) or {}
 
-    def _save_pin(self, guild_id: typing.Union[int, str], channel_id: typing.Union[int, str], data: dict) -> None:
+    def _save_pin(
+        self,
+        guild_id: typing.Union[int, str],
+        channel_id: typing.Union[int, str],
+        data: dict,
+    ) -> None:
         p = self._pin_file(guild_id, channel_id)
         save_json(p, data)
 
-    def _delete_pin_file(self, guild_id: typing.Union[int, str], channel_id: typing.Union[int, str]) -> None:
+    def _delete_pin_file(
+        self, guild_id: typing.Union[int, str], channel_id: typing.Union[int, str]
+    ) -> None:
         p = self._pin_file(guild_id, channel_id)
         remove_file(p)
 
@@ -222,7 +248,15 @@ class PinManager(commands.Cog):
     # ----------------------------------------
     # Embed生成ヘルパー（色・フッター・ジャンプリンク・残り時間計算）
     # ----------------------------------------
-    def _make_embed(self, guild_id: typing.Union[int, str], channel_id: typing.Union[int, str], author_name: str, content: str, expires_at_iso: typing.Optional[str], jump_url: typing.Optional[str]) -> discord.Embed:
+    def _make_embed(
+        self,
+        guild_id: typing.Union[int, str],
+        channel_id: typing.Union[int, str],
+        author_name: str,
+        content: str,
+        expires_at_iso: typing.Optional[str],
+        jump_url: typing.Optional[str],
+    ) -> discord.Embed:
         """
         Embed を生成する。内容は下記の通り：
         - タイトル: 📌 ピン留めメッセージ
@@ -235,7 +269,7 @@ class PinManager(commands.Cog):
             title="📌 ピン留めメッセージ",
             description=content,
             color=_EMBED_COLOR,
-            timestamp=datetime.datetime.utcnow()
+            timestamp=datetime.datetime.utcnow(),
         )
 
         footer_text_parts = []
@@ -248,7 +282,9 @@ class PinManager(commands.Cog):
                 expires_dt = datetime.datetime.fromisoformat(expires_at_iso)
                 remaining = expires_dt - datetime.datetime.utcnow()
                 if remaining.total_seconds() > 0:
-                    footer_text_parts.append(f"削除まであと{fmt_timedelta_short(remaining)}")
+                    footer_text_parts.append(
+                        f"削除まであと{fmt_timedelta_short(remaining)}"
+                    )
                 else:
                     footer_text_parts.append("削除予定: まもなく")
             except Exception:
@@ -263,7 +299,11 @@ class PinManager(commands.Cog):
         # jump_url を添える行を Embed の最下部にフィールドで追加（小さく）
         if jump_url:
             # field name は空のままにすると Discord が弾くので短いタイトルをつける
-            embed.add_field(name="🔗 メッセージへジャンプ", value=f"[ここをクリック]({jump_url})", inline=False)
+            embed.add_field(
+                name="🔗 メッセージへジャンプ",
+                value=f"[ここをクリック]({jump_url})",
+                inline=False,
+            )
 
         return embed
 
@@ -279,7 +319,12 @@ class PinManager(commands.Cog):
     # ----------------------------------------
     # 実際の「ピン再送」処理（古いメッセージ削除 → 新メッセージ送信 → JSON 更新）
     # ----------------------------------------
-    async def _repost_pin_for(self, guild: discord.Guild, channel: discord.TextChannel, suppress_log: bool = False) -> bool:
+    async def _repost_pin_for(
+        self,
+        guild: discord.Guild,
+        channel: discord.TextChannel,
+        suppress_log: bool = False,
+    ) -> bool:
         """
         指定チャンネルのピンデータを読み込み、存在すれば古いピンを削除して再投稿する。
         成功したら True、何もなければ False を返す。
@@ -307,7 +352,11 @@ class PinManager(commands.Cog):
             # author name resolution
             author_name = "不明"
             try:
-                member = guild.get_member(int(data.get("author_id", 0))) if data.get("author_id") else None
+                member = (
+                    guild.get_member(int(data.get("author_id", 0)))
+                    if data.get("author_id")
+                    else None
+                )
                 if member:
                     author_name = member.display_name
                 else:
@@ -323,7 +372,9 @@ class PinManager(commands.Cog):
                 content = content.replace("\\n", "\n")
 
             # Embed の生成
-            embed = self._make_embed(gid, cid, author_name, content, expires_at_iso, None)
+            embed = self._make_embed(
+                gid, cid, author_name, content, expires_at_iso, None
+            )
 
             # 送信（ここで送られたメッセージが新しいピン）
             new_msg = await channel.send(embed=embed)
@@ -369,11 +420,16 @@ class PinManager(commands.Cog):
         """
         # 基本入力チェック
         if not ctx.guild:
-            await ctx.send("このコマンドはサーバー内でのみ使用できます。", delete_after=8)
+            await ctx.send(
+                "このコマンドはサーバー内でのみ使用できます。", delete_after=8
+            )
             return
 
         if not content:
-            await ctx.send("使用例: ^^pin <内容> [時間]\n例: ^^pin ようこそ！\\nルールを守って 24h", delete_after=12)
+            await ctx.send(
+                "使用例: ^^pin <内容> [時間]\n例: ^^pin ようこそ！\\nルールを守って 24h",
+                delete_after=12,
+            )
             return
 
         # content の末尾に時間指定があるか判定（最後のトークン）
@@ -406,14 +462,22 @@ class PinManager(commands.Cog):
             except Exception:
                 continue
         if total_pins >= 7 and not ctx.author.guild_permissions.administrator:
-            await ctx.send("❌ このサーバーでは7つまでしかピンを設定できません（管理者は例外）。", delete_after=8)
+            await ctx.send(
+                "❌ このサーバーでは7つまでしかピンを設定できません（管理者は例外）。",
+                delete_after=8,
+            )
             return
 
         # 既に同チャンネルにピンがあるかどうか
         gid = str(ctx.guild.id)
         cid = str(ctx.channel.id)
         old = self._load_pin(gid, cid)
-        if old and old.get("author_id") and int(old.get("author_id")) != ctx.author.id and not ctx.author.guild_permissions.administrator:
+        if (
+            old
+            and old.get("author_id")
+            and int(old.get("author_id")) != ctx.author.id
+            and not ctx.author.guild_permissions.administrator
+        ):
             await ctx.send("❌ 他の人のピンは上書きできません。", delete_after=8)
             return
 
@@ -443,10 +507,12 @@ class PinManager(commands.Cog):
             "guild_id": gid,
             "channel_id": cid,
             "author_id": ctx.author.id,
-            "message": content_text.replace("\n", "\\n"),  # 保存時は \n をエスケープしておく（読み込み時に戻す）
+            "message": content_text.replace(
+                "\n", "\\n"
+            ),  # 保存時は \n をエスケープしておく（読み込み時に戻す）
             "created_at": iso_now(),
             "expires_at": expires_iso,
-            "jump_url": sent_jump
+            "jump_url": sent_jump,
         }
         self._save_pin(gid, cid, data)
         self._push_log(f"pin_set: guild={gid} channel={cid} by user={ctx.author.id}")
@@ -481,7 +547,10 @@ class PinManager(commands.Cog):
             return
 
         # 権限チェック（作成者か管理者）
-        if int(data.get("author_id", 0)) != ctx.author.id and not ctx.author.guild_permissions.administrator:
+        if (
+            int(data.get("author_id", 0)) != ctx.author.id
+            and not ctx.author.guild_permissions.administrator
+        ):
             await ctx.send("❌ 編集権限がありません。", delete_after=8)
             return
 
@@ -495,15 +564,32 @@ class PinManager(commands.Cog):
             if embed:
                 embed.description = new_text
                 # フッターは作者名を変えない（ただし表示を更新する）
-                author_name = ctx.guild.get_member(int(data.get("author_id"))) .display_name if ctx.guild.get_member(int(data.get("author_id"))) else "不明"
+                author_name = (
+                    ctx.guild.get_member(int(data.get("author_id"))).display_name
+                    if ctx.guild.get_member(int(data.get("author_id")))
+                    else "不明"
+                )
                 # 再生成のためフィールド全部作り直す
-                new_embed = self._make_embed(gid, cid, author_name, new_text, data.get("expires_at"), data.get("jump_url"))
+                new_embed = self._make_embed(
+                    gid,
+                    cid,
+                    author_name,
+                    new_text,
+                    data.get("expires_at"),
+                    data.get("jump_url"),
+                )
                 await msg.edit(embed=new_embed)
             else:
                 # embed が無い場合は削除して再送する
                 await msg.delete()
-                author_name = ctx.guild.get_member(int(data.get("author_id"))) .display_name if ctx.guild.get_member(int(data.get("author_id"))) else "不明"
-                new_embed = self._make_embed(gid, cid, author_name, new_text, data.get("expires_at"), None)
+                author_name = (
+                    ctx.guild.get_member(int(data.get("author_id"))).display_name
+                    if ctx.guild.get_member(int(data.get("author_id")))
+                    else "不明"
+                )
+                new_embed = self._make_embed(
+                    gid, cid, author_name, new_text, data.get("expires_at"), None
+                )
                 new_msg = await ctx.channel.send(embed=new_embed)
                 data["id"] = new_msg.id
                 data["jump_url"] = getattr(new_msg, "jump_url", None)
@@ -511,7 +597,9 @@ class PinManager(commands.Cog):
             # fetch_message が失敗したら再送する形で対応
             new_text = new_content.replace("\\n", "\n")
             author_name = ctx.author.display_name
-            embed = self._make_embed(gid, cid, author_name, new_text, data.get("expires_at"), None)
+            embed = self._make_embed(
+                gid, cid, author_name, new_text, data.get("expires_at"), None
+            )
             new_msg = await ctx.channel.send(embed=embed)
             data["id"] = new_msg.id
             data["jump_url"] = getattr(new_msg, "jump_url", None)
@@ -544,7 +632,10 @@ class PinManager(commands.Cog):
             return
 
         # 権限チェック
-        if int(data.get("author_id", 0)) != ctx.author.id and not ctx.author.guild_permissions.administrator:
+        if (
+            int(data.get("author_id", 0)) != ctx.author.id
+            and not ctx.author.guild_permissions.administrator
+        ):
             await ctx.send("❌ 削除権限がありません。", delete_after=6)
             return
 
@@ -566,7 +657,9 @@ class PinManager(commands.Cog):
             try:
                 log_ch = ctx.guild.get_channel(int(log_ch_id))
                 if log_ch:
-                    await log_ch.send(f"🗑️ ピン削除: {ctx.channel.mention} by {ctx.author.mention}")
+                    await log_ch.send(
+                        f"🗑️ ピン削除: {ctx.channel.mention} by {ctx.author.mention}"
+                    )
             except Exception:
                 pass
 
@@ -613,12 +706,16 @@ class PinManager(commands.Cog):
             content_val_trim = content_val
         embed.add_field(name="内容", value=content_val_trim, inline=False)
         embed.add_field(name="作成者", value=author_mention, inline=True)
-        embed.add_field(name="作成日時", value=data.get("created_at", "不明"), inline=True)
+        embed.add_field(
+            name="作成日時", value=data.get("created_at", "不明"), inline=True
+        )
         embed.add_field(name="有効期限", value=expires_text, inline=False)
         # jump_url を追加表示する（可能なら）
         jump = data.get("jump_url")
         if jump:
-            embed.add_field(name="メッセージリンク", value=f"[ジャンプ]({jump})", inline=False)
+            embed.add_field(
+                name="メッセージリンク", value=f"[ジャンプ]({jump})", inline=False
+            )
 
         await ctx.send(embed=embed, delete_after=40)
 
@@ -641,7 +738,9 @@ class PinManager(commands.Cog):
             await ctx.send("このサーバーにはピンが存在しません。", delete_after=8)
             return
 
-        embed = discord.Embed(title="📚 サーバー内のピン一覧", color=discord.Color.green())
+        embed = discord.Embed(
+            title="📚 サーバー内のピン一覧", color=discord.Color.green()
+        )
         count = 0
         for ch in files:
             path = os.path.join(folder, ch, "pindata.json")
@@ -666,7 +765,9 @@ class PinManager(commands.Cog):
     # ^^pinlogchannel <#チャンネル> (管理者専用)
     # -------------------------
     @commands.command(name="pinlogchannel")
-    async def pinlogchannel(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    async def pinlogchannel(
+        self, ctx: commands.Context, channel: discord.TextChannel = None
+    ):
         """
         ピン操作ログを送るチャンネルを設定します（管理者のみ）。
         使用: ^^pinlogchannel #log
@@ -681,7 +782,10 @@ class PinManager(commands.Cog):
         if channel:
             settings["log_channel"] = channel.id
             self._save_settings(gid, settings)
-            await ctx.send(f"📜 ログチャンネルを {channel.mention} に設定しました。", delete_after=8)
+            await ctx.send(
+                f"📜 ログチャンネルを {channel.mention} に設定しました。",
+                delete_after=8,
+            )
         else:
             settings.pop("log_channel", None)
             self._save_settings(gid, settings)
@@ -691,7 +795,9 @@ class PinManager(commands.Cog):
     # ^^pinrepost (管理者専用): 全チャンネル or 指定チャンネルのピンを再送
     # -------------------------
     @commands.command(name="pinrepost")
-    async def pinrepost(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    async def pinrepost(
+        self, ctx: commands.Context, channel: discord.TextChannel = None
+    ):
         """
         管理者専用。全チャンネルのピンを再送するか、引数で指定したチャンネルのみ再送する。
         使用例:
@@ -782,7 +888,9 @@ class PinManager(commands.Cog):
                     pass
 
             # 実際に再投稿を行う（古いメッセージを削除して新しく投稿する）
-            await self._repost_pin_for(message.guild, message.channel, suppress_log=False)
+            await self._repost_pin_for(
+                message.guild, message.channel, suppress_log=False
+            )
         except Exception:
             # 何らかの例外が発生しても on_message は壊さない
             traceback.print_exc()
@@ -831,7 +939,9 @@ class PinManager(commands.Cog):
                                 msg_id = data.get("id")
                                 if msg_id:
                                     try:
-                                        msg_obj = await ch_obj.fetch_message(int(msg_id))
+                                        msg_obj = await ch_obj.fetch_message(
+                                            int(msg_id)
+                                        )
                                         await msg_obj.delete()
                                     except Exception:
                                         pass
@@ -845,7 +955,9 @@ class PinManager(commands.Cog):
                                 try:
                                     log_ch = guild_obj.get_channel(int(log_ch_id))
                                     if log_ch:
-                                        await log_ch.send(f"🕒 ピン期限切れ: {ch_obj.mention}")
+                                        await log_ch.send(
+                                            f"🕒 ピン期限切れ: {ch_obj.mention}"
+                                        )
                                 except Exception:
                                     pass
                     except Exception:
@@ -860,6 +972,7 @@ class PinManager(commands.Cog):
         # 起動時に全ピンを再登録したい場合は refreshpin を呼ぶか、管理者が ^^refreshpin を叩く
         return
 
+
 # Cog を追加するための setup 関数（標準）
 async def setup(bot: commands.Bot):
     """
@@ -870,25 +983,29 @@ async def setup(bot: commands.Bot):
     """
     await bot.add_cog(PinManager(bot))
 
+
 # =====================================================================
 # 末尾ダミー領域（追加行数確保のための意味のない定数や関数群）
 # =====================================================================
 
 _EXTRA_PADDING_CONSTANT = 0xDEADBEEF  # 無意味だが存在する
 
+
 def _useless_padding_function_a():
-    """ ただの余白確保関数（呼び出す必要なし） """
+    """ただの余白確保関数（呼び出す必要なし）"""
     t = []
     for i in range(3):
         t.append(i)
     return t
 
+
 def _useless_padding_function_b(x):
-    """ より多くの行を消費するためのダミー """
+    """より多くの行を消費するためのダミー"""
     y = 0
     for i in range(0, 10):
         y += i * 0
     return x, y
+
 
 # ここまで読むのは暇な人だけにしておいた。ファイルは一応動くはずだ。
 # もし動作しない場合:

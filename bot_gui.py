@@ -5,6 +5,7 @@ import queue
 import random
 import math
 
+
 # --- particles.js風の最背面・カーソル回避対応キャンバス ---
 class ParticleCanvas(tk.Canvas):
     def __init__(self, parent, **kwargs):
@@ -13,7 +14,7 @@ class ParticleCanvas(tk.Canvas):
         self.active = False
         self.width = 650
         self.height = 550
-        
+
         # マウス座標（初期値は範囲外）
         self.mx = -1000
         self.my = -1000
@@ -41,13 +42,15 @@ class ParticleCanvas(tk.Canvas):
         self.particles = []
         # ウィンドウサイズに応じた粒子の配置
         for _ in range(40):
-            self.particles.append({
-                'x': random.randint(10, self.width - 10),
-                'y': random.randint(10, self.height - 10),
-                'vx': random.uniform(-1.0, 1.0),
-                'vy': random.uniform(-1.0, 1.0),
-                'r': random.randint(2, 4)
-            })
+            self.particles.append(
+                {
+                    "x": random.randint(10, self.width - 10),
+                    "y": random.randint(10, self.height - 10),
+                    "vx": random.uniform(-1.0, 1.0),
+                    "vy": random.uniform(-1.0, 1.0),
+                    "r": random.randint(2, 4),
+                }
+            )
         self.animate()
 
     def stop_animation(self):
@@ -58,38 +61,45 @@ class ParticleCanvas(tk.Canvas):
         if not self.active:
             return
         self.delete("all")
-        
+
         # 粒子の更新と描画
         for p in self.particles:
             # カーソル回避ロジック（距離が80px未満なら避けるように力を加える）
-            dx = p['x'] - self.mx
-            dy = p['y'] - self.my
+            dx = p["x"] - self.mx
+            dy = p["y"] - self.my
             dist = math.hypot(dx, dy)
             if dist < 80 and dist > 0:
                 # 近いほど強い力で押し出す
                 force = (80 - dist) / 80 * 4.0
                 angle = math.atan2(dy, dx)
-                p['x'] += math.cos(angle) * force * 3
-                p['y'] += math.sin(angle) * force * 3
-            
+                p["x"] += math.cos(angle) * force * 3
+                p["y"] += math.sin(angle) * force * 3
+
             # 通常移動
-            p['x'] += p['vx']
-            p['y'] += p['vy']
-            
+            p["x"] += p["vx"]
+            p["y"] += p["vy"]
+
             # 壁での跳ね返り
-            if p['x'] < 0 or p['x'] > self.width:
-                p['vx'] *= -1
-            if p['y'] < 0 or p['y'] > self.height:
-                p['vy'] *= -1
-                
-            self.create_oval(p['x']-p['r'], p['y']-p['r'], p['x']+p['r'], p['y']+p['r'], fill="#00e5ff", outline="")
+            if p["x"] < 0 or p["x"] > self.width:
+                p["vx"] *= -1
+            if p["y"] < 0 or p["y"] > self.height:
+                p["vy"] *= -1
+
+            self.create_oval(
+                p["x"] - p["r"],
+                p["y"] - p["r"],
+                p["x"] + p["r"],
+                p["y"] + p["r"],
+                fill="#00e5ff",
+                outline="",
+            )
 
         # 距離が近い粒子同士を結ぶ
         for i in range(len(self.particles)):
-            for j in range(i+1, len(self.particles)):
+            for j in range(i + 1, len(self.particles)):
                 p1 = self.particles[i]
                 p2 = self.particles[j]
-                dist = math.hypot(p1['x'] - p2['x'], p1['y'] - p2['y'])
+                dist = math.hypot(p1["x"] - p2["x"], p1["y"] - p2["y"])
                 if dist < 85:
                     if dist < 30:
                         color = "#00e5ff"
@@ -97,8 +107,10 @@ class ParticleCanvas(tk.Canvas):
                         color = "#0088cc"
                     else:
                         color = "#002b4d"
-                    self.create_line(p1['x'], p1['y'], p2['x'], p2['y'], fill=color, width=1)
-                    
+                    self.create_line(
+                        p1["x"], p1["y"], p2["x"], p2["y"], fill=color, width=1
+                    )
+
         self.after(30, self.animate)
 
 
@@ -125,16 +137,25 @@ class BotManagerGUI:
         # ステータス・テーマ設定エリア
         self.top_frame = tk.Frame(self.root)
         self.top_frame.pack(fill=tk.X, padx=15, pady=8)
-        
-        self.status_label = tk.Label(self.top_frame, text="Checking status...", font=("Arial", 11, "bold"))
+
+        self.status_label = tk.Label(
+            self.top_frame, text="Checking status...", font=("Arial", 11, "bold")
+        )
         self.status_label.pack(side=tk.LEFT)
 
         # テーマ選択ドロップダウン
         tk.Label(self.top_frame, text="テーマ:").pack(side=tk.RIGHT, padx=5)
-        self.theme_combo = ttk.Combobox(self.top_frame, values=["light", "dark", "hacker", "particles"], width=10, state="readonly")
+        self.theme_combo = ttk.Combobox(
+            self.top_frame,
+            values=["light", "dark", "hacker", "particles"],
+            width=10,
+            state="readonly",
+        )
         self.theme_combo.set("dark")
         self.theme_combo.pack(side=tk.RIGHT)
-        self.theme_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_theme(self.theme_combo.get()))
+        self.theme_combo.bind(
+            "<<ComboboxSelected>>", lambda e: self.apply_theme(self.theme_combo.get())
+        )
 
         # ログ表示フレームとスクロールテキスト
         self.log_frame = tk.Frame(self.root)
@@ -150,24 +171,41 @@ class BotManagerGUI:
         self.cmd_entry = tk.Entry(self.input_frame)
         self.cmd_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         self.cmd_entry.bind("<Return>", lambda e: self.send_cmd())
-        self.send_btn = tk.Button(self.input_frame, text="送信", width=8, command=self.send_cmd)
+        self.send_btn = tk.Button(
+            self.input_frame, text="送信", width=8, command=self.send_cmd
+        )
         self.send_btn.pack(side=tk.LEFT)
 
         # 操作パネル（ボタン群）
         self.btn_frame = tk.Frame(self.root)
         self.btn_frame.pack(fill=tk.X, padx=15, pady=5)
-        
-        self.btn_start = tk.Button(self.btn_frame, text="Start Bot", width=11, command=self.callbacks['start'])
+
+        self.btn_start = tk.Button(
+            self.btn_frame, text="Start Bot", width=11, command=self.callbacks["start"]
+        )
         self.btn_start.pack(side=tk.LEFT, padx=2)
-        self.btn_stop = tk.Button(self.btn_frame, text="Stop Bot", width=11, command=self.callbacks['stop'])
+        self.btn_stop = tk.Button(
+            self.btn_frame, text="Stop Bot", width=11, command=self.callbacks["stop"]
+        )
         self.btn_stop.pack(side=tk.LEFT, padx=2)
-        self.btn_restart = tk.Button(self.btn_frame, text="Restart Bot", width=11, command=self.callbacks['restart'])
+        self.btn_restart = tk.Button(
+            self.btn_frame,
+            text="Restart Bot",
+            width=11,
+            command=self.callbacks["restart"],
+        )
         self.btn_restart.pack(side=tk.LEFT, padx=2)
-        self.btn_save = tk.Button(self.btn_frame, text="ログを保存", width=11, command=self.export_logs)
+        self.btn_save = tk.Button(
+            self.btn_frame, text="ログを保存", width=11, command=self.export_logs
+        )
         self.btn_save.pack(side=tk.LEFT, padx=2)
-        self.btn_help = tk.Button(self.btn_frame, text="Help", width=6, command=self.show_help)
+        self.btn_help = tk.Button(
+            self.btn_frame, text="Help", width=6, command=self.show_help
+        )
         self.btn_help.pack(side=tk.LEFT, padx=2)
-        self.btn_close = tk.Button(self.btn_frame, text="CMDに戻る", width=11, command=self.return_to_cmd)
+        self.btn_close = tk.Button(
+            self.btn_frame, text="CMDに戻る", width=11, command=self.return_to_cmd
+        )
         self.btn_close.pack(side=tk.RIGHT, padx=2)
 
         # コマンドショートカット
@@ -175,7 +213,12 @@ class BotManagerGUI:
         self.cmd_shortcut_frame.pack(fill=tk.X, padx=15, pady=8)
         self.shortcut_buttons = []
         for cmd in ["talk", "hello", "korosuzo", "aga"]:
-            btn = tk.Button(self.cmd_shortcut_frame, text=cmd, width=10, command=lambda c=cmd: self.send_cmd(c))
+            btn = tk.Button(
+                self.cmd_shortcut_frame,
+                text=cmd,
+                width=10,
+                command=lambda c=cmd: self.send_cmd(c),
+            )
             btn.pack(side=tk.LEFT, padx=5, pady=5)
             self.shortcut_buttons.append(btn)
 
@@ -191,30 +234,38 @@ class BotManagerGUI:
     def recursive_style(self, widget, bg, fg, font, entry_bg=None, text_bg=None):
         """全子ウィジェットに対して再帰的にテーマカラーとフォントを適用"""
         w_class = widget.winfo_class()
-        
+
         # キャンバス自体はテーマ背景を直接上書きしないように除外
         if widget == self.particle_canvas:
             return
 
         # 標準ウィジェットへのスタイル適用
-        if w_class in ("Frame", "LabelFrame", "Label", "Button", "Entry", "Text", "Message"):
+        if w_class in (
+            "Frame",
+            "LabelFrame",
+            "Label",
+            "Button",
+            "Entry",
+            "Text",
+            "Message",
+        ):
             # 特殊な背景色指定がある場合
             current_bg = bg
             if w_class == "Entry" and entry_bg:
                 current_bg = entry_bg
             elif w_class == "Text" and text_bg:
                 current_bg = text_bg
-                
+
             try:
                 widget.config(bg=current_bg)
             except tk.TclError:
                 pass
-            
+
             try:
                 widget.config(fg=fg)
             except tk.TclError:
                 pass
-            
+
             try:
                 widget.config(font=font)
             except tk.TclError:
@@ -233,7 +284,7 @@ class BotManagerGUI:
 
     def apply_theme(self, theme_name):
         self.current_theme = theme_name
-        
+
         # particlesのアニメーション管理
         if theme_name == "particles":
             self.particle_canvas.start_animation()
@@ -265,9 +316,17 @@ class BotManagerGUI:
 
         # 2. ttkスタイルの更新（Combobox、Scrollbarなどのスタイリング対応）
         style = ttk.Style()
-        style.theme_use('clam')
-        style.configure("TCombobox", fieldbackground=entry_bg, background=bg, foreground=fg, arrowcolor=fg)
-        style.configure("TScrollbar", background=bg, troughcolor=bg, bordercolor=bg, arrowcolor=fg)
+        style.theme_use("clam")
+        style.configure(
+            "TCombobox",
+            fieldbackground=entry_bg,
+            background=bg,
+            foreground=fg,
+            arrowcolor=fg,
+        )
+        style.configure(
+            "TScrollbar", background=bg, troughcolor=bg, bordercolor=bg, arrowcolor=fg
+        )
 
         # ScrolledText内の標準Scrollbarへの簡易適用
         try:
@@ -281,7 +340,9 @@ class BotManagerGUI:
         try:
             with open(log_path, "w", encoding="utf-8") as f:
                 f.write(content)
-            messagebox.showinfo("保存完了", f"現在のログをファイルに書き出しました:\n{log_path}")
+            messagebox.showinfo(
+                "保存完了", f"現在のログをファイルに書き出しました:\n{log_path}"
+            )
         except Exception as e:
             messagebox.showerror("エラー", f"ログの保存に失敗しました: {e}")
 
@@ -298,10 +359,16 @@ class BotManagerGUI:
         messagebox.showinfo("ヘルプ", help_text)
 
     def update_status(self):
-        if self.callbacks['is_running']():
-            self.status_label.config(text="Bot Status: 🟢 Running", fg="green" if self.current_theme != "hacker" else "#00ff00")
+        if self.callbacks["is_running"]():
+            self.status_label.config(
+                text="Bot Status: 🟢 Running",
+                fg="green" if self.current_theme != "hacker" else "#00ff00",
+            )
         else:
-            self.status_label.config(text="Bot Status: 🔴 Stopped", fg="red" if self.current_theme != "hacker" else "#ff3333")
+            self.status_label.config(
+                text="Bot Status: 🔴 Stopped",
+                fg="red" if self.current_theme != "hacker" else "#ff3333",
+            )
         self.root.after(1000, self.update_status)
 
     def poll_logs(self):
@@ -317,14 +384,14 @@ class BotManagerGUI:
     def send_cmd(self, cmd_text=None):
         cmd = cmd_text if cmd_text else self.cmd_entry.get().strip()
         if cmd:
-            self.callbacks['send_cmd'](cmd)
+            self.callbacks["send_cmd"](cmd)
             self.log_area.insert(tk.END, f">>> {cmd}\n")
             self.log_area.yview(tk.END)
             if not cmd_text:
                 self.cmd_entry.delete(0, tk.END)
 
     def return_to_cmd(self):
-        self.callbacks['show_console']()
+        self.callbacks["show_console"]()
         self.root.destroy()
 
     def on_close(self):

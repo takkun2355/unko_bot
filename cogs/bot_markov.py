@@ -9,8 +9,10 @@ TARGET_USER = 1118799600816492626
 
 tokenizer = Tokenizer()
 
+
 def tokenize_japanese(text: str):
     return [token.surface for token in tokenizer.tokenize(text)]
+
 
 def build_model(text, n=2):
     """Markovモデルを作成"""
@@ -18,13 +20,14 @@ def build_model(text, n=2):
     if not words:
         return {}
     if n > len(words):
-        n = max(1, len(words)-1)
+        n = max(1, len(words) - 1)
     model = {}
-    for i in range(len(words)-n):
-        key = tuple(words[i:i+n])
-        next_word = words[i+n]
+    for i in range(len(words) - n):
+        key = tuple(words[i : i + n])
+        next_word = words[i + n]
         model.setdefault(key, []).append(next_word)
     return model
+
 
 def generate_sentence(model, length=50):
     """実際の文字数が length に達するまで生成"""
@@ -33,12 +36,13 @@ def generate_sentence(model, length=50):
     key = random.choice(list(model.keys()))
     words = list(key)
     while len("".join(words)) < length:
-        current_key = tuple(words[-len(key):])
+        current_key = tuple(words[-len(key) :])
         next_words = model.get(current_key)
         if not next_words:
             break
         words.append(random.choice(next_words))
     return "".join(words)[:length]
+
 
 def save_log(author_id: int, text: str):
     """対象ユーザー(TARGET_USER)の発言のみをspecial_log.txtに保存"""
@@ -46,10 +50,11 @@ def save_log(author_id: int, text: str):
         # 空のメッセージや、ボットへのコマンド（例: ! や / から始まるメッセージ）は除外
         if not text or text.startswith("!") or text.startswith("/"):
             return
-        
+
         # ログを追記保存
         with open(SPECIAL_LOG, "a", encoding="utf-8") as f:
             f.write(text + "\n")
+
 
 def read_logs():
     """special_log.txtのみからテキストを読み込む"""

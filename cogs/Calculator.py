@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import math
 
+
 class Calculator(commands.Cog):
     """拡張計算Cog（math + ^対応 + 関数一覧表示）"""
 
@@ -53,6 +54,7 @@ class Calculator(commands.Cog):
             f"例: `/calc 2^3 + sqrt(16)`"
         )
         await ctx.send(message)
+
 
 # CogをBotに登録
 async def setup(bot):

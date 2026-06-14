@@ -4,8 +4,9 @@ from collections import defaultdict, deque
 import time
 
 # 設定
-SPAM_LIMIT = 20      # 発言回数
-TIME_WINDOW = 15     # 秒数（短時間の定義）
+SPAM_LIMIT = 20  # 発言回数
+TIME_WINDOW = 15  # 秒数（短時間の定義）
+
 
 class AntiSpam(commands.Cog):
     """自動荒らし検知Cog（厳格版: 15秒以内20回）"""
@@ -27,12 +28,16 @@ class AntiSpam(commands.Cog):
 
         # SPAM_LIMIT回以上の発言がTIME_WINDOW秒以内かチェック
         timestamps = self.user_messages[user_id]
-        if len(timestamps) == SPAM_LIMIT and (timestamps[-1] - timestamps[0]) <= TIME_WINDOW:
+        if (
+            len(timestamps) == SPAM_LIMIT
+            and (timestamps[-1] - timestamps[0]) <= TIME_WINDOW
+        ):
             await message.channel.send(
                 f"⚠️ {message.author.mention} さん、15秒以内に20回発言しています！荒らし注意！"
             )
             # 二重警告防止のため履歴をリセット
             self.user_messages[user_id].clear()
+
 
 # CogをBotに登録
 async def setup(bot):

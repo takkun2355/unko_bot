@@ -5,6 +5,7 @@ import random
 # 氷化演出用絵文字
 ICE_EMOJIS = ["❄️", "🧊", "🌨️"]
 
+
 class IceBot(commands.Cog):
     """氷Bot（発言を凍らせる演出）"""
 
@@ -20,6 +21,7 @@ class IceBot(commands.Cog):
         ice = random.choice(ICE_EMOJIS)
         frozen = " ".join([char + ice for char in message])
         await ctx.send(f"🧊 {ctx.author.name} の発言が凍結！\n{frozen}")
+
 
 # CogをBotに登録
 async def setup(bot):

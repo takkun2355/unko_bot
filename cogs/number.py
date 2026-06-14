@@ -1,6 +1,7 @@
 import random
 from discord.ext import commands
 
+
 class NumberGame(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -15,7 +16,9 @@ class NumberGame(commands.Cog):
     @commands.command()
     async def guess(self, ctx, number: int):
         if ctx.channel.id not in self.number_games:
-            await ctx.send("まだゲームが始まっていないよ。`^^start_number` で開始してね。")
+            await ctx.send(
+                "まだゲームが始まっていないよ。`^^start_number` で開始してね。"
+            )
             return
 
         answer = self.number_games[ctx.channel.id]
@@ -27,6 +30,7 @@ class NumberGame(commands.Cog):
         else:
             await ctx.send(f"🎉 正解！ {ctx.author.mention} が当てました！")
             del self.number_games[ctx.channel.id]
+
 
 async def setup(bot):
     await bot.add_cog(NumberGame(bot))
