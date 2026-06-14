@@ -18,16 +18,12 @@ class Translate(commands.Cog):
             print(f"[WARNING] GoogleTranslator 初期化失敗: {e}")
 
     def error_embed(self, title, description):
-        return discord.Embed(
-            title=f"❌ {title}", description=description, color=discord.Color.red()
-        )
+        return discord.Embed(title=f"❌ {title}", description=description, color=discord.Color.red())
 
     @commands.command(name="translate")
     async def translate(self, ctx, lang: str, *, text: str):
         if not self.available:
-            await ctx.send(
-                embed=self.error_embed("翻訳エラー", "翻訳機能は現在利用できません")
-            )
+            await ctx.send(embed=self.error_embed("翻訳エラー", "翻訳機能は現在利用できません"))
             return
         try:
             translator = self.translator_class(source="auto", target=lang)
@@ -51,9 +47,7 @@ class Translate(commands.Cog):
     @commands.command(name="languages")
     async def languages(self, ctx):
         if not self.available:
-            await ctx.send(
-                embed=self.error_embed("翻訳エラー", "翻訳機能は現在利用できません")
-            )
+            await ctx.send(embed=self.error_embed("翻訳エラー", "翻訳機能は現在利用できません"))
             return
         try:
             langs = self.translator_class().get_supported_languages(as_dict=True)

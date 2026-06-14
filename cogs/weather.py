@@ -1,11 +1,12 @@
-from discord.ext import commands
-import aiohttp
 import asyncio
 import json
-import os
+import pathlib
 import traceback
 from datetime import datetime, timedelta, timezone
+
+import aiohttp
 from dateutil import parser
+from discord.ext import commands
 
 
 class Weather(commands.Cog):
@@ -107,13 +108,11 @@ class Weather(commands.Cog):
     def load_prefectures(self):
         """weather.json から地域データを読み込む"""
         file_path = "weather.json"
-        if os.path.exists(file_path):
+        if pathlib.Path(file_path).exists():
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with pathlib.Path(file_path).open(encoding="utf-8") as f:
                     self.prefectures = json.load(f)
-                    print(
-                        "[Weather] Loaded prefectures data successfully from weather.json."
-                    )
+                    print("[Weather] Loaded prefectures data successfully from weather.json.")
             except Exception:
                 print("[Weather] ERROR: Failed to load weather.json.")
                 print(traceback.format_exc())
@@ -208,9 +207,7 @@ class Weather(commands.Cog):
                                                     advisories.append(wname)
                 return {"name": name, "warnings": warnings, "advisories": advisories}
         except Exception:
-            print(
-                f"[Weather Debug] JMA Warning API error for code {jma_code} ({name}):"
-            )
+            print(f"[Weather Debug] JMA Warning API error for code {jma_code} ({name}):")
             print(traceback.format_exc())
             return {"name": name, "warnings": [], "advisories": []}
 
@@ -242,10 +239,7 @@ class Weather(commands.Cog):
                         latest_spec = None
                         for spec in specs:
                             part_data = spec.get("part", {})
-                            if (
-                                isinstance(part_data, dict)
-                                and part_data.get("jp") == "実況"
-                            ):
+                            if isinstance(part_data, dict) and part_data.get("jp") == "実況":
                                 latest_spec = spec
                                 break
                         if not latest_spec:
@@ -281,15 +275,13 @@ class Weather(commands.Cog):
 
                         wind_kmh = round(wind_ms * 3.6, 1)
 
-                        typhoons.append(
-                            {
-                                "num": num,
-                                "name": display_name,
-                                "pressure": pressure,
-                                "wind_ms": wind_ms,
-                                "wind_kmh": wind_kmh,
-                            }
-                        )
+                        typhoons.append({
+                            "num": num,
+                            "name": display_name,
+                            "pressure": pressure,
+                            "wind_ms": wind_ms,
+                            "wind_kmh": wind_kmh,
+                        })
                 return typhoons
         except Exception:
             print("[Weather Debug] JMA Typhoon API error (New Endpoint Parser):")
@@ -347,17 +339,13 @@ class Weather(commands.Cog):
                     else:
                         pref, key_name = self.find_prefecture(city)
                         if not pref:
-                            await ctx.send(
-                                f"❌ 地名 `{city}` に該当する都道府県が見つかりません！"
-                            )
+                            await ctx.send(f"❌ 地名 `{city}` に該当する都道府県が見つかりません！")
                             return
 
             # 「日本」指定時は、東京、大阪、愛知、福岡の4拠点を対象にする
             if is_japan:
                 japan_data = self.prefectures.get("日本", {})
-                query_cities = japan_data.get(
-                    "display_prefectures", ["東京都", "大阪府", "福岡県", "愛知県"]
-                )
+                query_cities = japan_data.get("display_prefectures", ["東京都", "大阪府", "福岡県", "愛知県"])
             else:
                 if pref.get("type") == "region":
                     query_cities = pref.get("children", [])
@@ -393,35 +381,21 @@ class Weather(commands.Cog):
                         f"&timezone=Asia/Tokyo"
                     )
 
-                    weather_tasks.append(
-                        self.fetch_weather_api(session, url, cname, pref_data)
-                    )
+                    weather_tasks.append(self.fetch_weather_api(session, url, cname, pref_data))
 
                 # 警報・注意報の並行取得タスク
                 warning_tasks = []
                 for cname in query_cities:
                     pref_data = self.prefectures.get(cname)
-                    if (
-                        pref_data
-                        and "jma" in pref_data
-                        and "forecast" in pref_data["jma"]
-                    ):
-                        warning_tasks.append(
-                            self.get_jma_warnings(
-                                session, pref_data["jma"]["forecast"], cname
-                            )
-                        )
+                    if pref_data and "jma" in pref_data and "forecast" in pref_data["jma"]:
+                        warning_tasks.append(self.get_jma_warnings(session, pref_data["jma"]["forecast"], cname))
 
                 # 最新規格の台風情報取得タスク
                 typhoon_task = self.get_typhoon_info(session)
 
                 # 各種タスクの同時並行実行
-                weather_results = await asyncio.gather(
-                    *weather_tasks, return_exceptions=True
-                )
-                warning_results = await asyncio.gather(
-                    *warning_tasks, return_exceptions=True
-                )
+                weather_results = await asyncio.gather(*weather_tasks, return_exceptions=True)
+                warning_results = await asyncio.gather(*warning_tasks, return_exceptions=True)
                 typhoons = await typhoon_task
 
                 # 警報データのマッピング
@@ -453,28 +427,16 @@ class Weather(commands.Cog):
                     humidities = hourly.get("relative_humidity_2m", [])
                     pressures_hourly = hourly.get("pressure_msl", [])
 
-                    now_hour = now_jst.replace(
-                        minute=0, second=0, microsecond=0, tzinfo=None
-                    )
+                    now_hour = now_jst.replace(minute=0, second=0, microsecond=0, tzinfo=None)
 
                     # 最も近い時間（closest_index）の計算
                     if times:
                         closest_index = min(
                             range(len(times)),
-                            key=lambda i: abs(
-                                parser.parse(times[i]).replace(tzinfo=None) - now_hour
-                            ),
+                            key=lambda i: abs(parser.parse(times[i]).replace(tzinfo=None) - now_hour),
                         )
-                        humidity = (
-                            cw.get("relative_humidity_2m")
-                            if closest_index < len(humidities)
-                            else None
-                        )
-                        pressure = (
-                            pressures_hourly[closest_index]
-                            if closest_index < len(pressures_hourly)
-                            else None
-                        )
+                        humidity = cw.get("relative_humidity_2m") if closest_index < len(humidities) else None
+                        pressure = pressures_hourly[closest_index] if closest_index < len(pressures_hourly) else None
                     else:
                         humidity, pressure = None, None
 
@@ -484,18 +446,12 @@ class Weather(commands.Cog):
                     weather_name = self.weather_names.get(weather_code, "不明")
                     wind_dir_jp = self.get_wind_direction_jp(wind_dir)
 
-                    current_weather_msg += (
-                        f"### :white_sun_small_cloud: **{name} の現在の天気**\n"
-                    )
+                    current_weather_msg += f"### :white_sun_small_cloud: **{name} の現在の天気**\n"
                     current_weather_msg += f"気温: {temp}°C\n"
-                    current_weather_msg += (
-                        f"湿度: {humidity if humidity is not None else '不明'}%\n"
-                    )
+                    current_weather_msg += f"湿度: {humidity if humidity is not None else '不明'}%\n"
                     current_weather_msg += f"風速: {wind_speed} km/h\n"
                     current_weather_msg += f"風向: {wind_dir}° ({wind_dir_jp})\n"
-                    current_weather_msg += (
-                        f"気圧: {pressure if pressure is not None else '不明'} hPa\n"
-                    )
+                    current_weather_msg += f"気圧: {pressure if pressure is not None else '不明'} hPa\n"
                     current_weather_msg += f"天気: {icon} {weather_name}\n\n"
 
                 if current_weather_msg:
@@ -544,9 +500,7 @@ class Weather(commands.Cog):
                                     has_data = True
                                     if dt.date() != last_shown_date:
                                         detailed_msg += f"#### **{dt.year}年**\n"
-                                        detailed_msg += (
-                                            f"#### **{dt.month:02d}月{dt.day:02d}日**\n"
-                                        )
+                                        detailed_msg += f"#### **{dt.month:02d}月{dt.day:02d}日**\n"
                                         last_shown_date = dt.date()
 
                                     start_hour = dt.strftime("%H:%M")
@@ -554,9 +508,7 @@ class Weather(commands.Cog):
                                     end_hour = end_dt.strftime("%H:%M")
 
                                     icon_hour = self.weather_icons.get(code, "❓")
-                                    weather_name_hour = self.weather_names.get(
-                                        code, "不明"
-                                    )
+                                    weather_name_hour = self.weather_names.get(code, "不明")
                                     wind_dir_hour_jp = self.get_wind_direction_jp(wd)
 
                                     detailed_msg += (
@@ -602,9 +554,7 @@ class Weather(commands.Cog):
                     for ty in typhoons:
                         typhoon_msg += f"- 台風{ty['num']}号（{ty['name']}）が発生中\n"
                         typhoon_msg += "降水: - mm\n"
-                        typhoon_msg += (
-                            f"風速: {ty['wind_kmh']}km/h, {ty['wind_ms']}m/s\n"
-                        )
+                        typhoon_msg += f"風速: {ty['wind_kmh']}km/h, {ty['wind_ms']}m/s\n"
                         typhoon_msg += f"気圧: {ty['pressure']}hPa\n"
                 else:
                     typhoon_msg += "- 現在、発表されている台風情報はありません\n"

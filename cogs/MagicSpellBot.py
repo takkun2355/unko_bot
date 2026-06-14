@@ -1,5 +1,6 @@
-from discord.ext import commands
 import random
+
+from discord.ext import commands
 
 # 呪文のパーツ
 PREFIXES = ["アブラカダ", "エクス", "インフェルノ", "ルミナス", "シャドウ", "アルケミ"]
@@ -15,17 +16,14 @@ class MagicSpellBot(commands.Cog):
 
     @commands.command(name="cast")
     async def cast_spell(self, ctx, *, phrase: str):
-        """
-        ユーザーのフレーズを元に呪文を生成
+        """ユーザーのフレーズを元に呪文を生成
         例: /cast 火をください
         """
         prefix = random.choice(PREFIXES)
         suffix = random.choice(SUFFIXES)
         element = random.choice(ELEMENTS)
         spell = f"{prefix}{suffix} {element}！"
-        await ctx.send(
-            f"💬 {ctx.author.name} が唱えた: 「{phrase}」\n✨ 呪文生成: {spell}"
-        )
+        await ctx.send(f"💬 {ctx.author.name} が唱えた: 「{phrase}」\n✨ 呪文生成: {spell}")
 
 
 # CogをBotに登録

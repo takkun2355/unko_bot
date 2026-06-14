@@ -1,6 +1,7 @@
-from discord.ext import commands
 import asyncio
 import random
+
+from discord.ext import commands
 
 
 # ReactionGameCog.py
@@ -26,19 +27,13 @@ class ReactionGameCog(commands.Cog):
         await msg.add_reaction(chosen_emoji)
 
         def check(reaction, user):
-            return (
-                user != self.bot.user
-                and str(reaction.emoji) == chosen_emoji
-                and reaction.message.id == msg.id
-            )
+            return user != self.bot.user and str(reaction.emoji) == chosen_emoji and reaction.message.id == msg.id
 
         try:
             # 最初にリアクションしたユーザーを待つ
-            reaction, user = await self.bot.wait_for(
-                "reaction_add", timeout=2.5, check=check
-            )
+            reaction, user = await self.bot.wait_for("reaction_add", timeout=2.5, check=check)
             await ctx.send(f"🏆 {user.mention} が一番乗り！おめでとう！")
-        except asyncio.TimeoutError:
+        except TimeoutError:
             await ctx.send("⏰ 誰もリアクションできませんでした。もう一度挑戦してね！")
 
 

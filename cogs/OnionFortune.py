@@ -1,5 +1,6 @@
-from discord.ext import commands
 import random
+
+from discord.ext import commands
 
 
 class OnionFortune(commands.Cog):
@@ -10,8 +11,7 @@ class OnionFortune(commands.Cog):
 
     @commands.command(name="onion")
     async def onion_fortune(self, ctx):
-        """
-        今日の皮むき度をランダムで表示
+        """今日の皮むき度をランダムで表示
         """
         fortunes = [
             "🧅 今日の皮むき度: 0%…安全日です",

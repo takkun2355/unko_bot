@@ -5,9 +5,8 @@ import re
 import shlex
 import sqlite3
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Optional
 
 import discord
 from discord.ext import commands, tasks
@@ -19,22 +18,19 @@ JST = timezone(timedelta(hours=9))
 #  Utility
 # =========================
 
-DURATION_RE = re.compile(
-    r"(?:(\d+)y)?(?:(\d+)M)?(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$"
-)
+DURATION_RE = re.compile(r"(?:(\d+)y)?(?:(\d+)M)?(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$")
 
 
 def utcnow_ts() -> int:
-    return int(datetime.now(timezone.utc).timestamp())
+    return int(datetime.now(UTC).timestamp())
 
 
 def jst_now() -> datetime:
     return datetime.now(JST)
 
 
-def parse_duration(text: str) -> Optional[int]:
-    """
-    Parse duration strings like:
+def parse_duration(text: str) -> int | None:
+    """Parse duration strings like:
       1y2M3d4h5m6s
       1h30m
       10m
@@ -43,6 +39,7 @@ def parse_duration(text: str) -> Optional[int]:
     Notes:
       y = 365 days
       M = 30 days
+
     """
     text = text.strip()
     if not text:
@@ -52,17 +49,8 @@ def parse_duration(text: str) -> Optional[int]:
     if not m:
         return None
 
-    years, months, days, hours, minutes, seconds = (
-        int(x) if x else 0 for x in m.groups()
-    )
-    total = (
-        years * 365 * 24 * 3600
-        + months * 30 * 24 * 3600
-        + days * 24 * 3600
-        + hours * 3600
-        + minutes * 60
-        + seconds
-    )
+    years, months, days, hours, minutes, seconds = (int(x) if x else 0 for x in m.groups())
+    total = years * 365 * 24 * 3600 + months * 30 * 24 * 3600 + days * 24 * 3600 + hours * 3600 + minutes * 60 + seconds
     return total if total > 0 else None
 
 
@@ -189,12 +177,12 @@ class CreateSettings:
     public: int = 1  # 0 counts only, 1 voter list allowed
     live_result: int = 0
     max_select: int = 1
-    duration_seconds: Optional[int] = None
+    duration_seconds: int | None = None
     role_limit: list[int] | None = None
     channel_limit: list[int] | None = None
 
     @property
-    def end_at_ts(self) -> Optional[int]:
+    def end_at_ts(self) -> int | None:
         if self.duration_seconds is None:
             return None
         return utcnow_ts() + self.duration_seconds
@@ -219,7 +207,7 @@ class VoteStore:
 
     # ---------- low-level helpers ----------
 
-    def _fetchone(self, query: str, params: tuple = ()) -> Optional[sqlite3.Row]:
+    def _fetchone(self, query: str, params: tuple = ()) -> sqlite3.Row | None:
         with self._connect() as conn:
             cur = conn.execute(query, params)
             return cur.fetchone()
@@ -309,15 +297,13 @@ class VoteStore:
 
     # ---------- queries ----------
 
-    def get_poll(self, poll_id: int) -> Optional[sqlite3.Row]:
+    def get_poll(self, poll_id: int) -> sqlite3.Row | None:
         return self._fetchone("SELECT * FROM polls WHERE id = ?", (poll_id,))
 
-    def get_poll_by_message(self, message_id: int) -> Optional[sqlite3.Row]:
+    def get_poll_by_message(self, message_id: int) -> sqlite3.Row | None:
         return self._fetchone("SELECT * FROM polls WHERE message_id = ?", (message_id,))
 
-    def get_options(
-        self, poll_id: int, *, include_deleted: bool = False
-    ) -> list[sqlite3.Row]:
+    def get_options(self, poll_id: int, *, include_deleted: bool = False) -> list[sqlite3.Row]:
         if include_deleted:
             return self._fetchall(
                 """
@@ -336,7 +322,7 @@ class VoteStore:
             (poll_id,),
         )
 
-    def get_option(self, option_id: int) -> Optional[sqlite3.Row]:
+    def get_option(self, option_id: int) -> sqlite3.Row | None:
         return self._fetchone("SELECT * FROM poll_options WHERE id = ?", (option_id,))
 
     def get_active_vote_option_ids(self, poll_id: int, user_id: int) -> list[int]:
@@ -362,9 +348,7 @@ class VoteStore:
         )
         return [int(r["user_id"]) for r in rows]
 
-    def list_manageable_polls(
-        self, guild_id: int, user: discord.Member | discord.User
-    ) -> list[sqlite3.Row]:
+    def list_manageable_polls(self, guild_id: int, user: discord.Member | discord.User) -> list[sqlite3.Row]:
         rows = self._fetchall(
             """
             SELECT *
@@ -403,16 +387,13 @@ class VoteStore:
         self,
         member: discord.Member | discord.User,
         poll_row: sqlite3.Row,
-        guild: Optional[discord.Guild] = None,
+        guild: discord.Guild | None = None,
     ) -> bool:
         if getattr(member, "id", None) == poll_row["creator_id"]:
             return True
 
         if isinstance(member, discord.Member):
-            if (
-                member.guild_permissions.manage_guild
-                or member.guild_permissions.administrator
-            ):
+            if member.guild_permissions.manage_guild or member.guild_permissions.administrator:
                 return True
 
         # Settings by permission table.
@@ -428,22 +409,12 @@ class VoteStore:
         for perm in perms:
             ptype = perm["permission_type"]
             target_id = perm["target_id"]
-            if (
-                ptype == "owner"
-                and getattr(member, "id", None) == poll_row["creator_id"]
-            ):
+            if ptype == "owner" and getattr(member, "id", None) == poll_row["creator_id"]:
                 return True
             if ptype == "op" and isinstance(member, discord.Member):
-                if (
-                    member.guild_permissions.manage_guild
-                    or member.guild_permissions.administrator
-                ):
+                if member.guild_permissions.manage_guild or member.guild_permissions.administrator:
                     return True
-            if (
-                ptype == "role"
-                and target_id is not None
-                and target_id in member_role_ids
-            ):
+            if ptype == "role" and target_id is not None and target_id in member_role_ids:
                 return True
 
         return False
@@ -458,9 +429,7 @@ class VoteStore:
         channel_limit = poll_row["channel_limit"]
 
         if channel_limit:
-            allowed_channels = {
-                int(x) for x in str(channel_limit).split(",") if x.isdigit()
-            }
+            allowed_channels = {int(x) for x in str(channel_limit).split(",") if x.isdigit()}
             if channel_id not in allowed_channels:
                 return False
 
@@ -477,7 +446,7 @@ class VoteStore:
     def set_poll_status(self, poll_id: int, status: int) -> None:
         self._execute("UPDATE polls SET status = ? WHERE id = ?", (status, poll_id))
 
-    def set_poll_end_at(self, poll_id: int, end_at: Optional[int]) -> None:
+    def set_poll_end_at(self, poll_id: int, end_at: int | None) -> None:
         self._execute("UPDATE polls SET end_at = ? WHERE id = ?", (end_at, poll_id))
 
     def update_poll_meta(
@@ -496,9 +465,7 @@ class VoteStore:
         removed_option_ids: list[int] = []
 
         with self._connect() as conn:
-            poll = conn.execute(
-                "SELECT * FROM polls WHERE id = ?", (poll_id,)
-            ).fetchone()
+            poll = conn.execute("SELECT * FROM polls WHERE id = ?", (poll_id,)).fetchone()
             if poll is None:
                 return []
 
@@ -556,7 +523,7 @@ class VoteStore:
     def close_poll(self, poll_id: int) -> None:
         self._execute("UPDATE polls SET status = 1 WHERE id = ?", (poll_id,))
 
-    def reopen_poll(self, poll_id: int, *, new_end_at: Optional[int] = None) -> None:
+    def reopen_poll(self, poll_id: int, *, new_end_at: int | None = None) -> None:
         self._execute(
             "UPDATE polls SET status = 0, end_at = ? WHERE id = ?",
             (new_end_at, poll_id),
@@ -576,17 +543,13 @@ class VoteStore:
         )
         return {int(r["option_id"]): int(r["cnt"]) for r in rows}
 
-    def set_vote_state(
-        self, poll_id: int, user_id: int, selected_option_ids: list[int]
-    ) -> None:
+    def set_vote_state(self, poll_id: int, user_id: int, selected_option_ids: list[int]) -> None:
         """Reconcile user's votes for a poll with the provided selected option ids."""
         now = utcnow_ts()
         selected = set(selected_option_ids)
 
         with self._connect() as conn:
-            poll = conn.execute(
-                "SELECT * FROM polls WHERE id = ?", (poll_id,)
-            ).fetchone()
+            poll = conn.execute("SELECT * FROM polls WHERE id = ?", (poll_id,)).fetchone()
             if poll is None:
                 return
 
@@ -599,11 +562,7 @@ class VoteStore:
                 (poll_id, user_id),
             ).fetchall()
 
-            current_active = {
-                int(r["option_id"]): int(r["id"])
-                for r in current_rows
-                if int(r["is_active"]) == 1
-            }
+            current_active = {int(r["option_id"]): int(r["id"]) for r in current_rows if int(r["is_active"]) == 1}
 
             # Deactivate votes not in selection
             for option_id, vote_row_id in current_active.items():
@@ -673,7 +632,7 @@ class VoteStore:
             """
         )
 
-    def list_due_polls(self, now_ts: Optional[int] = None) -> list[sqlite3.Row]:
+    def list_due_polls(self, now_ts: int | None = None) -> list[sqlite3.Row]:
         now_ts = now_ts or utcnow_ts()
         return self._fetchall(
             """
@@ -698,12 +657,12 @@ def poll_display_embed(
     poll_row: sqlite3.Row,
     options: list[sqlite3.Row],
     totals: dict[int, int],
-    guild: Optional[discord.Guild] = None,
+    guild: discord.Guild | None = None,
     include_voters: bool = False,
 ) -> discord.Embed:
     total_votes = sum(totals.values())
     end_at = poll_row["end_at"]
-    created_at = datetime.fromtimestamp(int(poll_row["created_at"]), tz=timezone.utc)
+    created_at = datetime.fromtimestamp(int(poll_row["created_at"]), tz=UTC)
 
     embed = discord.Embed(
         title=f"📊 {poll_row['title']}",
@@ -728,9 +687,7 @@ def poll_display_embed(
     )
     embed.add_field(
         name="公開",
-        value="匿名"
-        if int(poll_row["anonymous"]) == 1
-        else ("公開" if int(poll_row["public"]) == 1 else "結果のみ"),
+        value="匿名" if int(poll_row["anonymous"]) == 1 else ("公開" if int(poll_row["public"]) == 1 else "結果のみ"),
         inline=True,
     )
     embed.add_field(
@@ -746,47 +703,34 @@ def poll_display_embed(
         line = f"**{label}**: {cnt}票"
         lines.append(line)
 
-        if (
-            include_voters
-            and int(poll_row["anonymous"]) == 0
-            and int(poll_row["public"]) == 1
-            and guild is not None
-        ):
+        if include_voters and int(poll_row["anonymous"]) == 0 and int(poll_row["public"]) == 1 and guild is not None:
             # placeholder: keep the embed readable; detailed voter listing is added outside by the caller
             pass
 
-    embed.add_field(
-        name="選択肢", value="\n".join(lines) if lines else "なし", inline=False
-    )
+    embed.add_field(name="選択肢", value="\n".join(lines) if lines else "なし", inline=False)
     embed.set_footer(text=f"Poll ID: {poll_row['id']}")
     return embed
 
 
 class ConfirmView(discord.ui.View):
-    def __init__(self, *, timeout: float = 60, owner_id: Optional[int] = None):
+    def __init__(self, *, timeout: float = 60, owner_id: int | None = None):
         super().__init__(timeout=timeout)
-        self.value: Optional[bool] = None
+        self.value: bool | None = None
         self.owner_id = owner_id
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if self.owner_id is not None and interaction.user.id != self.owner_id:
-            await interaction.response.send_message(
-                "この操作は実行できません。", ephemeral=True
-            )
+            await interaction.response.send_message("この操作は実行できません。", ephemeral=True)
             return False
         return True
 
-    @discord.ui.button(
-        label="YES", style=discord.ButtonStyle.danger, custom_id="vote:confirm:yes"
-    )
+    @discord.ui.button(label="YES", style=discord.ButtonStyle.danger, custom_id="vote:confirm:yes")
     async def yes(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
         await interaction.response.defer()
         self.stop()
 
-    @discord.ui.button(
-        label="NO", style=discord.ButtonStyle.secondary, custom_id="vote:confirm:no"
-    )
+    @discord.ui.button(label="NO", style=discord.ButtonStyle.secondary, custom_id="vote:confirm:no")
     async def no(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = False
         await interaction.response.defer()
@@ -794,9 +738,7 @@ class ConfirmView(discord.ui.View):
 
 
 class ModalLaunchView(discord.ui.View):
-    def __init__(
-        self, *, label: str, modal_factory, owner_id: int, timeout: float = 180
-    ):
+    def __init__(self, *, label: str, modal_factory, owner_id: int, timeout: float = 180):
         super().__init__(timeout=timeout)
         self.label = label
         self.modal_factory = modal_factory
@@ -804,28 +746,20 @@ class ModalLaunchView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.owner_id:
-            await interaction.response.send_message(
-                "この操作は実行できません。", ephemeral=True
-            )
+            await interaction.response.send_message("この操作は実行できません。", ephemeral=True)
             return False
         return True
 
-    @discord.ui.button(
-        label="開く", style=discord.ButtonStyle.primary, custom_id="vote:modal:open"
-    )
-    async def open_modal(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
+    @discord.ui.button(label="開く", style=discord.ButtonStyle.primary, custom_id="vote:modal:open")
+    async def open_modal(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.owner_id:
-            await interaction.response.send_message(
-                "この操作は実行できません。", ephemeral=True
-            )
+            await interaction.response.send_message("この操作は実行できません。", ephemeral=True)
             return
         await interaction.response.send_modal(self.modal_factory())
 
 
 class VoteCreateModal(discord.ui.Modal, title="投票を作成"):
-    def __init__(self, cog: "VoteCog", settings: CreateSettings):
+    def __init__(self, cog: VoteCog, settings: CreateSettings):
         super().__init__(timeout=300)
         self.cog = cog
         self.settings = settings
@@ -862,28 +796,20 @@ class VoteCreateModal(discord.ui.Modal, title="投票を作成"):
         options = normalize_lines(str(self.options_input.value))
 
         if not title:
-            await interaction.response.send_message(
-                "タイトルが空です。", ephemeral=True
-            )
+            await interaction.response.send_message("タイトルが空です。", ephemeral=True)
             return
 
         if len(options) < 2:
-            await interaction.response.send_message(
-                "選択肢は2つ以上必要です。", ephemeral=True
-            )
+            await interaction.response.send_message("選択肢は2つ以上必要です。", ephemeral=True)
             return
 
         if len(options) > 25:
-            await interaction.response.send_message(
-                "選択肢は25個までです。", ephemeral=True
-            )
+            await interaction.response.send_message("選択肢は25個までです。", ephemeral=True)
             return
 
         channel = interaction.channel
         if not isinstance(channel, discord.abc.Messageable):
-            await interaction.response.send_message(
-                "この場所では投票を作成できません。", ephemeral=True
-            )
+            await interaction.response.send_message("この場所では投票を作成できません。", ephemeral=True)
             return
 
         # Send placeholder to get message_id for persistence.
@@ -897,20 +823,16 @@ class VoteCreateModal(discord.ui.Modal, title="投票を作成"):
             options=options,
         )
 
-        await interaction.followup.send(
-            f"投票を作成しました。ID: {poll_id}", ephemeral=True
-        )
+        await interaction.followup.send(f"投票を作成しました。ID: {poll_id}", ephemeral=True)
         if poll_message is not None:
             try:
-                await poll_message.reply(
-                    f"✅ 投票を作成しました。`ID: {poll_id}`", mention_author=False
-                )
+                await poll_message.reply(f"✅ 投票を作成しました。`ID: {poll_id}`", mention_author=False)
             except Exception:
                 pass
 
 
 class VoteEditModal(discord.ui.Modal, title="投票を編集"):
-    def __init__(self, cog: "VoteCog", poll_row: sqlite3.Row):
+    def __init__(self, cog: VoteCog, poll_row: sqlite3.Row):
         super().__init__(timeout=300)
         self.cog = cog
         self.poll_row = poll_row
@@ -948,9 +870,7 @@ class VoteEditModal(discord.ui.Modal, title="投票を編集"):
         options = normalize_lines(str(self.options_input.value))
 
         if len(options) < 2:
-            await interaction.response.send_message(
-                "選択肢は2つ以上必要です。", ephemeral=True
-            )
+            await interaction.response.send_message("選択肢は2つ以上必要です。", ephemeral=True)
             return
 
         removed = await self.cog.update_poll_meta(
@@ -966,21 +886,14 @@ class VoteEditModal(discord.ui.Modal, title="投票を編集"):
 
 
 class PollChoiceSelect(discord.ui.Select):
-    def __init__(self, cog: "VoteCog", poll_row: sqlite3.Row):
+    def __init__(self, cog: VoteCog, poll_row: sqlite3.Row):
         self.cog = cog
         self.poll_row = poll_row
         options = self.cog.store.get_options(int(poll_row["id"]), include_deleted=False)
 
-        max_values = (
-            1
-            if int(poll_row["vote_type"]) == 0
-            else max(1, min(int(poll_row["max_select"]), len(options)))
-        )
+        max_values = 1 if int(poll_row["vote_type"]) == 0 else max(1, min(int(poll_row["max_select"]), len(options)))
         select_options = [
-            discord.SelectOption(
-                label=opt["option_name"][:100], value=str(int(opt["id"]))
-            )
-            for opt in options
+            discord.SelectOption(label=opt["option_name"][:100], value=str(int(opt["id"]))) for opt in options
         ]
 
         super().__init__(
@@ -993,13 +906,11 @@ class PollChoiceSelect(discord.ui.Select):
         )
 
     async def callback(self, interaction: discord.Interaction) -> None:
-        await self.cog.handle_vote_interaction(
-            interaction, self.poll_row, list(self.values)
-        )
+        await self.cog.handle_vote_interaction(interaction, self.poll_row, list(self.values))
 
 
 class PollVoteView(discord.ui.View):
-    def __init__(self, cog: "VoteCog", poll_row: sqlite3.Row):
+    def __init__(self, cog: VoteCog, poll_row: sqlite3.Row):
         super().__init__(timeout=None)
         self.cog = cog
         self.poll_row = poll_row
@@ -1011,12 +922,8 @@ class PollVoteView(discord.ui.View):
         custom_id="vote:poll:refresh",
         row=1,
     )
-    async def refresh(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
-        await self.cog.send_poll_embed(
-            interaction, int(self.poll_row["id"]), ephemeral=True
-        )
+    async def refresh(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.cog.send_poll_embed(interaction, int(self.poll_row["id"]), ephemeral=True)
 
     @discord.ui.button(
         label="取消",
@@ -1029,22 +936,18 @@ class PollVoteView(discord.ui.View):
 
 
 class ResultRefreshView(discord.ui.View):
-    def __init__(self, cog: "VoteCog", poll_id: int):
+    def __init__(self, cog: VoteCog, poll_id: int):
         super().__init__(timeout=180)
         self.cog = cog
         self.poll_id = poll_id
 
-    @discord.ui.button(
-        label="更新", style=discord.ButtonStyle.primary, custom_id="vote:result:refresh"
-    )
-    async def refresh(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
+    @discord.ui.button(label="更新", style=discord.ButtonStyle.primary, custom_id="vote:result:refresh")
+    async def refresh(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.cog.send_poll_embed(interaction, self.poll_id, ephemeral=False)
 
 
 class VoteActionSelect(discord.ui.Select):
-    def __init__(self, cog: "VoteCog"):
+    def __init__(self, cog: VoteCog):
         self.cog = cog
         options = [
             discord.SelectOption(label="create", description="投票を作成"),
@@ -1069,7 +972,7 @@ class VoteActionSelect(discord.ui.Select):
 
 
 class VoteManagementView(discord.ui.View):
-    def __init__(self, cog: "VoteCog", owner_id: int):
+    def __init__(self, cog: VoteCog, owner_id: int):
         super().__init__(timeout=180)
         self.cog = cog
         self.owner_id = owner_id
@@ -1077,9 +980,7 @@ class VoteManagementView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.owner_id:
-            await interaction.response.send_message(
-                "この操作は実行できません。", ephemeral=True
-            )
+            await interaction.response.send_message("この操作は実行できません。", ephemeral=True)
             return False
         return True
 
@@ -1089,16 +990,12 @@ class VoteManagementView(discord.ui.View):
         custom_id="vote:manage:help",
         row=1,
     )
-    async def help_button(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
-        await interaction.response.send_message(
-            self.cog.build_help_text(), ephemeral=True
-        )
+    async def help_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message(self.cog.build_help_text(), ephemeral=True)
 
 
 class PollTargetSelect(discord.ui.Select):
-    def __init__(self, cog: "VoteCog", action: str, polls: list[sqlite3.Row]):
+    def __init__(self, cog: VoteCog, action: str, polls: list[sqlite3.Row]):
         self.cog = cog
         self.action = action
         self.polls = polls
@@ -1126,28 +1023,20 @@ class PollTargetSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction) -> None:
         if self.values[0] == "0":
-            await interaction.response.send_message(
-                "対象の投票がありません。", ephemeral=True
-            )
+            await interaction.response.send_message("対象の投票がありません。", ephemeral=True)
             return
-        await self.cog.handle_target_action(
-            interaction, self.action, int(self.values[0])
-        )
+        await self.cog.handle_target_action(interaction, self.action, int(self.values[0]))
 
 
 class PollTargetView(discord.ui.View):
-    def __init__(
-        self, cog: "VoteCog", action: str, polls: list[sqlite3.Row], owner_id: int
-    ):
+    def __init__(self, cog: VoteCog, action: str, polls: list[sqlite3.Row], owner_id: int):
         super().__init__(timeout=180)
         self.owner_id = owner_id
         self.add_item(PollTargetSelect(cog, action, polls))
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.owner_id:
-            await interaction.response.send_message(
-                "この操作は実行できません。", ephemeral=True
-            )
+            await interaction.response.send_message("この操作は実行できません。", ephemeral=True)
             return False
         return True
 
@@ -1356,9 +1245,7 @@ class VoteCog(commands.Cog):
                 return
 
             # Filter by permissions unless the user can manage the poll.
-            managed = [
-                p for p in polls if self.store.can_manage_poll(ctx.author, p, ctx.guild)
-            ]
+            managed = [p for p in polls if self.store.can_manage_poll(ctx.author, p, ctx.guild)]
             if not managed:
                 await ctx.send("操作できる投票がありません。")
                 return
@@ -1398,12 +1285,10 @@ class VoteCog(commands.Cog):
         description: str | None,
         settings: CreateSettings,
         options: list[str],
-    ) -> tuple[int, Optional[discord.Message]]:
+    ) -> tuple[int, discord.Message | None]:
         # For the creation flow we need the final message_id, so send the placeholder first.
         channel = interaction.channel
-        if not isinstance(
-            channel, discord.TextChannel | discord.Thread | discord.VoiceChannel
-        ):
+        if not isinstance(channel, discord.TextChannel | discord.Thread | discord.VoiceChannel):
             # fallback to anything sendable
             pass
 
@@ -1448,9 +1333,7 @@ class VoteCog(commands.Cog):
             options=options,
         )
 
-    async def notify_removed_options(
-        self, poll_id: int, removed_option_ids: list[int]
-    ) -> None:
+    async def notify_removed_options(self, poll_id: int, removed_option_ids: list[int]) -> None:
         poll = self.store.get_poll(poll_id)
         if poll is None or int(poll["status"]) == 2:
             return
@@ -1488,17 +1371,13 @@ class VoteCog(commands.Cog):
                     # DM cannot be delivered. Keep silent.
                     pass
 
-    async def handle_target_action(
-        self, interaction_or_ctx, action: str, poll_id: int
-    ) -> None:
+    async def handle_target_action(self, interaction_or_ctx, action: str, poll_id: int) -> None:
         poll = self.store.get_poll(poll_id)
         if poll is None:
             if isinstance(interaction_or_ctx, commands.Context):
                 await interaction_or_ctx.send("投票が見つかりません。")
             else:
-                await interaction_or_ctx.response.send_message(
-                    "投票が見つかりません。", ephemeral=True
-                )
+                await interaction_or_ctx.response.send_message("投票が見つかりません。", ephemeral=True)
             return
 
         if isinstance(interaction_or_ctx, commands.Context):
@@ -1511,15 +1390,11 @@ class VoteCog(commands.Cog):
             channel_id = interaction_or_ctx.channel_id or 0
 
         # channel/role restrictions
-        if isinstance(
-            member, discord.Member
-        ) and not self.store.can_use_poll_in_channel(member, poll, channel_id):
+        if isinstance(member, discord.Member) and not self.store.can_use_poll_in_channel(member, poll, channel_id):
             if isinstance(interaction_or_ctx, commands.Context):
                 await interaction_or_ctx.send("このチャンネルでは使用できません。")
             else:
-                await interaction_or_ctx.response.send_message(
-                    "このチャンネルでは使用できません。", ephemeral=True
-                )
+                await interaction_or_ctx.response.send_message("このチャンネルでは使用できません。", ephemeral=True)
             return
 
         if action == "result":
@@ -1534,9 +1409,7 @@ class VoteCog(commands.Cog):
             if isinstance(interaction_or_ctx, commands.Context):
                 await interaction_or_ctx.send("権限がありません。")
             else:
-                await interaction_or_ctx.response.send_message(
-                    "権限がありません。", ephemeral=True
-                )
+                await interaction_or_ctx.response.send_message("権限がありません。", ephemeral=True)
             return
 
         if action == "edit":
@@ -1575,19 +1448,13 @@ class VoteCog(commands.Cog):
                 else:
                     await msg.edit(content="キャンセルしました。", view=None)
             else:
-                await interaction_or_ctx.response.send_message(
-                    "本当に削除しますか？", view=view, ephemeral=True
-                )
+                await interaction_or_ctx.response.send_message("本当に削除しますか？", view=view, ephemeral=True)
                 await view.wait()
                 if view.value:
                     await self.delete_poll_and_refresh(poll_id)
-                    await interaction_or_ctx.followup.send(
-                        "削除しました。", ephemeral=True
-                    )
+                    await interaction_or_ctx.followup.send("削除しました。", ephemeral=True)
                 else:
-                    await interaction_or_ctx.followup.send(
-                        "キャンセルしました。", ephemeral=True
-                    )
+                    await interaction_or_ctx.followup.send("キャンセルしました。", ephemeral=True)
             return
 
         if action == "close":
@@ -1604,27 +1471,15 @@ class VoteCog(commands.Cog):
 
         await self._send_action_feedback(interaction_or_ctx, "未対応の操作です。")
 
-    async def route_management_action(
-        self, interaction: discord.Interaction, action: str
-    ) -> None:
+    async def route_management_action(self, interaction: discord.Interaction, action: str) -> None:
         if action == "create":
-            await interaction.response.send_modal(
-                VoteCreateModal(self, CreateSettings())
-            )
+            await interaction.response.send_modal(VoteCreateModal(self, CreateSettings()))
             return
 
-        polls = self.store.list_user_polls(
-            interaction.guild_id or 0, interaction.user.id
-        )
-        managed = [
-            p
-            for p in polls
-            if self.store.can_manage_poll(interaction.user, p, interaction.guild)
-        ]
+        polls = self.store.list_user_polls(interaction.guild_id or 0, interaction.user.id)
+        managed = [p for p in polls if self.store.can_manage_poll(interaction.user, p, interaction.guild)]
         if not managed:
-            await interaction.response.send_message(
-                "対象の投票がありません。", ephemeral=True
-            )
+            await interaction.response.send_message("対象の投票がありません。", ephemeral=True)
             return
 
         await interaction.response.send_message(
@@ -1650,17 +1505,13 @@ class VoteCog(commands.Cog):
 
     # ---------- voting ----------
 
-    async def handle_vote_clear(
-        self, interaction: discord.Interaction, poll_row: sqlite3.Row
-    ) -> None:
+    async def handle_vote_clear(self, interaction: discord.Interaction, poll_row: sqlite3.Row) -> None:
         if interaction.user.id == int(poll_row["creator_id"]):
             # Creator can always clear own vote? Not required, but harmless.
             pass
 
         await interaction.response.defer(ephemeral=True, thinking=False)
-        current = self.store.get_active_vote_option_ids(
-            int(poll_row["id"]), interaction.user.id
-        )
+        current = self.store.get_active_vote_option_ids(int(poll_row["id"]), interaction.user.id)
         if not current:
             await interaction.followup.send("まだ投票していません。", ephemeral=True)
             return
@@ -1676,34 +1527,23 @@ class VoteCog(commands.Cog):
         selected_values: list[str],
     ) -> None:
         if int(poll_row["status"]) != 0:
-            await interaction.response.send_message(
-                "この投票は終了しています。", ephemeral=True
-            )
+            await interaction.response.send_message("この投票は終了しています。", ephemeral=True)
             return
 
         if not self.store.can_use_poll_in_channel(
-            interaction.user
-            if isinstance(interaction.user, discord.Member)
-            else interaction.user,
+            interaction.user if isinstance(interaction.user, discord.Member) else interaction.user,
             poll_row,
             interaction.channel_id or 0,
         ):
-            await interaction.response.send_message(
-                "このチャンネルでは投票できません。", ephemeral=True
-            )
+            await interaction.response.send_message("このチャンネルでは投票できません。", ephemeral=True)
             return
 
         option_ids = [int(v) for v in selected_values if v.isdigit()]
-        valid_ids = {
-            int(r["id"])
-            for r in self.store.get_options(int(poll_row["id"]), include_deleted=False)
-        }
+        valid_ids = {int(r["id"]) for r in self.store.get_options(int(poll_row["id"]), include_deleted=False)}
         option_ids = [oid for oid in option_ids if oid in valid_ids]
 
         if not option_ids:
-            await interaction.response.send_message(
-                "有効な選択肢がありません。", ephemeral=True
-            )
+            await interaction.response.send_message("有効な選択肢がありません。", ephemeral=True)
             return
 
         if int(poll_row["vote_type"]) == 0 and len(option_ids) > 1:
@@ -1712,9 +1552,7 @@ class VoteCog(commands.Cog):
         if int(poll_row["vote_type"]) == 1:
             max_select = max(1, min(int(poll_row["max_select"]), len(valid_ids)))
             if len(option_ids) > max_select:
-                await interaction.response.send_message(
-                    f"選択数は {max_select} までです。", ephemeral=True
-                )
+                await interaction.response.send_message(f"選択数は {max_select} までです。", ephemeral=True)
                 return
 
         await interaction.response.defer(ephemeral=True, thinking=False)
@@ -1733,17 +1571,13 @@ class VoteCog(commands.Cog):
             totals=totals,
         )
 
-    async def send_poll_embed(
-        self, interaction_or_ctx, poll_id: int, *, ephemeral: bool
-    ) -> None:
+    async def send_poll_embed(self, interaction_or_ctx, poll_id: int, *, ephemeral: bool) -> None:
         poll = self.store.get_poll(poll_id)
         if poll is None:
             if isinstance(interaction_or_ctx, commands.Context):
                 await interaction_or_ctx.send("投票が見つかりません。")
             else:
-                await interaction_or_ctx.response.send_message(
-                    "投票が見つかりません。", ephemeral=True
-                )
+                await interaction_or_ctx.response.send_message("投票が見つかりません。", ephemeral=True)
             return
 
         options = self.store.get_options(poll_id, include_deleted=False)
@@ -1759,15 +1593,7 @@ class VoteCog(commands.Cog):
                 names = []
                 for uid in voter_ids[:30]:
                     member = None
-                    if (
-                        isinstance(interaction_or_ctx, commands.Context)
-                        and interaction_or_ctx.guild is not None
-                    ):
-                        member = interaction_or_ctx.guild.get_member(uid)
-                    elif (
-                        isinstance(interaction_or_ctx, discord.Interaction)
-                        and interaction_or_ctx.guild is not None
-                    ):
+                    if (isinstance(interaction_or_ctx, commands.Context) and interaction_or_ctx.guild is not None) or (isinstance(interaction_or_ctx, discord.Interaction) and interaction_or_ctx.guild is not None):
                         member = interaction_or_ctx.guild.get_member(uid)
                     if member is None:
                         names.append(f"<@{uid}>")
@@ -1775,14 +1601,10 @@ class VoteCog(commands.Cog):
                         names.append(member.display_name)
                 details.append(f"**{opt['option_name']}**: " + ", ".join(names))
             if details:
-                embed.add_field(
-                    name="投票者", value="\n".join(details)[:1024], inline=False
-                )
+                embed.add_field(name="投票者", value="\n".join(details)[:1024], inline=False)
 
         if isinstance(interaction_or_ctx, commands.Context):
-            await interaction_or_ctx.send(
-                embed=embed, view=ResultRefreshView(self, poll_id)
-            )
+            await interaction_or_ctx.send(embed=embed, view=ResultRefreshView(self, poll_id))
         else:
             if interaction_or_ctx.response.is_done():
                 await interaction_or_ctx.followup.send(

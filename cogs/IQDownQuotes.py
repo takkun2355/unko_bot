@@ -1,5 +1,6 @@
-from discord.ext import commands
 import random
+
+from discord.ext import commands
 
 # IQが下がる名言サンプル
 QUOTES = [

@@ -1,6 +1,7 @@
 # bot_markov.py
-import os
+import pathlib
 import random
+
 from janome.tokenizer import Tokenizer
 
 # chatlog.txtは廃止し、special_log.txtのみに統合
@@ -52,13 +53,13 @@ def save_log(author_id: int, text: str):
             return
 
         # ログを追記保存
-        with open(SPECIAL_LOG, "a", encoding="utf-8") as f:
+        with pathlib.Path(SPECIAL_LOG).open("a", encoding="utf-8") as f:
             f.write(text + "\n")
 
 
 def read_logs():
     """special_log.txtのみからテキストを読み込む"""
-    if os.path.exists(SPECIAL_LOG):
-        with open(SPECIAL_LOG, "r", encoding="utf-8") as f:
+    if pathlib.Path(SPECIAL_LOG).exists():
+        with pathlib.Path(SPECIAL_LOG).open(encoding="utf-8") as f:
             return f.read()
     return ""

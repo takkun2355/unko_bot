@@ -1,6 +1,7 @@
-from discord.ext import commands
 from datetime import datetime
+
 import pytz  # pip install pytz
+from discord.ext import commands
 
 
 class WorldClock(commands.Cog):
@@ -11,8 +12,7 @@ class WorldClock(commands.Cog):
 
     @commands.command(name="time")
     async def world_time(self, ctx, city: str):
-        """
-        都市名を指定して現地時間を返す
+        """都市名を指定して現地時間を返す
         例: /time Tokyo
         """
         city_map = {

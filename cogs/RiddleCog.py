@@ -1,5 +1,6 @@
-from discord.ext import commands
 import random
+
+from discord.ext import commands
 
 
 class RiddleCog(commands.Cog):
@@ -35,9 +36,7 @@ class RiddleCog(commands.Cog):
             if riddle["answer"] in msg.content:
                 await ctx.send("🎉 正解です！")
             else:
-                await ctx.send(
-                    f"❌ 残念、不正解です。答えは `{riddle['answer']}` でした。"
-                )
+                await ctx.send(f"❌ 残念、不正解です。答えは `{riddle['answer']}` でした。")
         except:
             await ctx.send(f"⏰ 時間切れ！答えは `{riddle['answer']}` です。")
 

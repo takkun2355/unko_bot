@@ -1,7 +1,8 @@
+import json
+import pathlib
+
 import discord
 from discord.ext import commands
-import json
-import os
 
 ACHIEVEMENT_FILE = "achievements.json"
 
@@ -76,14 +77,14 @@ class Achievements(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        if os.path.exists(ACHIEVEMENT_FILE):
-            with open(ACHIEVEMENT_FILE, "r", encoding="utf-8") as f:
+        if pathlib.Path(ACHIEVEMENT_FILE).exists():
+            with pathlib.Path(ACHIEVEMENT_FILE).open(encoding="utf-8") as f:
                 self.data = json.load(f)
         else:
             self.data = {}
 
     async def save_data(self):
-        with open(ACHIEVEMENT_FILE, "w", encoding="utf-8") as f:
+        with pathlib.Path(ACHIEVEMENT_FILE).open("w", encoding="utf-8") as f:
             json.dump(self.data, f, ensure_ascii=False, indent=2)
 
     @commands.Cog.listener()
@@ -100,9 +101,7 @@ class Achievements(commands.Cog):
             threshold = get_triple_threshold(i)
             if msg_count == threshold and title not in self.data[user_id]["titles"]:
                 self.data[user_id]["titles"].append(title)
-                await message.channel.send(
-                    f"🏆 {message.author.name} に称号「{title}」を授与！"
-                )
+                await message.channel.send(f"🏆 {message.author.name} に称号「{title}」を授与！")
                 break  # 1回の発言で1つだけ付与
 
         await self.save_data()
@@ -121,9 +120,7 @@ class Achievements(commands.Cog):
             threshold = get_triple_threshold(i)
             if react_count == threshold and title not in self.data[user_id]["titles"]:
                 self.data[user_id]["titles"].append(title)
-                await reaction.message.channel.send(
-                    f"🏆 {user.name} に称号「{title}」を授与！"
-                )
+                await reaction.message.channel.send(f"🏆 {user.name} に称号「{title}」を授与！")
                 break
 
         await self.save_data()

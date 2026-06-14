@@ -1,6 +1,7 @@
+import random
+
 import discord
 from discord.ext import commands, tasks
-import random
 
 
 class RandomNameAuto(commands.Cog):
@@ -86,9 +87,7 @@ class RandomNameAuto(commands.Cog):
             "ナナホシ",
         ]
 
-        new_name = (
-            random.choice(prefixes) + random.choice(bases) + random.choice(suffixes)
-        )
+        new_name = random.choice(prefixes) + random.choice(bases) + random.choice(suffixes)
 
         guild = self.bot.get_guild(guild_id)
         if not guild:

@@ -1,4 +1,5 @@
 import random
+
 import discord
 from discord.ext import commands
 
@@ -11,8 +12,7 @@ class Fun(commands.Cog):
 
     @commands.command(name="team")
     async def team(self, ctx, team_size: int, *members: discord.Member):
-        """
-        チーム分け
+        """チーム分け
         例: ^^team 2 @A @B @C @D
         """
         if not members:
@@ -27,9 +27,7 @@ class Fun(commands.Cog):
             names = ", ".join(m.mention for m in t)
             result += f"**チーム {i}:** {names}\n"
 
-        embed = discord.Embed(
-            title="⚔ チーム分け結果", description=result, color=discord.Color.orange()
-        )
+        embed = discord.Embed(title="⚔ チーム分け結果", description=result, color=discord.Color.orange())
         await ctx.send(embed=embed)
 
     @commands.command(name="randname")

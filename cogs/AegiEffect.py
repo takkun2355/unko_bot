@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import random
+
 import discord
 from discord.ext import commands
 
@@ -11,9 +12,7 @@ COMBINING_DAKUTEN = "\u3099"
 
 # 濁点を付ける対象
 DAKUTEN_TARGETS = set(
-    "あいうえおかきくけこさしすせそたちつてと"
-    "はひふへほまみむめもやゆよらりるれろわをん"
-    "ぁぃぅぇぉゃゅょっゕㇰヶゎー"
+    "あいうえおかきくけこさしすせそたちつてとはひふへほまみむめもやゆよらりるれろわをんぁぃぅぇぉゃゅょっゕㇰヶゎー"
 )
 
 # 文字重ねマッピング
@@ -146,8 +145,7 @@ TSU_TARGETS = set(
 
 
 def apply_effect_19(text: str) -> str:
-    """
-    1パスで全エフェクトを適用:
+    """1パスで全エフェクトを適用:
     文字重ね(15-40%) + 小文字化(30-50%) + 「っ」挿入(10-25%) + 濁点(100%) + 行末♥
     """
     prob_double = random.randint(15, 40)
@@ -172,11 +170,7 @@ def apply_effect_19(text: str) -> str:
             # 2. 小文字化（文字重ねた後の1文字目だけ対象）
             first_char = c[0]
             if first_char in KANA_TO_SMALL and random.randint(1, 100) <= prob_small:
-                c = (
-                    KANA_TO_SMALL[first_char] + c[1:]
-                    if len(c) > 1
-                    else KANA_TO_SMALL[first_char]
-                )
+                c = KANA_TO_SMALL[first_char] + c[1:] if len(c) > 1 else KANA_TO_SMALL[first_char]
 
             # 3. 濁点（結合文字として付与）
             c_with_daku = ""
@@ -260,9 +254,7 @@ class AegiEffect(commands.Cog):
         self._skip_ids.add(msg.id)  # このメッセージは加工しない
 
     @aegieffect.command(name="start")
-    async def aegieffect_start(
-        self, ctx: commands.Context, effect_type: str = "19"
-    ) -> None:
+    async def aegieffect_start(self, ctx: commands.Context, effect_type: str = "19") -> None:
         """エフェクト開始 (19 / 1919 / 3099)"""
         if not ctx.guild:
             return
@@ -274,9 +266,7 @@ class AegiEffect(commands.Cog):
             key = "3099"
             name = "3099"
         else:
-            msg = await ctx.send(
-                f"不明なエフェクト: {effect_type}\n使えるのは: 19, 1919, 3099"
-            )
+            msg = await ctx.send(f"不明なエフェクト: {effect_type}\n使えるのは: 19, 1919, 3099")
             self._skip_ids.add(msg.id)
             return
 
@@ -288,9 +278,7 @@ class AegiEffect(commands.Cog):
         self._skip_ids.add(msg.id)
 
     @aegieffect.command(name="stop")
-    async def aegieffect_stop(
-        self, ctx: commands.Context, effect_type: str | None = None
-    ) -> None:
+    async def aegieffect_stop(self, ctx: commands.Context, effect_type: str | None = None) -> None:
         """エフェクト停止（指定なしで全停止）"""
         if not ctx.guild:
             return

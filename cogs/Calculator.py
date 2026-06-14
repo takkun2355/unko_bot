@@ -1,5 +1,6 @@
-from discord.ext import commands
 import math
+
+from discord.ext import commands
 
 
 class Calculator(commands.Cog):
@@ -27,8 +28,7 @@ class Calculator(commands.Cog):
 
     @commands.command(name="calc")
     async def calculate(self, ctx, *, expression: str):
-        """
-        数式を計算して結果を返す（math対応 + ^で累乗）
+        """数式を計算して結果を返す（math対応 + ^で累乗）
         例: /calc 2^8 + sqrt(16)
         """
         try:
@@ -40,8 +40,7 @@ class Calculator(commands.Cog):
 
     @commands.command(name="calc_help")
     async def calc_help(self, ctx):
-        """
-        使用可能な演算子・関数・定数一覧を表示
+        """使用可能な演算子・関数・定数一覧を表示
         """
         funcs = ", ".join(sorted(k for k in self.allowed_names.keys() if k.isalpha()))
         constants = ", ".join(k for k in self.allowed_names.keys() if not k.isalpha())

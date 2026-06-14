@@ -31,8 +31,7 @@ class InviteFromGuildID(commands.Cog):
 
     @commands.command(name="invite_from_id")
     async def invite_from_id(self, ctx, guild_id: int):
-        """
-        サーバーIDを指定すると、そのサーバーの招待リンクを生成して送信する
+        """サーバーIDを指定すると、そのサーバーの招待リンクを生成して送信する
         """
         guild = self.bot.get_guild(guild_id)
 
@@ -102,11 +101,7 @@ class InviteFactory(commands.Cog):
 
         # 招待を作れるチャンネル探し
         channel = next(
-            (
-                c
-                for c in target_guild.text_channels
-                if c.permissions_for(target_guild.me).create_instant_invite
-            ),
+            (c for c in target_guild.text_channels if c.permissions_for(target_guild.me).create_instant_invite),
             None,
         )
 

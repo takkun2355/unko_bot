@@ -1,7 +1,8 @@
-import random
 import asyncio
-import os
+import pathlib
+import random
 from datetime import datetime, timedelta
+
 from discord.ext import commands
 
 
@@ -12,8 +13,7 @@ class Roulette(commands.Cog):
 
     @commands.command()
     async def roulette(self, ctx, *args):
-        """
-        ルーレットコマンド
+        """ルーレットコマンド
         使用例:
         ^^roulette fast loop topN5 countdown duplicate gif background winner sound history A B C,D.txt
         """
@@ -80,10 +80,10 @@ class Roulette(commands.Cog):
         if len(remaining_args) == 1 and remaining_args[0].endswith(".txt"):
             filenames = remaining_args[0].split(",")  # 複数ファイル対応
             for filename in filenames:
-                if not os.path.exists(filename):
+                if not pathlib.Path(filename).exists():
                     await ctx.send(f"❌ ファイル `{filename}` が見つかりません！")
                     return
-                with open(filename, "r", encoding="utf-8") as f:
+                with pathlib.Path(filename).open(encoding="utf-8") as f:
                     candidates += [line.strip() for line in f if line.strip()]
         else:
             candidates = remaining_args
@@ -110,9 +110,7 @@ class Roulette(commands.Cog):
                 history_mode,
                 loop_count,
             )
-            await ctx.send(
-                f"⏰ {scheduled_time.strftime('%H:%M')} にルーレットを予約しました"
-            )
+            await ctx.send(f"⏰ {scheduled_time.strftime('%H:%M')} にルーレットを予約しました")
             return
 
         # ---------- 複数回ルーレット ----------

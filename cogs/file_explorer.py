@@ -1,4 +1,6 @@
 import os
+import pathlib
+
 from discord.ext import commands
 
 
@@ -13,23 +15,16 @@ class FileExplorer(commands.Cog):
 
     @commands.command(name="files")
     async def files(self, ctx, *args):
-        """
-        管理者＆オーナー専用ファイル閲覧コマンド
+        """管理者＆オーナー専用ファイル閲覧コマンド
         使用例:
         ^^files                  -> Botフォルダ内のトップ層
         ^^files venv             -> venv 内のファイル表示
         ^^files .txt             -> .txt ファイルだけ表示
         ^^files address          -> BASE_DIR のフルパスを表示
         """
-
         # 権限チェック
-        if (
-            not ctx.author.guild_permissions.administrator
-            and ctx.author.id not in self.OWNER_IDS
-        ):
-            await ctx.send(
-                "❌ このコマンドを使用できるのは管理者とBotオーナーのみです。"
-            )
+        if not ctx.author.guild_permissions.administrator and ctx.author.id not in self.OWNER_IDS:
+            await ctx.send("❌ このコマンドを使用できるのは管理者とBotオーナーのみです。")
             return
 
         target_dir = self.BASE_DIR
@@ -45,16 +40,15 @@ class FileExplorer(commands.Cog):
             else:
                 candidate_dir = os.path.join(self.BASE_DIR, args[0])
                 if (
-                    os.path.exists(candidate_dir)
-                    and os.path.commonpath([candidate_dir, self.BASE_DIR])
-                    == self.BASE_DIR
+                    pathlib.Path(candidate_dir).exists()
+                    and os.path.commonpath([candidate_dir, self.BASE_DIR]) == self.BASE_DIR
                 ):
                     target_dir = candidate_dir
                 else:
                     await ctx.send(f"❌ `{args[0]}` は存在しないか閲覧不可です。")
                     return
 
-        if not os.path.exists(target_dir):
+        if not pathlib.Path(target_dir).exists():
             await ctx.send(f"❌ `{target_dir}` が存在しません。")
             return
 
@@ -72,7 +66,7 @@ class FileExplorer(commands.Cog):
                 branch = "└─" if i == len(items) - 1 else "├─"
                 display_name = path if full_path_mode else item
                 lines.append(f"{prefix}{branch} {display_name}")
-                if os.path.isdir(path):
+                if pathlib.Path(path).is_dir():
                     extension = "   " if i == len(items) - 1 else "│  "
                     lines.extend(list_dir(path, prefix + extension))
             return lines

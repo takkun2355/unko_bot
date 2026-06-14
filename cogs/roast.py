@@ -1,6 +1,7 @@
-from discord.ext import commands
-import random
 import asyncio
+import random
+
+from discord.ext import commands
 
 
 class Roast(commands.Cog):
@@ -117,7 +118,7 @@ class Roast(commands.Cog):
         try:
             msg = await self.bot.wait_for("message", timeout=30.0, check=check)
             response = msg.content.lower().strip()
-        except asyncio.TimeoutError:
+        except TimeoutError:
             await ctx.send("一定時間が経過したため終了します...")
             return
 
@@ -126,9 +127,7 @@ class Roast(commands.Cog):
         elif response in ("no", "n", "いいえ"):
             await ctx.send(roast["no"])
         else:
-            await ctx.send(
-                "Can't even answer a simple yes/no question? That's... not surprising."
-            )
+            await ctx.send("Can't even answer a simple yes/no question? That's... not surprising.")
 
 
 async def setup(bot):

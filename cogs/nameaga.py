@@ -1,4 +1,5 @@
 import random
+
 import discord
 from discord.ext import commands
 
@@ -44,9 +45,7 @@ class nameaga(commands.Cog):
             "ナナホシ",
         ]
 
-        aganame = (
-            random.choice(prefixes) + random.choice(bases) + random.choice(suffixes)
-        )
+        aganame = random.choice(prefixes) + random.choice(bases) + random.choice(suffixes)
 
         embed = discord.Embed(
             title="🎲 ランダム名前ジェネレーター",

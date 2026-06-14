@@ -1,8 +1,9 @@
-from discord.ext import commands
-import random
-import json
-import os
 import asyncio
+import json
+import pathlib
+import random
+
+from discord.ext import commands
 
 CUSTOM_WORD_FILE = "custom_words.txt"
 ROOM_FILE = "rooms.json"
@@ -10,23 +11,21 @@ RANK_FILE = "rankings.json"
 
 
 def load_words():
-    if not os.path.exists(CUSTOM_WORD_FILE):
-        raise FileNotFoundError(
-            f"{CUSTOM_WORD_FILE} が見つかりません。作成してください。"
-        )
-    with open(CUSTOM_WORD_FILE, "r", encoding="utf-8") as f:
+    if not pathlib.Path(CUSTOM_WORD_FILE).exists():
+        raise FileNotFoundError(f"{CUSTOM_WORD_FILE} が見つかりません。作成してください。")
+    with pathlib.Path(CUSTOM_WORD_FILE).open(encoding="utf-8") as f:
         return [line.strip() for line in f if line.strip()]
 
 
 def save_json(path, data):
-    with open(path, "w", encoding="utf-8") as f:
+    with pathlib.Path(path).open("w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def load_json(path):
-    if not os.path.exists(path):
+    if not pathlib.Path(path).exists():
         return {}
-    with open(path, "r", encoding="utf-8") as f:
+    with pathlib.Path(path).open(encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -44,9 +43,7 @@ class Shiritori(commands.Cog):
             return
         self.rooms[room_name] = {"password": password, "players": [], "used_words": []}
         save_json(ROOM_FILE, self.rooms)
-        await ctx.send(
-            f"部屋 {room_name} を作成しました。パスワードを控えておいてください。"
-        )
+        await ctx.send(f"部屋 {room_name} を作成しました。パスワードを控えておいてください。")
 
     @commands.command()
     async def join(self, ctx, room_name: str, password: str):
@@ -76,9 +73,7 @@ class Shiritori(commands.Cog):
         await ctx.send(f"{ctx.author.name} が {room_name} から退出しました。")
 
     @commands.command()
-    async def start(
-        self, ctx, room_name: str, word_mode: str = "custom", bot_mode: str = None
-    ):
+    async def start(self, ctx, room_name: str, word_mode: str = "custom", bot_mode: str = None):
         if room_name not in self.rooms:
             await ctx.send("その部屋は存在しません。")
             return
@@ -92,9 +87,7 @@ class Shiritori(commands.Cog):
             return
 
         used_words = room.get("used_words", [])
-        await ctx.send(
-            f"しりとり開始！単語モード: {word_mode} | プレイヤー: {', '.join(players)}"
-        )
+        await ctx.send(f"しりとり開始！単語モード: {word_mode} | プレイヤー: {', '.join(players)}")
         await self.run_game(ctx, room_name, players, used_words, word_mode)
 
     async def run_game(self, ctx, room_name, players, used_words, word_mode):
@@ -107,9 +100,7 @@ class Shiritori(commands.Cog):
             await ctx.send(f"現在のターン: {current_player}")
 
             if current_player == "Bot":
-                candidate_words = [
-                    w for w in self.words if w[0] == last_char and w not in used_words
-                ]
+                candidate_words = [w for w in self.words if w[0] == last_char and w not in used_words]
                 if not candidate_words:
                     await ctx.send("Botは単語が出せず負け！")
                     self.update_rank(room_name, "Bot", False)
@@ -125,7 +116,7 @@ class Shiritori(commands.Cog):
                 try:
                     msg = await self.bot.wait_for("message", check=check, timeout=60)
                     word = msg.content.strip()
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     await ctx.send(f"{current_player} が時間切れで負け！")
                     self.update_rank(room_name, current_player, False)
                     break

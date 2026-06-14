@@ -1,9 +1,11 @@
 # rpg_cog_full.py
-from discord.ext import commands
+import asyncio
 import json
 import os
+import pathlib
 import random
-import asyncio
+
+from discord.ext import commands
 
 RPG_FOLDER = "rpg_data"
 
@@ -65,20 +67,20 @@ class RPGCog(commands.Cog):
     # ----------------------
     def get_user_folder(self, user_id):
         folder = os.path.join(RPG_FOLDER, str(user_id))
-        os.makedirs(folder, exist_ok=True)
+        pathlib.Path(folder).mkdir(exist_ok=True, parents=True)
         return folder
 
     def save_user(self, user_id, data):
         folder = self.get_user_folder(user_id)
         path = os.path.join(folder, "player.json")
-        with open(path, "w", encoding="utf-8") as f:
+        with pathlib.Path(path).open("w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
     def load_user(self, user_id):
         folder = self.get_user_folder(user_id)
         path = os.path.join(folder, "player.json")
-        if os.path.exists(path):
-            with open(path, "r", encoding="utf-8") as f:
+        if pathlib.Path(path).exists():
+            with pathlib.Path(path).open(encoding="utf-8") as f:
                 return json.load(f)
         return None
 
@@ -172,11 +174,7 @@ class RPGCog(commands.Cog):
         )
 
         def check(m):
-            return (
-                m.author == ctx.author
-                and m.channel == ctx.channel
-                and m.content.lower() in ["yes", "no"]
-            )
+            return m.author == ctx.author and m.channel == ctx.channel and m.content.lower() in ["yes", "no"]
 
         try:
             msg = await self.bot.wait_for("message", check=check, timeout=30)
@@ -234,9 +232,7 @@ class RPGCog(commands.Cog):
             user_data["hp"] = 1
             self.save_user(ctx.author.id, user_data)
             self.active_battles.pop(ctx.author.id)
-            msg += (
-                f"💀 {user_data['name']} は倒されました。G {user_data['level']} 減少！"
-            )
+            msg += f"💀 {user_data['name']} は倒されました。G {user_data['level']} 減少！"
         else:
             self.active_battles[ctx.author.id] = battle
             user_data["hp"] = battle["user_hp"]
@@ -290,9 +286,7 @@ class RPGCog(commands.Cog):
         user_data["items"].remove(item_name)
         self.save_user(ctx.author.id, user_data)
 
-        await ctx.send(
-            f"{user_data['name']} が {item_name} を使用！現在HP: {user_data['hp']} / {user_data['max_hp']}"
-        )
+        await ctx.send(f"{user_data['name']} が {item_name} を使用！現在HP: {user_data['hp']} / {user_data['max_hp']}")
 
     # ----------------------
     # 逃走コマンド

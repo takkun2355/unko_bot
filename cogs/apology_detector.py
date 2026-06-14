@@ -1,8 +1,9 @@
 # cogs/apology_detector.py
 
-import discord
-import re
 import random
+import re
+
+import discord
 from discord.ext import commands
 
 
@@ -133,9 +134,7 @@ class ApologyDetector(commands.Cog):
         # ミス系
         for pattern in self.misu:
             if re.search(pattern, content):
-                await message.channel.send(
-                    "あっちゃー、ごめんなさい！完全に私のミスです。"
-                )
+                await message.channel.send("あっちゃー、ごめんなさい！完全に私のミスです。")
                 return
 
         # 勘違い系

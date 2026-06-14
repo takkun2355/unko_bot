@@ -1,6 +1,7 @@
+import random
+
 import discord
 from discord.ext import commands
-import random
 
 SUITS = ["♠", "♥", "♦", "♣"]
 RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
@@ -59,25 +60,19 @@ class BlackJackFull(commands.Cog):
 
         # DMで手札と合計表示
         try:
-            await user.send(
-                f"🃏 ブラックジャック [{game_type}] 現在の手札: {', '.join(hand)}\n"
-                f"合計値: {total}"
-            )
+            await user.send(f"🃏 ブラックジャック [{game_type}] 現在の手札: {', '.join(hand)}\n合計値: {total}")
         except discord.Forbidden:
             await ctx.send(f"⚠️ {user.mention} にDMを送れません。DMを許可してください。")
             return
 
         # サーバーには進行状況だけ
         await ctx.send(
-            f"🎲 {user.mention} さんがカードを引きました。"
-            f" 現在 {len(hand)} 枚目。種類: {game_type} 合計値非表示"
+            f"🎲 {user.mention} さんがカードを引きました。 現在 {len(hand)} 枚目。種類: {game_type} 合計値非表示"
         )
 
         # バースト判定
         if total > 21:
-            await ctx.send(
-                f"💥 {user.mention} さんがバーストしました！手札: {len(hand)} 枚"
-            )
+            await ctx.send(f"💥 {user.mention} さんがバーストしました！手札: {len(hand)} 枚")
             del self.games[user.id]
 
     @commands.command(name="blackjack_reset")
@@ -86,9 +81,7 @@ class BlackJackFull(commands.Cog):
         user = ctx.author
         if user.id in self.games:
             del self.games[user.id]
-        await ctx.send(
-            f"{user.mention} さんのブラックジャックゲームをリセットしました。"
-        )
+        await ctx.send(f"{user.mention} さんのブラックジャックゲームをリセットしました。")
 
 
 # Cog登録

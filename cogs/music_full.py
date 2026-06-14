@@ -1,8 +1,10 @@
 # cogs/music_full.py
-import discord
-from discord.ext import commands
 import asyncio
 import os
+import pathlib
+
+import discord
+from discord.ext import commands
 
 try:
     import yt_dlp as youtube_dl
@@ -74,30 +76,24 @@ class music_full(commands.Cog):
         url_or_file = queue.pop(0)
         self.current_time[server_id] = 0
 
-        if os.path.exists(url_or_file):
+        if pathlib.Path(url_or_file).exists():
             source = discord.FFmpegOpusAudio(url_or_file, **ffmpeg_options)
             title = os.path.basename(url_or_file)
             thumbnail = None
             duration = 0
         else:
             if not self.ytdl:
-                await ctx.send(
-                    "❌ yt-dlpがインストールされていません。`pip install yt-dlp` を実行してください。"
-                )
+                await ctx.send("❌ yt-dlpがインストールされていません。`pip install yt-dlp` を実行してください。")
                 return
             info = self.ytdl.extract_info(url_or_file, download=False)
-            source = await discord.FFmpegOpusAudio.from_probe(
-                info["url"], **ffmpeg_options
-            )
+            source = await discord.FFmpegOpusAudio.from_probe(info["url"], **ffmpeg_options)
             title = info.get("title", "Unknown")
             thumbnail = info.get("thumbnail")
             duration = info.get("duration", 0)
 
         ctx.voice_client.play(
             source,
-            after=lambda e: asyncio.run_coroutine_threadsafe(
-                self.play_next(ctx), self.bot.loop
-            ),
+            after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(ctx), self.bot.loop),
         )
 
         bars_total = 5
@@ -108,9 +104,7 @@ class music_full(commands.Cog):
             embed.set_thumbnail(url=thumbnail)
         embed.add_field(name="再生進行", value=bar_str, inline=False)
         if duration:
-            embed.add_field(
-                name="再生時間", value=f"0:{duration // 60:02d}", inline=False
-            )
+            embed.add_field(name="再生時間", value=f"0:{duration // 60:02d}", inline=False)
 
         np_msg = self.now_playing_messages.get(server_id)
         if np_msg:
@@ -121,15 +115,13 @@ class music_full(commands.Cog):
         else:
             self.now_playing_messages[server_id] = await ctx.send(embed=embed)
 
-        await self.add_control_reactions(
-            self.now_playing_messages[server_id], server_id
-        )
+        await self.add_control_reactions(self.now_playing_messages[server_id], server_id)
 
     # ------------------------
     # リアクション追加
     # ------------------------
     async def add_control_reactions(self, message, guild_id):
-        for emoji in REACTION_EMOJIS.keys():
+        for emoji in REACTION_EMOJIS:
             await message.add_reaction(emoji)
         self.control_messages[guild_id] = message
 
@@ -181,13 +173,9 @@ class music_full(commands.Cog):
                 for i, url in enumerate(queue, start=1):
                     try:
                         info = self.ytdl.extract_info(url, download=False)
-                        embed.add_field(
-                            name=f"{i}. {info['title']}", value=url, inline=False
-                        )
+                        embed.add_field(name=f"{i}. {info['title']}", value=url, inline=False)
                     except Exception:
-                        embed.add_field(
-                            name=f"{i}. (取得失敗)", value=url, inline=False
-                        )
+                        embed.add_field(name=f"{i}. (取得失敗)", value=url, inline=False)
                 await reaction.message.channel.send(embed=embed)
 
         elif action == "forward_10":
@@ -261,9 +249,7 @@ class music_full(commands.Cog):
             for i, url in enumerate(queue, start=1):
                 try:
                     info = self.ytdl.extract_info(url, download=False)
-                    embed.add_field(
-                        name=f"{i}. {info['title']}", value=url, inline=False
-                    )
+                    embed.add_field(name=f"{i}. {info['title']}", value=url, inline=False)
                 except Exception:
                     embed.add_field(name=f"{i}. (取得失敗)", value=url, inline=False)
             await ctx.send(embed=embed)

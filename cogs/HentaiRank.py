@@ -1,6 +1,7 @@
-from discord.ext import commands
 import random
 from datetime import date
+
+from discord.ext import commands
 
 
 class HentaiRank(commands.Cog):
@@ -12,8 +13,7 @@ class HentaiRank(commands.Cog):
 
     @commands.command(name="hentai_rank")
     async def hentai_rank(self, ctx):
-        """
-        今日のサーバー民ランキング「変態度」をランダムで生成
+        """今日のサーバー民ランキング「変態度」をランダムで生成
         """
         today_str = str(date.today())
         members = [m for m in ctx.guild.members if not m.bot]
@@ -26,9 +26,7 @@ class HentaiRank(commands.Cog):
                 self.daily_ranks[today_str][member.id] = random.randint(0, 100)
 
         # スコア順にソート
-        sorted_members = sorted(
-            self.daily_ranks[today_str].items(), key=lambda x: x[1], reverse=True
-        )
+        sorted_members = sorted(self.daily_ranks[today_str].items(), key=lambda x: x[1], reverse=True)
 
         # 上位5名表示
         description = ""
