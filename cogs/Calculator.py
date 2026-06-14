@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import math
 
 from discord.ext import commands
@@ -36,7 +39,7 @@ class Calculator(commands.Cog):
             result = eval(expression, {"__builtins__": {}}, self.allowed_names)
             await ctx.send(f"🧮 計算結果: {result}")
         except Exception as e:
-            await ctx.send(f"❌ 計算エラー: {e}")
+            await ctx.send(f" 計算エラー: {e}")
 
     @commands.command(name="calc_help")
     async def calc_help(self, ctx):

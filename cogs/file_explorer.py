@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import os
 import pathlib
 
@@ -24,7 +27,7 @@ class FileExplorer(commands.Cog):
         """
         # 権限チェック
         if not ctx.author.guild_permissions.administrator and ctx.author.id not in self.OWNER_IDS:
-            await ctx.send("❌ このコマンドを使用できるのは管理者とBotオーナーのみです。")
+            await ctx.send(" このコマンドを使用できるのは管理者とBotオーナーのみです。")
             return
 
         target_dir = self.BASE_DIR
@@ -45,18 +48,18 @@ class FileExplorer(commands.Cog):
                 ):
                     target_dir = candidate_dir
                 else:
-                    await ctx.send(f"❌ `{args[0]}` は存在しないか閲覧不可です。")
+                    await ctx.send(f" `{args[0]}` は存在しないか閲覧不可です。")
                     return
 
         if not pathlib.Path(target_dir).exists():
-            await ctx.send(f"❌ `{target_dir}` が存在しません。")
+            await ctx.send(f" `{target_dir}` が存在しません。")
             return
 
         def list_dir(dir_path, prefix=""):
             try:
                 items = sorted(os.listdir(dir_path))
             except PermissionError:
-                return [f"{prefix}⚠ 権限がありません"]
+                return [f"{prefix} 権限がありません"]
 
             lines = []
             for i, item in enumerate(items):

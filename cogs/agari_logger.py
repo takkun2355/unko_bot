@@ -1,7 +1,9 @@
 # cogs/agari_logger.py
 
-from pathlib import Path
+from pathlib import logging
 
+logger = logging.getLogger(__name__)
+import Path
 from discord.ext import commands
 
 CHANNEL_ID = 1118799600816492626
@@ -22,10 +24,10 @@ class AgariLogger(commands.Cog):
         channel = self.bot.get_channel(CHANNEL_ID)
 
         if channel is None:
-            print(f"チャンネル取得失敗: {CHANNEL_ID}")
+            logger.info(f"チャンネル取得失敗: {CHANNEL_ID}")
             return
 
-        print("ログ取得開始")
+        logger.info("ログ取得開始")
 
         log_path = Path(LOG_FILE)
 
@@ -35,7 +37,7 @@ class AgariLogger(commands.Cog):
 
                 f.write(f"[{msg.created_at}] {msg.author} ({msg.author.id}) : {content}\n")
 
-        print(f"保存完了: {LOG_FILE}")
+        logger.info(f"保存完了: {LOG_FILE}")
 
 
 async def setup(bot):

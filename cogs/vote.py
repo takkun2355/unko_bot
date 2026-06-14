@@ -1,4 +1,6 @@
-from __future__ import annotations
+from __future__ import logging
+
+logger = logging.getLogger(__name__)
 
 import asyncio
 import re
@@ -826,7 +828,7 @@ class VoteCreateModal(discord.ui.Modal, title="投票を作成"):
         await interaction.followup.send(f"投票を作成しました。ID: {poll_id}", ephemeral=True)
         if poll_message is not None:
             try:
-                await poll_message.reply(f"✅ 投票を作成しました。`ID: {poll_id}`", mention_author=False)
+                await poll_message.reply(f" 投票を作成しました。`ID: {poll_id}`", mention_author=False)
             except Exception:
                 pass
 

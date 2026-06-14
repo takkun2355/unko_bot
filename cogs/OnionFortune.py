@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import random
 
 from discord.ext import commands
@@ -20,7 +23,7 @@ class OnionFortune(commands.Cog):
             "🧅 今日の皮むき度: 50%…中くらいの皮むき日",
             "🧅 今日の皮むき度: 75%…結構むけそう！",
             "🧅 今日の皮むき度: 90%…むけまくり注意！",
-            "🧅 今日の皮むき度: 100%…フルでむける！玉ねぎ注意⚠️",
+            "🧅 今日の皮むき度: 100%…フルでむける！玉ねぎ注意",
         ]
         fortune = random.choice(fortunes)
         await ctx.send(fortune)

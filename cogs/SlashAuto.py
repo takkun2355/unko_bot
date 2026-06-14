@@ -1,4 +1,7 @@
 # cogs/SlashAuto.py
+import logging
+
+logger = logging.getLogger(__name__)
 import inspect
 from typing import get_type_hints
 
@@ -72,7 +75,7 @@ class SlashAuto(commands.Cog):
                         )
                     )
                 except Exception as e:
-                    print(f"[SlashAuto] {command.name} 登録失敗: {e}")
+                    logger.info(f"[SlashAuto] {command.name} 登録失敗: {e}")
 
 
 async def setup(bot: commands.Bot):

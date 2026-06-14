@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import discord
 from discord.ext import commands
 
@@ -13,10 +16,10 @@ class UtilityURL(commands.Cog):
         except Exception as e:
             self.s = None
             self.available = False
-            print(f"[WARNING] pyshorteners初期化失敗: {e}")
+            logger.info(f"[WARNING] pyshorteners初期化失敗: {e}")
 
     def error_embed(self, title, description):
-        return discord.Embed(title=f"❌ {title}", description=description, color=discord.Color.red())
+        return discord.Embed(title=f" {title}", description=description, color=discord.Color.red())
 
     @commands.command(name="shorten")
     async def shorten(self, ctx, url: str):
@@ -57,4 +60,4 @@ async def setup(bot):
     try:
         await bot.add_cog(UtilityURL(bot))
     except Exception as e:
-        print(f"[ERROR] UtilityURL Cog 読み込み失敗: {e}")
+        logger.info(f"[ERROR] UtilityURL Cog 読み込み失敗: {e}")

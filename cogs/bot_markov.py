@@ -1,4 +1,7 @@
 # bot_markov.py
+import logging
+
+logger = logging.getLogger(__name__)
 import pathlib
 import random
 

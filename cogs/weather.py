@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import asyncio
 import json
 import pathlib
@@ -17,7 +20,7 @@ class Weather(commands.Cog):
 
         # 天気コードとアイコン
         self.weather_icons = {
-            0: "☀️",
+            0: "☀",
             1: "🌤",
             2: "⛅",
             3: "🌥",
@@ -33,7 +36,7 @@ class Weather(commands.Cog):
             65: "🌧",
             71: "🌨",
             73: "🌨",
-            75: "❄️",
+            75: "❄",
             80: "🌦",
             81: "🌧",
             82: "🌧",
@@ -112,12 +115,12 @@ class Weather(commands.Cog):
             try:
                 with pathlib.Path(file_path).open(encoding="utf-8") as f:
                     self.prefectures = json.load(f)
-                    print("[Weather] Loaded prefectures data successfully from weather.json.")
+                    logger.info("[Weather] Loaded prefectures data successfully from weather.json.")
             except Exception:
-                print("[Weather] ERROR: Failed to load weather.json.")
-                print(traceback.format_exc())
+                logger.info("[Weather] ERROR: Failed to load weather.json.")
+                logger.info(traceback.format_exc())
         else:
-            print(
+            logger.info(
                 "[Weather] ERROR: weather.json not found! Please make sure weather.json exists in the root directory."
             )
 
@@ -177,8 +180,8 @@ class Weather(commands.Cog):
                 data = await resp.json()
                 return {"name": name, "data": data, "pref": pref_data}
         except Exception:
-            print(f"[Weather Debug] Open-Meteo fetch failed for {name}:")
-            print(traceback.format_exc())
+            logger.info(f"[Weather Debug] Open-Meteo fetch failed for {name}:")
+            logger.info(traceback.format_exc())
             return None
 
     async def get_jma_warnings(self, session, jma_code, name):
@@ -207,8 +210,8 @@ class Weather(commands.Cog):
                                                     advisories.append(wname)
                 return {"name": name, "warnings": warnings, "advisories": advisories}
         except Exception:
-            print(f"[Weather Debug] JMA Warning API error for code {jma_code} ({name}):")
-            print(traceback.format_exc())
+            logger.info(f"[Weather Debug] JMA Warning API error for code {jma_code} ({name}):")
+            logger.info(traceback.format_exc())
             return {"name": name, "warnings": [], "advisories": []}
 
     async def get_typhoon_info(self, session):
@@ -284,8 +287,8 @@ class Weather(commands.Cog):
                         })
                 return typhoons
         except Exception:
-            print("[Weather Debug] JMA Typhoon API error (New Endpoint Parser):")
-            print(traceback.format_exc())
+            logger.info("[Weather Debug] JMA Typhoon API error (New Endpoint Parser):")
+            logger.info(traceback.format_exc())
             return None
 
     async def send_long_message(self, ctx, text):
@@ -299,7 +302,7 @@ class Weather(commands.Cog):
     async def weather(self, ctx, *args):
         if not self.prefectures:
             await ctx.send(
-                "❌ 地域データが読み込まれていません。weather.jsonが正しく配置されているか確認してください。"
+                " 地域データが読み込まれていません。weather.jsonが正しく配置されているか確認してください。"
             )
             return
 
@@ -339,7 +342,7 @@ class Weather(commands.Cog):
                     else:
                         pref, key_name = self.find_prefecture(city)
                         if not pref:
-                            await ctx.send(f"❌ 地名 `{city}` に該当する都道府県が見つかりません！")
+                            await ctx.send(f" 地名 `{city}` に該当する都道府県が見つかりません！")
                             return
 
             # 「日本」指定時は、東京、大阪、愛知、福岡の4拠点を対象にする
@@ -351,7 +354,7 @@ class Weather(commands.Cog):
                     query_cities = pref.get("children", [])
 
                     if not query_cities:
-                        await ctx.send("❌ 地域に都道府県が登録されていません")
+                        await ctx.send(" 地域に都道府県が登録されていません")
                         return
                 else:
                     query_cities = [key_name]
@@ -562,9 +565,9 @@ class Weather(commands.Cog):
                 await self.send_long_message(ctx, typhoon_msg)
 
         except Exception as e:
-            print("[Weather Debug] Core command error:")
-            print(traceback.format_exc())
-            await ctx.send(f"❌ 天気情報の取得に失敗しました: {e}")
+            logger.info("[Weather Debug] Core command error:")
+            logger.info(traceback.format_exc())
+            await ctx.send(f" 天気情報の取得に失敗しました: {e}")
 
 
 async def setup(bot):

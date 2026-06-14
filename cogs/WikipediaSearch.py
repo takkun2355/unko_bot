@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import wikipedia
 from discord.ext import commands
 
@@ -24,11 +27,11 @@ class WikipediaSearch(commands.Cog):
             await ctx.send(f"🔍 **{query}** の概要:\n{summary}")
         except wikipedia.DisambiguationError as e:
             options = ", ".join(e.options[:5])  # 選択肢を5個だけ表示
-            await ctx.send(f"⚠️ 曖昧なキーワードです。候補: {options}")
+            await ctx.send(f" 曖昧なキーワードです。候補: {options}")
         except wikipedia.PageError:
-            await ctx.send(f"❌ ページが見つかりません: {query}")
+            await ctx.send(f" ページが見つかりません: {query}")
         except Exception as e:
-            await ctx.send(f"❌ エラー: {e}")
+            await ctx.send(f" エラー: {e}")
 
 
 # CogをBotに登録

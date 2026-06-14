@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import random
 
 import discord
@@ -22,11 +25,11 @@ class FunGames(commands.Cog):
     @commands.command(name="dice")
     async def dice(self, ctx, sides: int = 6):
         if sides < 2:
-            await ctx.send("❌ サイコロの面数は2以上にしてください！")
+            await ctx.send(" サイコロの面数は2以上にしてください！")
             return
         result = random.randint(1, sides)
         embed = discord.Embed(
-            title="🎲 サイコロ振り",
+            title=" サイコロ振り",
             description=f"{ctx.author.mention} さんが {sides} 面のサイコロを振りました！\n結果: **{result}**",
             color=discord.Color.blue(),
         )

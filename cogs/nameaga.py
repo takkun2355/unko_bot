@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import random
 
 import discord
@@ -48,7 +51,7 @@ class nameaga(commands.Cog):
         aganame = random.choice(prefixes) + random.choice(bases) + random.choice(suffixes)
 
         embed = discord.Embed(
-            title="🎲 ランダム名前ジェネレーター",
+            title=" ランダム名前ジェネレーター",
             description=f"生成された名前: **{aganame}**",
             color=discord.Color.purple(),
         )

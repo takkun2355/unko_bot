@@ -1,5 +1,8 @@
 # cogs/apology_detector.py
 
+import logging
+
+logger = logging.getLogger(__name__)
 import random
 import re
 

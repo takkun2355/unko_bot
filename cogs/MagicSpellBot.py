@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import random
 
 from discord.ext import commands
@@ -5,7 +8,7 @@ from discord.ext import commands
 # 呪文のパーツ
 PREFIXES = ["アブラカダ", "エクス", "インフェルノ", "ルミナス", "シャドウ", "アルケミ"]
 SUFFIXES = ["リウス", "トロン", "フィカス", "マンドラ", "サリオン", "ボルテクス"]
-ELEMENTS = ["🔥", "❄️", "⚡", "🌪️", "💧", "🌟"]
+ELEMENTS = ["🔥", "❄", "⚡", "🌪", "💧", "🌟"]
 
 
 class MagicSpellBot(commands.Cog):
@@ -23,7 +26,7 @@ class MagicSpellBot(commands.Cog):
         suffix = random.choice(SUFFIXES)
         element = random.choice(ELEMENTS)
         spell = f"{prefix}{suffix} {element}！"
-        await ctx.send(f"💬 {ctx.author.name} が唱えた: 「{phrase}」\n✨ 呪文生成: {spell}")
+        await ctx.send(f"💬 {ctx.author.name} が唱えた: 「{phrase}」\n 呪文生成: {spell}")
 
 
 # CogをBotに登録

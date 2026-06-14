@@ -1,6 +1,8 @@
 # cogs/AegiEffect.py
 
-from __future__ import annotations
+from __future__ import logging
+
+logger = logging.getLogger(__name__)
 
 import random
 

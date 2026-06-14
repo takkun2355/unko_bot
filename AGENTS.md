@@ -3,28 +3,9 @@
 AIがコードを書く際に気をつけるべき点
 
 ## はじめに
-このドキュメントは、GEMINIがPythonコードを生成する際に、より高品質で保守性の高いコードを作成するためのガイドラインを提供します。特に、以下の点に焦点を当てます。
+このドキュメントは、AIがPythonコードを生成する際に、より高品質で保守性の高いコードを作成するためのガイドラインを提供します。特に、以下の点に焦点を当てます。
 
-基本ログ設定（print乱用からの脱却）
-まず最初に、AIが出力するprint()だらけのコードを防ぐ基本設定。
-
-```python
-# logging ベースライン（コピペ用）
-import logging
-import sys
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-logger = logging.getLogger(__name__)
-
-# 使用例
-logger.info("処理開始")
-logger.debug("デバッグ情報: %s", data)
-logger.error("エラーが発生: %s", error)
-```
+- 必ずloggingを使うこと
 
 ---
 

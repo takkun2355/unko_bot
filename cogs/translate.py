@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import discord
 from discord.ext import commands
 
@@ -15,10 +18,10 @@ class Translate(commands.Cog):
         except Exception as e:
             self.translator_class = None
             self.available = False
-            print(f"[WARNING] GoogleTranslator 初期化失敗: {e}")
+            logger.info(f"[WARNING] GoogleTranslator 初期化失敗: {e}")
 
     def error_embed(self, title, description):
-        return discord.Embed(title=f"❌ {title}", description=description, color=discord.Color.red())
+        return discord.Embed(title=f" {title}", description=description, color=discord.Color.red())
 
     @commands.command(name="translate")
     async def translate(self, ctx, lang: str, *, text: str):
@@ -66,4 +69,4 @@ async def setup(bot):
     try:
         await bot.add_cog(Translate(bot))
     except Exception as e:
-        print(f"[ERROR] Translate Cog 読み込み失敗: {e}")
+        logger.info(f"[ERROR] Translate Cog 読み込み失敗: {e}")

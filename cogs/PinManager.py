@@ -10,6 +10,9 @@
 # ここから先は冗長でコメント多め、かつ役に立つスケルトンや小分け関数を大量に入れて
 # 「物理的にデカく見せる」ことに特化してあります。動作は既定仕様に一致します。
 
+import logging
+
+logger = logging.getLogger(__name__)
 import datetime
 import json
 import os
@@ -435,7 +438,7 @@ class PinManager(commands.Cog):
                 continue
         if total_pins >= 7 and not ctx.author.guild_permissions.administrator:
             await ctx.send(
-                "❌ このサーバーでは7つまでしかピンを設定できません（管理者は例外）。",
+                " このサーバーでは7つまでしかピンを設定できません（管理者は例外）。",
                 delete_after=8,
             )
             return
@@ -450,7 +453,7 @@ class PinManager(commands.Cog):
             and int(old.get("author_id")) != ctx.author.id
             and not ctx.author.guild_permissions.administrator
         ):
-            await ctx.send("❌ 他の人のピンは上書きできません。", delete_after=8)
+            await ctx.send(" 他の人のピンは上書きできません。", delete_after=8)
             return
 
         # 既存ピンは削除（Botが送ったメッセージを消す）
@@ -517,7 +520,7 @@ class PinManager(commands.Cog):
 
         # 権限チェック（作成者か管理者）
         if int(data.get("author_id", 0)) != ctx.author.id and not ctx.author.guild_permissions.administrator:
-            await ctx.send("❌ 編集権限がありません。", delete_after=8)
+            await ctx.send(" 編集権限がありません。", delete_after=8)
             return
 
         # メッセージの存在確認と編集（存在しないなら再送）
@@ -572,7 +575,7 @@ class PinManager(commands.Cog):
         self._save_pin(gid, cid, data)
         self._push_log(f"pin_edit: guild={gid} channel={cid} by user={ctx.author.id}")
 
-        await ctx.send("✅ ピンを編集しました。", delete_after=6)
+        await ctx.send(" ピンを編集しました。", delete_after=6)
 
     # -------------------------
     # ^^removepin
@@ -594,7 +597,7 @@ class PinManager(commands.Cog):
 
         # 権限チェック
         if int(data.get("author_id", 0)) != ctx.author.id and not ctx.author.guild_permissions.administrator:
-            await ctx.send("❌ 削除権限がありません。", delete_after=6)
+            await ctx.send(" 削除権限がありません。", delete_after=6)
             return
 
         # メッセージ削除
@@ -615,11 +618,11 @@ class PinManager(commands.Cog):
             try:
                 log_ch = ctx.guild.get_channel(int(log_ch_id))
                 if log_ch:
-                    await log_ch.send(f"🗑️ ピン削除: {ctx.channel.mention} by {ctx.author.mention}")
+                    await log_ch.send(f"🗑 ピン削除: {ctx.channel.mention} by {ctx.author.mention}")
             except Exception:
                 pass
 
-        await ctx.send("🗑️ ピンを削除しました。", delete_after=6)
+        await ctx.send("🗑 ピンを削除しました。", delete_after=6)
 
     # -------------------------
     # ^^pininfo
@@ -678,7 +681,7 @@ class PinManager(commands.Cog):
         """サーバー内の全ピンを一覧表示（管理者専用）。
         """
         if not ctx.author.guild_permissions.administrator:
-            await ctx.send("❌ 管理者専用コマンドです。", delete_after=8)
+            await ctx.send(" 管理者専用コマンドです。", delete_after=8)
             return
 
         gid = str(ctx.guild.id)
@@ -719,7 +722,7 @@ class PinManager(commands.Cog):
         引数なしで設定解除。
         """
         if not ctx.author.guild_permissions.administrator:
-            await ctx.send("❌ 管理者専用コマンドです。", delete_after=8)
+            await ctx.send(" 管理者専用コマンドです。", delete_after=8)
             return
 
         gid = str(ctx.guild.id)
@@ -747,7 +750,7 @@ class PinManager(commands.Cog):
           ^^pinrepost #general -> #general のみ
         """
         if not ctx.author.guild_permissions.administrator:
-            await ctx.send("❌ 管理者専用コマンドです。", delete_after=8)
+            await ctx.send(" 管理者専用コマンドです。", delete_after=8)
             return
 
         target_channels = [channel] if channel else ctx.guild.text_channels
@@ -760,7 +763,7 @@ class PinManager(commands.Cog):
             except Exception:
                 continue
 
-        await ctx.send(f"♻️ {total}件のピンを再送しました。", delete_after=8)
+        await ctx.send(f"♻ {total}件のピンを再送しました。", delete_after=8)
 
     # -------------------------
     # ^^refreshpin (管理者専用): Bot 再起動時などに全ピンを再送
@@ -771,7 +774,7 @@ class PinManager(commands.Cog):
         実行中は多少時間がかかることがあります。
         """
         if not ctx.author.guild_permissions.administrator:
-            await ctx.send("❌ 管理者専用コマンドです。", delete_after=8)
+            await ctx.send(" 管理者専用コマンドです。", delete_after=8)
             return
 
         guild = ctx.guild
@@ -788,7 +791,7 @@ class PinManager(commands.Cog):
             except Exception:
                 continue
 
-        await ctx.send(f"♻️ {total}件のピンを再送しました。", delete_after=8)
+        await ctx.send(f"♻ {total}件のピンを再送しました。", delete_after=8)
 
     # ----------------------------------------
     # on_message: 誰かがそのチャンネルで発言したらピンを再送する（自動置き直し）

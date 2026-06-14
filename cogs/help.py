@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import json
 import re
 from pathlib import Path
@@ -22,7 +25,7 @@ else:
     DATA_FILE = None
 
 if not DATA_FILE.exists():
-    print("[WARNING] command_help.json not found")
+    logger.info("[WARNING] command_help.json not found")
 
 for cmd in self.bot.commands:
     commands_found.append({"name": cmd.name, "description": cmd.help or cmd.brief or "説明なし"})

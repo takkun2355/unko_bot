@@ -1,4 +1,7 @@
 # cogs/music_full.py
+import logging
+
+logger = logging.getLogger(__name__)
 import asyncio
 import os
 import pathlib
@@ -64,7 +67,7 @@ class music_full(commands.Cog):
                 except Exception:
                     pass
                 self.now_playing_messages.pop(server_id, None)
-            await ctx.send("✅ キューが空です。")
+            await ctx.send(" キューが空です。")
             if self.control_messages.get(server_id):
                 try:
                     await self.control_messages[server_id].delete()
@@ -83,7 +86,7 @@ class music_full(commands.Cog):
             duration = 0
         else:
             if not self.ytdl:
-                await ctx.send("❌ yt-dlpがインストールされていません。`pip install yt-dlp` を実行してください。")
+                await ctx.send(" yt-dlpがインストールされていません。`pip install yt-dlp` を実行してください。")
                 return
             info = self.ytdl.extract_info(url_or_file, download=False)
             source = await discord.FFmpegOpusAudio.from_probe(info["url"], **ffmpeg_options)
@@ -167,7 +170,7 @@ class music_full(commands.Cog):
 
         elif action == "queue":
             if not queue:
-                await reaction.message.channel.send("❌ キューは空です")
+                await reaction.message.channel.send(" キューは空です")
             else:
                 embed = discord.Embed(title="🎵 キュー一覧", color=0x00FF00)
                 for i, url in enumerate(queue, start=1):
@@ -189,7 +192,7 @@ class music_full(commands.Cog):
                 removed = queue.pop(0)
                 await reaction.message.channel.send(f"➖ キューから削除: {removed}")
             else:
-                await reaction.message.channel.send("❌ キューは空です")
+                await reaction.message.channel.send(" キューは空です")
 
         await reaction.remove(user)
 
@@ -200,9 +203,9 @@ class music_full(commands.Cog):
     async def join(self, ctx):
         if ctx.author.voice:
             await ctx.author.voice.channel.connect()
-            await ctx.send("✅ VCに参加しました")
+            await ctx.send(" VCに参加しました")
         else:
-            await ctx.send("❌ VCに入ってから呼んでね")
+            await ctx.send(" VCに入ってから呼んでね")
 
     @commands.command(name="leave")
     async def leave(self, ctx):
@@ -223,7 +226,7 @@ class music_full(commands.Cog):
                     pass
                 self.control_messages.pop(ctx.guild.id, None)
         else:
-            await ctx.send("❌ VCに入っていません")
+            await ctx.send(" VCに入っていません")
 
     @commands.command(name="play")
     async def play(self, ctx, *, url_or_file):
@@ -231,7 +234,7 @@ class music_full(commands.Cog):
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
             else:
-                await ctx.send("❌ VCに入ってから呼んでね")
+                await ctx.send(" VCに入ってから呼んでね")
                 return
         self.queues.setdefault(ctx.guild.id, []).append(url_or_file)
         if not ctx.voice_client.is_playing() and not ctx.voice_client.is_paused():
@@ -243,7 +246,7 @@ class music_full(commands.Cog):
     async def queue_cmd(self, ctx):
         queue = self.queues.get(ctx.guild.id, [])
         if not queue:
-            await ctx.send("❌ キューは空です")
+            await ctx.send(" キューは空です")
         else:
             embed = discord.Embed(title="🎵 キュー一覧", color=0x00FF00)
             for i, url in enumerate(queue, start=1):

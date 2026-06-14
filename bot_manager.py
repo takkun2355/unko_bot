@@ -2,6 +2,7 @@
 
 import ctypes
 import datetime
+import logging
 import os
 import queue
 import random
@@ -12,15 +13,23 @@ import time
 import tkinter as tk
 from pathlib import Path
 
-from colorama import Fore, init
 from dotenv import load_dotenv
 
 import bot_gui
 
 # ===========================
+# Logging 設定
+# ===========================
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+logger = logging.getLogger(__name__)
+
+# ===========================
 # 初期化
 # ===========================
-init(autoreset=True)
 
 # ===========================
 # 設定
@@ -45,7 +54,7 @@ load_dotenv(BASE_DIR / ".env")
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 
 if not TOKEN:
-    print(Fore.RED + "ERROR: .env に DISCORD_BOT_TOKEN が設定されていません。")
+    logger.error("ERROR: .env に DISCORD_BOT_TOKEN が設定されていません。")
     sys.exit(1)
 
 # ===========================
@@ -76,11 +85,10 @@ def delete_log_file():
     if log_path.exists():
         try:
             log_path.unlink()
-
-            print(Fore.CYAN + "INFO: 既存ログを削除しました。")
+            logger.info("INFO: 既存ログを削除しました。")
 
         except Exception as e:
-            print(Fore.RED + f"WARNING: ログ削除失敗: {e}")
+            logger.warning(f"WARNING: ログ削除失敗: {e}")
 
 
 # ===========================
@@ -115,7 +123,7 @@ def enqueue_output(pipe):
                     pass
 
     except Exception as e:
-        print(Fore.RED + f"ERROR: ログ監視失敗: {e}")
+        logger.error(f"ERROR: ログ監視失敗: {e}")
 
     finally:
         pipe.close()
@@ -219,31 +227,31 @@ def run_console_roast():
     ]
 
     os.system("cls" if os.name == "nt" else "clear")
-    print("\nWelcome to the Console Roast-a-Tron!")
+    logger.info("Welcome to the Console Roast-a-Tron!")
     time.sleep(0.5)
 
     roast = random.choice(roasts)
-    print(f"\n{Fore.MAGENTA}{roast['question']}")
-    print(f"{Fore.WHITE}(yes / y / はい / no / n / いいえ)")
+    logger.info(f"{roast['question']}")
+    logger.info("(yes / y / はい / no / n / いいえ)")
 
     try:
         response = input("yes or no? >> ").lower().strip()
     except (KeyboardInterrupt, EOFError):
-        print("\nRoastを中断します。")
+        logger.info("Roastを中断します。")
         return
 
     if response in ("yes", "y", "はい"):
-        print(f"\n{Fore.YELLOW}{roast['yes']}\n")
+        logger.info(f"{roast['yes']}")
     elif response in ("no", "n", "いいえ"):
-        print(f"\n{Fore.YELLOW}{roast['no']}\n")
+        logger.info(f"{roast['no']}")
     else:
-        print(f"\n{Fore.RED}Can't even answer a simple yes/no question? That's... not surprising.\n")
+        logger.error("Can't even answer a simple yes/no question? That's... not surprising.")
 
-    print(f"{Fore.WHITE}( next / n / 続ける / 続き / restart / rs / 再始 )")
+    logger.info("( next / n / 続ける / 続き / restart / rs / 再始 )")
     response = input("continue >> ").lower().strip()
     if response in ("next", "n", "続ける", "続き", "restart", "rs", "再始"):
         run_console_roast()
-        print("そんなに暇なんだね。")
+        logger.info("そんなに暇なんだね。")
         time.sleep(1)
     else:
         return
@@ -260,7 +268,7 @@ def get_command():
     except EOFError:
         cmd = os.environ.get("BOT_COMMAND", "exit")
 
-        print(f"\n入力なし → BOT_COMMAND 使用: {cmd}")
+        logger.info(f"入力なし → BOT_COMMAND 使用: {cmd}")
 
         return cmd.lower()
 
@@ -286,27 +294,27 @@ def start_bot():
     global bot_process
 
     if bot_process and bot_process.poll() is None:
-        print(Fore.YELLOW + "WARNING: Botは既に起動しています。")
+        logger.warning("WARNING: Botは既に起動しています。")
         return
 
     if not BOT_PATH.exists():
-        print(Fore.RED + f"NOTFOUND: {BOT_PATH}")
+        logger.error(f"NOTFOUND: {BOT_PATH}")
         return
 
     python_exe = get_python_executable()
 
     if not python_exe.exists():
-        print(Fore.RED + "ERROR: venv が見つかりません。")
+        logger.error("ERROR: venv が見つかりません。")
 
-        print(Fore.YELLOW + "作成コマンド:")
+        logger.info("作成コマンド:")
 
-        print("python -m venv venv")
+        logger.info("python -m venv venv")
 
         return
 
     delete_log_file()
 
-    print(Fore.GREEN + "INFO: Bot起動中...")
+    logger.info("INFO: Bot起動中...")
 
     try:
         bot_process = subprocess.Popen(
@@ -325,12 +333,12 @@ def start_bot():
         time.sleep(1)
 
         if bot_process.poll() is None:
-            print(Fore.GREEN + "SUCCESS: Bot起動成功")
+            logger.info("SUCCESS: Bot起動成功")
         else:
-            print(Fore.RED + "ERROR: Botが即終了しました。")
+            logger.error("ERROR: Botが即終了しました。")
 
     except Exception as e:
-        print(Fore.RED + f"ERROR: 起動失敗: {e}")
+        logger.error(f"ERROR: 起動失敗: {e}")
 
 
 # ===========================
@@ -341,11 +349,11 @@ def stop_bot():
     global bot_process
 
     if not bot_process or bot_process.poll() is not None:
-        print(Fore.YELLOW + "WARNING: Botは起動していません。")
+        logger.warning("WARNING: Botは起動していません。")
 
         return
 
-    print(Fore.RED + "INFO: Bot停止中...")
+    logger.info("INFO: Bot停止中...")
 
     try:
         # graceful shutdown
@@ -366,12 +374,12 @@ def stop_bot():
             bot_process.wait(timeout=5)
 
         except subprocess.TimeoutExpired:
-            print(Fore.YELLOW + "WARNING: 強制終了します。")
+            logger.warning("WARNING: 強制終了します。")
 
             bot_process.kill()
 
     except Exception as e:
-        print(Fore.RED + f"ERROR: 停止失敗: {e}")
+        logger.error(f"ERROR: 停止失敗: {e}")
 
     finally:
         bot_process = None
@@ -399,7 +407,7 @@ def send_command(cmd):
     global bot_process
 
     if not bot_process or bot_process.poll() is not None:
-        print(Fore.RED + "WARNING: Botが起動していません。")
+        logger.warning("WARNING: Botが起動していません。")
 
         return
 
@@ -409,7 +417,7 @@ def send_command(cmd):
             bot_process.stdin.flush()
 
     except Exception as e:
-        print(Fore.RED + f"ERROR: コマンド送信失敗: {e}")
+        logger.error(f"ERROR: コマンド送信失敗: {e}")
 
 
 # ===========================
@@ -417,7 +425,7 @@ def send_command(cmd):
 # ===========================
 def daily_restart(hour=0, minute=0):
 
-    print(f"INFO: 毎日 {hour:02d}:{minute:02d} 自動再起動監視開始")
+    logger.info(f"INFO: 毎日 {hour:02d}:{minute:02d} 自動再起動監視開始")
 
     last_restarted_date = None
 
@@ -428,7 +436,7 @@ def daily_restart(hour=0, minute=0):
             today = now.date()
 
             if last_restarted_date != today:
-                print(Fore.CYAN + f"\nINFO: {hour:02d}:{minute:02d} 自動再起動")
+                logger.info(f"INFO: {hour:02d}:{minute:02d} 自動再起動")
 
                 restart_bot()
 
@@ -444,81 +452,81 @@ def show_menu():
 
     os.system("cls" if os.name == "nt" else "clear")
 
-    bot_status = Fore.GREEN + "🟢 Running" if bot_process and bot_process.poll() is None else Fore.RED + "🔴 Stopped"
+    bot_status = "Running" if bot_process and bot_process.poll() is None else "Stopped"
 
-    lc_status = Fore.GREEN + "🟢 true" if bot_process and bot_process.poll() is None else Fore.RED + "🔴 false"
+    lc_status = "true" if bot_process and bot_process.poll() is None else "false"
 
-    print("▣" + "=" * 58 + "▣")
-    print(" " * 17 + "Bot Control Menu v2.0.0")
-    print("▣" + "=" * 58 + "▣")
+    logger.info("▣" + "=" * 58 + "▣")
+    logger.info(" " * 17 + "Bot Control Menu v2.0.0")
+    logger.info("▣" + "=" * 58 + "▣")
 
     if not lde_enabled:
-        print(f"Bot name: {bot_name}")
-        print("Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 ")
-        print(f"login user: {login_user}")
-        print(f"Bot Status: {bot_status}")
-        print(f"Log Stoper Status: {lc_status}")
-        print("Discord Bot by \n Takkun2355 \n Akikukeo \n ChatGPT \n ...and you :)")
+        logger.info(f"Bot name: {bot_name}")
+        logger.info("Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 ")
+        logger.info(f"login user: {login_user}")
+        logger.info(f"Bot Status: {bot_status}")
+        logger.info(f"Log Stoper Status: {lc_status}")
+        logger.info("Discord Bot by \n Takkun2355 \n Akikukeo \n ChatGPT \n ...and you :)")
 
-        print("-" * 58)
+        logger.info("-" * 58)
 
-        print("start    - 開始")
-        print("stop     - 停止")
-        print("restart  - 再起動")
-        print("gui      - GUIで表示")
-        print("logclear - ログクリア")
-        print("ls       - logの停止と再開の切り替え。")
-        print("lde      - メニューをlog下に移動させる")
-        print("roast    - Welcome to the Roast-a-Tron 9000!")
-        print("         - Let's see what we've got for you today...")
-        print("help     - ヘルプ")
-        print("exit     - 閉じる")
-        print("-" * 60)
+        logger.info("start    - 開始")
+        logger.info("stop     - 停止")
+        logger.info("restart  - 再起動")
+        logger.info("gui      - GUIで表示")
+        logger.info("logclear - ログクリア")
+        logger.info("ls       - logの停止と再開の切り替え。")
+        logger.info("lde      - メニューをlog下に移動させる")
+        logger.info("roast    - Welcome to the Roast-a-Tron 9000!")
+        logger.info("         - Let's see what we've got for you today...")
+        logger.info("help     - ヘルプ")
+        logger.info("exit     - 閉じる")
+        logger.info("-" * 60)
         if ls_enabled:
-            print(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
+            logger.info(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
 
         elif not ls_enabled:
-            print(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
-            print("-" * 60)
+            logger.info(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
+            logger.info("-" * 60)
 
             for line in log_lines[-MAX_LOG_LINES:]:
-                print(line)
+                logger.info(line)
 
-        print("-" * 60)
+        logger.info("-" * 60)
 
     if lde_enabled:
         if ls_enabled:
-            print(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
+            logger.info(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
 
         elif not ls_enabled:
             for line in log_lines[-MAX_LOG_LINES:]:
-                print(line)
-            print("-" * 60)
-            print(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
+                logger.info(line)
+            logger.info("-" * 60)
+            logger.info(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
 
-        print("-" * 60)
+        logger.info("-" * 60)
 
-        print(f"Bot name: {bot_name}")
-        print("Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 ")
-        print(f"login user: {login_user}")
-        print(f"Bot Status: {bot_status}")
-        print(f"Log Stoper Status: {lc_status}")
-        print("Discord Bot by \n Takkun2355 \n Akikukeo \n ChatGPT \n ...and you :)")
+        logger.info(f"Bot name: {bot_name}")
+        logger.info("Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 ")
+        logger.info(f"login user: {login_user}")
+        logger.info(f"Bot Status: {bot_status}")
+        logger.info(f"Log Stoper Status: {lc_status}")
+        logger.info("Discord Bot by \n Takkun2355 \n Akikukeo \n ChatGPT \n ...and you :)")
 
-        print("-" * 60)
+        logger.info("-" * 60)
 
-        print("start    - 開始")
-        print("stop     - 停止")
-        print("restart  - 再起動")
-        print("gui      - GUIで表示")
-        print("logclear - ログクリア")
-        print("ls       - logの停止と再開の切り替え。")
-        print("lde      - メニューをlog下に移動させる")
-        print("roast    - Welcome to the Roast-a-Tron 9000!")
-        print("         - Let's see what we've got for you today...")
-        print("help     - ヘルプ")
-        print("exit     - 閉じる")
-        print("-" * 60)
+        logger.info("start    - 開始")
+        logger.info("stop     - 停止")
+        logger.info("restart  - 再起動")
+        logger.info("gui      - GUIで表示")
+        logger.info("logclear - ログクリア")
+        logger.info("ls       - logの停止と再開の切り替え。")
+        logger.info("lde      - メニューをlog下に移動させる")
+        logger.info("roast    - Welcome to the Roast-a-Tron 9000!")
+        logger.info("         - Let's see what we've got for you today...")
+        logger.info("help     - ヘルプ")
+        logger.info("exit     - 閉じる")
+        logger.info("-" * 60)
 
 
 # ===========================
@@ -536,7 +544,7 @@ def hide_console():
             ctypes.windll.user32.ShowWindow(hwnd, 0)
 
     except Exception as e:
-        print(f"Console hide failed: {e}")
+        logger.error(f"Console hide failed: {e}")
 
 
 def show_console():
@@ -551,7 +559,7 @@ def show_console():
             ctypes.windll.user32.ShowWindow(hwnd, 5)
 
     except Exception as e:
-        print(f"Console show failed: {e}")
+        logger.error(f"Console show failed: {e}")
 
 
 # ===========================
@@ -628,7 +636,7 @@ def main():
                 if len(parts) == 1:
                     send_command("reload all")
                     time.sleep(0.5)
-                    print(Fore.WHITE + f"All cogs reloaded successfully.\n {target}")
+                    logger.info("All cogs reloaded successfully.")
                 else:
                     target = parts[1].strip()
 
@@ -636,17 +644,17 @@ def main():
                     if target.lower() == "all":
                         send_command("reload all")
                         time.sleep(0.5)
-                        print(Fore.WHITE + f"All cogs reloaded successfully.\n {target}")
+                        logger.info(f"All cogs reloaded successfully. {target}")
 
                     # ^^reload cog1
                     # ^^reload cog1,cog2,cog3
                     else:
                         send_command(f"reload {target}")
                         time.sleep(0.5)
-                        print(Fore.WHITE + f"All cogs reloaded successfully.\n {target}")
+                        logger.info(f"All cogs reloaded successfully. {target}")
 
             else:
-                print(Fore.RED + "WARNING: Bot未起動")
+                logger.warning("WARNING: Bot未起動")
 
                 time.sleep(0.5)
 
@@ -683,12 +691,12 @@ def main():
             stop_flag = True
 
         elif cmd == "":
-            print(Fore.YELLOW + "SORRY: コマンドを入力してください。")
+            logger.warning("SORRY: コマンドを入力してください。")
 
             time.sleep(0.5)
 
         else:
-            print(Fore.RED + "NOTFOUND: 不明コマンド")
+            logger.error("NOTFOUND: 不明コマンド")
 
             time.sleep(0.5)
 

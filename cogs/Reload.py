@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import os
 import pathlib
 import traceback
@@ -79,13 +82,13 @@ class Reload(commands.Cog):
         results = []
 
         if parsed == "all":
-            print("[RELOAD-LOG] All cogs reloaded.")
+            logger.info("[RELOAD-LOG] All cogs reloaded.")
         else:
             targets = [cog.replace("cogs.", "") for cog in cogs]
 
-            print(f"[RELOAD-LOG] {', '.join(targets)} cog reload.")
+            logger.info(f"[RELOAD-LOG] {', '.join(targets)} cog reload.")
 
-        print("[RELOAD-LOG] --- reload cogs ---")
+        logger.info("[RELOAD-LOG] --- reload cogs ---")
 
         for cog in cogs:
             cog_name = cog.replace("cogs.", "")
@@ -93,23 +96,23 @@ class Reload(commands.Cog):
             try:
                 if cog in self.bot.extensions:
                     await self.bot.reload_extension(cog)
-                    results.append(f"✅ {cog}")
-                    print(f"[RELOAD-LOG] - {cog_name}.py reload Success")
+                    results.append(f" {cog}")
+                    logger.info(f"[RELOAD-LOG] - {cog_name}.py reload Success")
 
                 else:
                     await self.bot.load_extension(cog)
                     results.append(f"📦 {cog} (新規ロード)")
-                    print(f"[RELOAD-LOG] - {cog_name}.py load Success")
+                    logger.info(f"[RELOAD-LOG] - {cog_name}.py load Success")
 
             except commands.ExtensionNotFound:
-                results.append(f"❌ {cog} (見つかりません)")
-                print(f"[RELOAD-LOG] - {cog_name}.py reload Failure")
+                results.append(f" {cog} (見つかりません)")
+                logger.info(f"[RELOAD-LOG] - {cog_name}.py reload Failure")
 
             except Exception as e:
-                results.append(f"❌ {cog}\n{e}")
-                print(f"[RELOAD-LOG] - {cog_name}.py reload Failure")
+                results.append(f" {cog}\n{e}")
+                logger.info(f"[RELOAD-LOG] - {cog_name}.py reload Failure")
 
-        print("[RELOAD-LOG] --------------------")
+        logger.info("[RELOAD-LOG] --------------------")
 
         await self._send_results(ctx, results)
 
@@ -139,13 +142,13 @@ class Reload(commands.Cog):
                 results.append(f"📦 {cog}")
 
             except commands.ExtensionAlreadyLoaded:
-                results.append(f"⚠️ {cog} (既にロード済み)")
+                results.append(f" {cog} (既にロード済み)")
 
             except commands.ExtensionNotFound:
-                results.append(f"❌ {cog} (見つかりません)")
+                results.append(f" {cog} (見つかりません)")
 
             except Exception as e:
-                results.append(f"❌ {cog}\n{e}")
+                results.append(f" {cog}\n{e}")
 
         await self._send_results(ctx, results)
 
@@ -171,18 +174,18 @@ class Reload(commands.Cog):
 
         for cog in cogs:
             if cog.lower() == "cogs.reload":
-                results.append("⚠️ cogs.reload は保護されています")
+                results.append(" cogs.reload は保護されています")
                 continue
 
             try:
                 await self.bot.unload_extension(cog)
-                results.append(f"🗑️ {cog}")
+                results.append(f"🗑 {cog}")
 
             except commands.ExtensionNotLoaded:
-                results.append(f"⚠️ {cog} (未ロード)")
+                results.append(f" {cog} (未ロード)")
 
             except Exception as e:
-                results.append(f"❌ {cog}\n{e}")
+                results.append(f" {cog}\n{e}")
 
         await self._send_results(ctx, results)
 
@@ -203,7 +206,7 @@ class Reload(commands.Cog):
         lines = ["📋 Cog一覧"]
 
         if loaded_cogs:
-            lines.append("\n✅ ロード済み")
+            lines.append("\n ロード済み")
             lines.extend(f"・{cog}" for cog in sorted(loaded_cogs))
 
         if unloaded_cogs:
@@ -230,7 +233,7 @@ class Reload(commands.Cog):
         if len(tb) > 1500:
             tb = tb[:1500] + "\n...(省略)"
 
-        await ctx.send(f"❌ エラー発生\n```py\n{tb}\n```")
+        await ctx.send(f" エラー発生\n```py\n{tb}\n```")
 
 
 async def setup(bot):
