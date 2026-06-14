@@ -2,11 +2,26 @@ import sys
 import os
 import asyncio
 import traceback
+import logging
 import discord
 import time
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 import bot_markov as mu
 from discord.ext import commands
+
+# =========================================
+# 基本ログ設定 (GEMINI.md ガイドライン準拠)
+# =========================================
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+logger = logging.getLogger(__name__)
+
+# .env ファイルの読み込み
+load_dotenv()
 
 # =========================================
 # Discord Bot の Intents 設定
@@ -61,17 +76,18 @@ class MockContext:
         if self.channel:
             await self.channel.send(*args, **kwargs)
         else:
-            print(*args)
+            # loggerを使用
+            logger.info("MockContext send: %s", args)
 
 async def handle_stdin(bot_instance):
     """Reads commands from stdin and executes them."""
     loop = asyncio.get_running_loop()
     await bot_instance.wait_until_ready()
-    
+
     channel_id = 1416694818339291147
     channel = bot_instance.get_channel(channel_id)
     if not channel:
-        print(f"Fatal: Could not find channel {channel_id} for stdin command output.")
+        logger.error("Fatal: Could not find channel %s for stdin command output.", channel_id)
         return
 
     mock_ctx = MockContext(channel, bot_instance)
@@ -82,16 +98,16 @@ async def handle_stdin(bot_instance):
 
         if not command_name:
             if line == '':
-                print("stdin closed. Exiting stdin handler.")
+                logger.info("stdin closed. Exiting stdin handler.")
                 return
             continue
 
         command = bot_instance.get_command(command_name)
         if command:
-            print(f"Executing command from stdin: {command_name}")
+            logger.info("Executing command from stdin: %s", command_name)
             asyncio.create_task(command.callback(mock_ctx))
         else:
-            print(f"Unknown command from stdin: {command_name}")
+            logger.warning("Unknown command from stdin: %s", command_name)
 
 async def daily_midnight_task(bot_instance):
     """0時に自動で実行される処理"""
@@ -110,8 +126,8 @@ async def daily_midnight_task(bot_instance):
             if channel:
                 await channel.send("🌙 0時のサイキ処理を実行しました！")
         except Exception as e:
-            print(f"0時処理でエラー: {e}")
-            
+            logger.exception("0時処理でエラー: %s", e)
+
 # =========================================
 # Cog をロードして起動
 # =========================================
@@ -166,22 +182,22 @@ async def main():
             "cogs.RiddleCog",
             "cogs.MagicSpellBot",
             "cogs.SpamOwnerCog",
-            "cogs.random_name_auto",
-            "cogs.PinManeger",
+            "cogs.RandomNameAuto",
+            "cogs.PinManager",
             "cogs.IconCog"
         ]
         for cog in cogs:
             try:
                 await bot.load_extension(cog)
-                print(f"Loaded cog: {cog}")
+                logger.info("Loaded cog: %s", cog)
             except Exception as e:
                 FAILED_COGS.append((cog, "".join(traceback.format_exception(type(e), e, e.__traceback__))))
-                print(f"Failed to load cog {cog}")
+                logger.error("Failed to load cog %s", cog)
 
-        # Docker 環境変数からトークン取得
+        # .env または 環境変数からトークン取得
         TOKEN = os.getenv("DISCORD_BOT_TOKEN")
         if not TOKEN:
-            print("❌ Botトークンが設定されていません！")
+            logger.error("❌ Botトークンが設定されていません！.env ファイルまたは環境変数を確認してください。")
             stdin_task.cancel()
             return
 
@@ -193,7 +209,7 @@ async def main():
 # =========================================
 @bot.event
 async def on_ready():
-    print(f"✅ Logged in as {bot.user} (ID: {bot.user.id})")
+    logger.info("✅ Logged in as %s (ID: %s)", bot.user, bot.user.id)
 
     if FAILED_COGS:
         notify_channels = [
