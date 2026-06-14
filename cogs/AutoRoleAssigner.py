@@ -1,5 +1,9 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import discord
 from discord.ext import commands
+
 
 class AutoRoleAssigner(commands.Cog):
     def __init__(self, bot):
@@ -8,13 +12,13 @@ class AutoRoleAssigner(commands.Cog):
         self.target_users = {
             885841692832464907: "メンバー",
             968755981326639104: "管理者",
-            1295371078704824351: "メンバー"
+            1295371078704824351: "メンバー",
         }
 
     @commands.Cog.listener()
     async def on_ready(self):
         """Bot起動時に対象ユーザーへロールを自動付与"""
-        print("🔧 AutoRoleAssigner 起動チェック開始")
+        logger.info(" AutoRoleAssigner 起動チェック開始")
         for guild in self.bot.guilds:
             for user_id, role_name in self.target_users.items():
                 member = guild.get_member(user_id)
@@ -23,19 +27,19 @@ class AutoRoleAssigner(commands.Cog):
 
                 role = discord.utils.get(guild.roles, name=role_name)
                 if not role:
-                    print(f"⚠️ ロール '{role_name}' が {guild.name} に見つかりません。")
+                    logger.info(f" ロール '{role_name}' が {guild.name} に見つかりません。")
                     continue
 
                 if role not in member.roles:
                     try:
                         await member.add_roles(role)
-                        print(f"✅ {member.name} にロール '{role_name}' を付与しました。")
+                        logger.info(f" {member.name} にロール '{role_name}' を付与しました。")
                     except discord.Forbidden:
-                        print(f"⚠️ 権限不足で {member.name} にロールを付与できません。")
+                        logger.info(f" 権限不足で {member.name} にロールを付与できません。")
                     except Exception as e:
-                        print(f"⚠️ エラー: {e}")
+                        logger.info(f" エラー: {e}")
                 else:
-                    print(f"ℹ️ {member.name} はすでに '{role_name}' を持っています。")
+                    logger.info(f" {member.name} はすでに '{role_name}' を持っています。")
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -45,7 +49,8 @@ class AutoRoleAssigner(commands.Cog):
             role = discord.utils.get(member.guild.roles, name=role_name)
             if role and role not in member.roles:
                 await member.add_roles(role)
-                print(f"✨ {member.name} が参加時に '{role_name}' を付与しました。")
+                logger.info(f" {member.name} が参加時に '{role_name}' を付与しました。")
+
 
 async def setup(bot):
     await bot.add_cog(AutoRoleAssigner(bot))

@@ -1,29 +1,36 @@
-import discord
-from discord.ext import commands, tasks
-import random
-import json
-import os
-import asyncio
+import logging
 
-CUSTOM_WORD_FILE = 'custom_words.txt'
-ROOM_FILE = 'rooms.json'
-RANK_FILE = 'rankings.json'
+logger = logging.getLogger(__name__)
+import asyncio
+import json
+import pathlib
+import random
+
+from discord.ext import commands
+
+CUSTOM_WORD_FILE = "custom_words.txt"
+ROOM_FILE = "rooms.json"
+RANK_FILE = "rankings.json"
+
 
 def load_words():
-    if not os.path.exists(CUSTOM_WORD_FILE):
+    if not pathlib.Path(CUSTOM_WORD_FILE).exists():
         raise FileNotFoundError(f"{CUSTOM_WORD_FILE} が見つかりません。作成してください。")
-    with open(CUSTOM_WORD_FILE, 'r', encoding='utf-8') as f:
+    with pathlib.Path(CUSTOM_WORD_FILE).open(encoding="utf-8") as f:
         return [line.strip() for line in f if line.strip()]
 
+
 def save_json(path, data):
-    with open(path, 'w', encoding='utf-8') as f:
+    with pathlib.Path(path).open("w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+
 def load_json(path):
-    if not os.path.exists(path):
+    if not pathlib.Path(path).exists():
         return {}
-    with open(path, 'r', encoding='utf-8') as f:
+    with pathlib.Path(path).open(encoding="utf-8") as f:
         return json.load(f)
+
 
 class Shiritori(commands.Cog):
     def __init__(self, bot):
@@ -37,11 +44,7 @@ class Shiritori(commands.Cog):
         if room_name in self.rooms:
             await ctx.send("その部屋名は既に存在します。")
             return
-        self.rooms[room_name] = {
-            "password": password,
-            "players": [],
-            "used_words": []
-        }
+        self.rooms[room_name] = {"password": password, "players": [], "used_words": []}
         save_json(ROOM_FILE, self.rooms)
         await ctx.send(f"部屋 {room_name} を作成しました。パスワードを控えておいてください。")
 
@@ -109,12 +112,14 @@ class Shiritori(commands.Cog):
                 await asyncio.sleep(0.5)
                 await ctx.send(f"Bot: {word}")
             else:
+
                 def check(m):
                     return m.author.name == current_player and m.channel == ctx.channel
+
                 try:
                     msg = await self.bot.wait_for("message", check=check, timeout=60)
                     word = msg.content.strip()
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     await ctx.send(f"{current_player} が時間切れで負け！")
                     self.update_rank(room_name, current_player, False)
                     break
@@ -155,6 +160,7 @@ class Shiritori(commands.Cog):
         for i, (player, w, l, rate) in enumerate(ranking_list[:5], 1):
             msg += f"{i}. {player} : {w}勝{l}敗 (勝率 {rate:.2f})\n"
         await ctx.send(msg)
+
 
 # async setup に統一
 async def setup(bot):

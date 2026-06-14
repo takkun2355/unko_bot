@@ -1,12 +1,18 @@
+import logging
+
+logger = logging.getLogger(__name__)
+import random
+
 import discord
 from discord.ext import commands
-import random
 
 SUITS = ["♠", "♥", "♦", "♣"]
 RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 
+
 def draw_card():
     return f"{random.choice(SUITS)}{random.choice(RANKS)}"
+
 
 def card_value(card):
     rank = card[1:]  # ♠A → A
@@ -15,6 +21,7 @@ def card_value(card):
     if rank == "A":
         return 11
     return int(rank)
+
 
 def hand_value(cards):
     """手札の合計値計算（Aは11か1で最適化）"""
@@ -25,10 +32,12 @@ def hand_value(cards):
         aces -= 1
     return total
 
+
 def get_game_type(number: int = None):
     if number is None:
         return 21
     return int(f"{number}1")
+
 
 class BlackJackFull(commands.Cog):
     """本格ブラックジャックCog"""
@@ -54,18 +63,14 @@ class BlackJackFull(commands.Cog):
 
         # DMで手札と合計表示
         try:
-            await user.send(
-                f"🃏 ブラックジャック [{game_type}] 現在の手札: {', '.join(hand)}\n"
-                f"合計値: {total}"
-            )
+            await user.send(f"🃏 ブラックジャック [{game_type}] 現在の手札: {', '.join(hand)}\n合計値: {total}")
         except discord.Forbidden:
-            await ctx.send(f"⚠️ {user.mention} にDMを送れません。DMを許可してください。")
+            await ctx.send(f" {user.mention} にDMを送れません。DMを許可してください。")
             return
 
         # サーバーには進行状況だけ
         await ctx.send(
-            f"🎲 {user.mention} さんがカードを引きました。"
-            f" 現在 {len(hand)} 枚目。種類: {game_type} 合計値非表示"
+            f" {user.mention} さんがカードを引きました。 現在 {len(hand)} 枚目。種類: {game_type} 合計値非表示"
         )
 
         # バースト判定
@@ -80,6 +85,7 @@ class BlackJackFull(commands.Cog):
         if user.id in self.games:
             del self.games[user.id]
         await ctx.send(f"{user.mention} さんのブラックジャックゲームをリセットしました。")
+
 
 # Cog登録
 async def setup(bot):

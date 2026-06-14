@@ -1,23 +1,34 @@
 # cogs/music_full.py
-import discord
-from discord.ext import commands, tasks
-import yt_dlp as youtube_dl
+import logging
+
+logger = logging.getLogger(__name__)
 import asyncio
-import math
 import os
+import pathlib
+
+import discord
+from discord.ext import commands
+
+try:
+    import yt_dlp as youtube_dl
+
+    YTDLP_AVAILABLE = True
+except ImportError:
+    YTDLP_AVAILABLE = False
 
 ytdl_format_options = {
-    'format': 'bestaudio/best',
-    'quiet': True,
-    'noplaylist': True,
+    "format": "bestaudio/best",
+    "quiet": True,
+    "noplaylist": True,
 }
+
+# ffmpegはシステムPATHから検索。環境変数 FFMPEG_PATH で上書き可能
+_ffmpeg_path = os.environ.get("FFMPEG_PATH", "ffmpeg")
 
 ffmpeg_options = {
-    'options': '-vn',
-    'executable': r"C:\Tools\ffmpeg-8.0-full_build\bin\ffmpeg.exe"
+    "options": "-vn",
+    "executable": _ffmpeg_path,
 }
-
-ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 REACTION_EMOJIS = {
     "⏯": "pause_resume",
@@ -26,8 +37,9 @@ REACTION_EMOJIS = {
     "📜": "queue",
     "⏩": "forward_10",
     "⏪": "backward_10",
-    "➖": "remove_song"
+    "➖": "remove_song",
 }
+
 
 class music_full(commands.Cog):
     def __init__(self, bot):
@@ -36,6 +48,11 @@ class music_full(commands.Cog):
         self.now_playing_messages = {}  # サーバーID -> メッセージ
         self.control_messages = {}  # サーバーID -> メッセージ
         self.current_time = {}  # サーバーID -> 秒
+        # ytdlpはインスタンス生成時に初期化（モジュールレベルを避ける）
+        if YTDLP_AVAILABLE:
+            self.ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+        else:
+            self.ytdl = None
 
     # ------------------------
     # 再生処理
@@ -44,18 +61,17 @@ class music_full(commands.Cog):
         server_id = ctx.guild.id
         queue = self.queues.get(server_id)
         if not queue or len(queue) == 0:
-            # キュー空の場合
             if self.now_playing_messages.get(server_id):
                 try:
                     await self.now_playing_messages[server_id].delete()
-                except:
+                except Exception:
                     pass
                 self.now_playing_messages.pop(server_id, None)
-            await ctx.send("✅ キューが空です。")
+            await ctx.send(" キューが空です。")
             if self.control_messages.get(server_id):
                 try:
                     await self.control_messages[server_id].delete()
-                except:
+                except Exception:
                     pass
                 self.control_messages.pop(server_id, None)
             return
@@ -63,41 +79,41 @@ class music_full(commands.Cog):
         url_or_file = queue.pop(0)
         self.current_time[server_id] = 0
 
-        # YouTubeかローカルファイルか判定
-        if os.path.exists(url_or_file):
+        if pathlib.Path(url_or_file).exists():
             source = discord.FFmpegOpusAudio(url_or_file, **ffmpeg_options)
             title = os.path.basename(url_or_file)
-            thumbnail = None  # ローカルならサムネなし
-            duration = 0  # ローカルなら不明（必要なら手動で指定可能）
+            thumbnail = None
+            duration = 0
         else:
-            info = ytdl.extract_info(url_or_file, download=False)
-            source = await discord.FFmpegOpusAudio.from_probe(info['url'], **ffmpeg_options)
-            title = info.get('title', 'Unknown')
-            thumbnail = info.get('thumbnail')
-            duration = info.get('duration', 0)
+            if not self.ytdl:
+                await ctx.send(" yt-dlpがインストールされていません。`pip install yt-dlp` を実行してください。")
+                return
+            info = self.ytdl.extract_info(url_or_file, download=False)
+            source = await discord.FFmpegOpusAudio.from_probe(info["url"], **ffmpeg_options)
+            title = info.get("title", "Unknown")
+            thumbnail = info.get("thumbnail")
+            duration = info.get("duration", 0)
 
         ctx.voice_client.play(
             source,
-            after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(ctx), self.bot.loop)
+            after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(ctx), self.bot.loop),
         )
 
-        # ------------------------
-        # Now Playing Embed
-        # ------------------------
         bars_total = 5
-        bar_str = "▰" + "▱"*(bars_total-1)  # 再生直後1回だけ
+        bar_str = "▰" + "▱" * (bars_total - 1)
 
-        embed = discord.Embed(title="🎶 Now Playing", description=title, color=0x00ff00)
+        embed = discord.Embed(title="🎶 Now Playing", description=title, color=0x00FF00)
         if thumbnail:
             embed.set_thumbnail(url=thumbnail)
         embed.add_field(name="再生進行", value=bar_str, inline=False)
         if duration:
-            embed.add_field(name="再生時間", value=f"0:{duration//60:02d}", inline=False)
+            embed.add_field(name="再生時間", value=f"0:{duration // 60:02d}", inline=False)
+
         np_msg = self.now_playing_messages.get(server_id)
         if np_msg:
             try:
                 await np_msg.edit(embed=embed)
-            except:
+            except Exception:
                 self.now_playing_messages[server_id] = await ctx.send(embed=embed)
         else:
             self.now_playing_messages[server_id] = await ctx.send(embed=embed)
@@ -108,7 +124,7 @@ class music_full(commands.Cog):
     # リアクション追加
     # ------------------------
     async def add_control_reactions(self, message, guild_id):
-        for emoji in REACTION_EMOJIS.keys():
+        for emoji in REACTION_EMOJIS:
             await message.add_reaction(emoji)
         self.control_messages[guild_id] = message
 
@@ -128,10 +144,10 @@ class music_full(commands.Cog):
         queue = self.queues.get(guild_id, [])
 
         if action == "pause_resume":
-            if ctx.voice_client.is_playing():
+            if ctx.voice_client and ctx.voice_client.is_playing():
                 ctx.voice_client.pause()
                 await reaction.message.channel.send("⏸ 一時停止")
-            elif ctx.voice_client.is_paused():
+            elif ctx.voice_client and ctx.voice_client.is_paused():
                 ctx.voice_client.resume()
                 await reaction.message.channel.send("▶ 再開")
 
@@ -148,20 +164,20 @@ class music_full(commands.Cog):
                 if self.now_playing_messages.get(guild_id):
                     try:
                         await self.now_playing_messages[guild_id].delete()
-                    except:
+                    except Exception:
                         pass
                     self.now_playing_messages.pop(guild_id, None)
 
         elif action == "queue":
             if not queue:
-                await reaction.message.channel.send("❌ キューは空です")
+                await reaction.message.channel.send(" キューは空です")
             else:
-                embed = discord.Embed(title="🎵 キュー一覧", color=0x00ff00)
+                embed = discord.Embed(title="🎵 キュー一覧", color=0x00FF00)
                 for i, url in enumerate(queue, start=1):
                     try:
-                        info = ytdl.extract_info(url, download=False)
+                        info = self.ytdl.extract_info(url, download=False)
                         embed.add_field(name=f"{i}. {info['title']}", value=url, inline=False)
-                    except:
+                    except Exception:
                         embed.add_field(name=f"{i}. (取得失敗)", value=url, inline=False)
                 await reaction.message.channel.send(embed=embed)
 
@@ -176,7 +192,7 @@ class music_full(commands.Cog):
                 removed = queue.pop(0)
                 await reaction.message.channel.send(f"➖ キューから削除: {removed}")
             else:
-                await reaction.message.channel.send("❌ キューは空です")
+                await reaction.message.channel.send(" キューは空です")
 
         await reaction.remove(user)
 
@@ -187,9 +203,9 @@ class music_full(commands.Cog):
     async def join(self, ctx):
         if ctx.author.voice:
             await ctx.author.voice.channel.connect()
-            await ctx.send("✅ VCに参加しました")
+            await ctx.send(" VCに参加しました")
         else:
-            await ctx.send("❌ VCに入ってから呼んでね")
+            await ctx.send(" VCに入ってから呼んでね")
 
     @commands.command(name="leave")
     async def leave(self, ctx):
@@ -200,17 +216,17 @@ class music_full(commands.Cog):
             if self.now_playing_messages.get(ctx.guild.id):
                 try:
                     await self.now_playing_messages[ctx.guild.id].delete()
-                except:
+                except Exception:
                     pass
                 self.now_playing_messages.pop(ctx.guild.id, None)
             if self.control_messages.get(ctx.guild.id):
                 try:
                     await self.control_messages[ctx.guild.id].delete()
-                except:
+                except Exception:
                     pass
                 self.control_messages.pop(ctx.guild.id, None)
         else:
-            await ctx.send("❌ VCに入っていません")
+            await ctx.send(" VCに入っていません")
 
     @commands.command(name="play")
     async def play(self, ctx, *, url_or_file):
@@ -218,7 +234,7 @@ class music_full(commands.Cog):
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
             else:
-                await ctx.send("❌ VCに入ってから呼んでね")
+                await ctx.send(" VCに入ってから呼んでね")
                 return
         self.queues.setdefault(ctx.guild.id, []).append(url_or_file)
         if not ctx.voice_client.is_playing() and not ctx.voice_client.is_paused():
@@ -230,16 +246,17 @@ class music_full(commands.Cog):
     async def queue_cmd(self, ctx):
         queue = self.queues.get(ctx.guild.id, [])
         if not queue:
-            await ctx.send("❌ キューは空です")
+            await ctx.send(" キューは空です")
         else:
-            embed = discord.Embed(title="🎵 キュー一覧", color=0x00ff00)
+            embed = discord.Embed(title="🎵 キュー一覧", color=0x00FF00)
             for i, url in enumerate(queue, start=1):
                 try:
-                    info = ytdl.extract_info(url, download=False)
+                    info = self.ytdl.extract_info(url, download=False)
                     embed.add_field(name=f"{i}. {info['title']}", value=url, inline=False)
-                except:
+                except Exception:
                     embed.add_field(name=f"{i}. (取得失敗)", value=url, inline=False)
             await ctx.send(embed=embed)
+
 
 async def setup(bot):
     await bot.add_cog(music_full(bot))

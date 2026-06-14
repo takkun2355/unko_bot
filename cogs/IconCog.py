@@ -1,22 +1,23 @@
-"""
-Discord.py Cog: /icon, /servericon および !icon, !servericon の両方を提供します。
+"""Discord.py Cog: /icon, /servericon および ^^icon, ^^servericon の両方を提供します。
 使い方:
   - cogs フォルダに置いて bot 側で `bot.load_extension('cogs.icon_cog')` または
     `await bot.load_extension('cogs.icon_cog')` でロードしてください。
 
 ファイル名例: cogs/icon_cog.py
 """
-from __future__ import annotations
 
+from __future__ import logging
+
+logger = logging.getLogger(__name__)
+
+import aiohttp
 import discord
 from discord import app_commands
 from discord.ext import commands
-from typing import Optional
-import aiohttp
 
 # --- 設定 ---
 # テスト用ギルドID。グローバルで登録したい場合は None にする。
-GUILD_ID: Optional[int] = None
+GUILD_ID: int | None = None
 
 
 def make_hd_url(asset_url: str, size: int = 1024) -> str:
@@ -37,19 +38,23 @@ class IconCog(commands.Cog):
     #       通常コマンド版
     # =============================
     @commands.command(name="icon", help="指定したユーザーのアイコンを表示します（未指定で実行者）")
-    async def icon(self, ctx: commands.Context, member: Optional[discord.Member] = None):
+    async def icon(self, ctx: commands.Context, member: discord.Member | None = None):
         member = member or ctx.author
         avatar_url = member.display_avatar.url
         avatar_url_hd = make_hd_url(avatar_url, size=1024)
 
-        embed = discord.Embed(title=f"{member}", description=f"ID: {member.id}", color=discord.Color.blurple())
+        embed = discord.Embed(
+            title=f"{member}",
+            description=f"ID: {member.id}",
+            color=discord.Color.blurple(),
+        )
         embed.set_image(url=avatar_url_hd)
         embed.set_footer(text="サイズ=1024 を指定しています。アニメアイコンはGIFで返ります。")
 
         await ctx.send(embed=embed)
 
     @commands.command(name="servericon", help="サーバーのアイコンを表示します（URLまたはID対応）")
-    async def servericon(self, ctx: commands.Context, target: Optional[str] = None):
+    async def servericon(self, ctx: commands.Context, target: str | None = None):
         if not target:
             guild = ctx.guild
             if not guild or not guild.icon:
@@ -82,8 +87,12 @@ class IconCog(commands.Cog):
                     data = await resp.json()
                     guild_data = data.get("guild")
                     if guild_data and guild_data.get("icon"):
-                        guild_icon = f"https://cdn.discordapp.com/icons/{guild_data['id']}/{guild_data['icon']}.png?size=1024"
-                        embed = discord.Embed(title=f"{guild_data['name']} のサーバーアイコン").set_image(url=guild_icon)
+                        guild_icon = (
+                            f"https://cdn.discordapp.com/icons/{guild_data['id']}/{guild_data['icon']}.png?size=1024"
+                        )
+                        embed = discord.Embed(title=f"{guild_data['name']} のサーバーアイコン").set_image(
+                            url=guild_icon
+                        )
                         await ctx.send(embed=embed)
                     else:
                         await ctx.send("このサーバーにはアイコンが設定されていません。")
@@ -94,23 +103,35 @@ class IconCog(commands.Cog):
     # =============================
     #       Slashコマンド版
     # =============================
-    @app_commands.command(name="icon", description="指定したユーザーのアイコンを表示します（未指定で実行者）")
+    @app_commands.command(
+        name="icon",
+        description="指定したユーザーのアイコンを表示します（未指定で実行者）",
+    )
     @app_commands.describe(member="アイコンを見たいユーザー（省略可）")
-    async def slash_icon(self, interaction: discord.Interaction, member: Optional[discord.Member] = None):
+    async def slash_icon(self, interaction: discord.Interaction, member: discord.Member | None = None):
         member = member or interaction.user
         avatar_url_hd = make_hd_url(member.display_avatar.url)
-        embed = discord.Embed(title=f"{member}", description=f"ID: {member.id}", color=discord.Color.blurple())
+        embed = discord.Embed(
+            title=f"{member}",
+            description=f"ID: {member.id}",
+            color=discord.Color.blurple(),
+        )
         embed.set_image(url=avatar_url_hd)
         embed.set_footer(text="サイズ=1024 を指定しています。アニメアイコンはGIFで返ります。")
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="servericon", description="サーバーのアイコンを表示します（URLまたはID対応）")
+    @app_commands.command(
+        name="servericon",
+        description="サーバーのアイコンを表示します（URLまたはID対応）",
+    )
     @app_commands.describe(target="省略で現在のサーバー、または discord.gg/リンク またはサーバーID")
-    async def slash_servericon(self, interaction: discord.Interaction, target: Optional[str] = None):
+    async def slash_servericon(self, interaction: discord.Interaction, target: str | None = None):
         if not target:
             guild = interaction.guild
             if not guild or not guild.icon:
-                await interaction.response.send_message("このサーバーにはアイコンが設定されていません。", ephemeral=True)
+                await interaction.response.send_message(
+                    "このサーバーにはアイコンが設定されていません。", ephemeral=True
+                )
                 return
             icon_url_hd = make_hd_url(guild.icon.url)
             embed = discord.Embed(title=f"{guild.name} のサーバーアイコン").set_image(url=icon_url_hd)
@@ -125,7 +146,10 @@ class IconCog(commands.Cog):
                 embed = discord.Embed(title=f"{guild.name} のサーバーアイコン").set_image(url=icon_url_hd)
                 await interaction.response.send_message(embed=embed)
             else:
-                await interaction.response.send_message("サーバー情報を取得できないか、アイコンが設定されていません。", ephemeral=True)
+                await interaction.response.send_message(
+                    "サーバー情報を取得できないか、アイコンが設定されていません。",
+                    ephemeral=True,
+                )
             return
 
         # --- 招待リンク指定 ---
@@ -134,16 +158,25 @@ class IconCog(commands.Cog):
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"https://discord.com/api/v10/invites/{invite_code}?with_counts=false") as resp:
                     if resp.status != 200:
-                        await interaction.response.send_message("招待リンクが無効か、情報を取得できません。", ephemeral=True)
+                        await interaction.response.send_message(
+                            "招待リンクが無効か、情報を取得できません。", ephemeral=True
+                        )
                         return
                     data = await resp.json()
                     guild_data = data.get("guild")
                     if guild_data and guild_data.get("icon"):
-                        guild_icon = f"https://cdn.discordapp.com/icons/{guild_data['id']}/{guild_data['icon']}.png?size=1024"
-                        embed = discord.Embed(title=f"{guild_data['name']} のサーバーアイコン").set_image(url=guild_icon)
+                        guild_icon = (
+                            f"https://cdn.discordapp.com/icons/{guild_data['id']}/{guild_data['icon']}.png?size=1024"
+                        )
+                        embed = discord.Embed(title=f"{guild_data['name']} のサーバーアイコン").set_image(
+                            url=guild_icon
+                        )
                         await interaction.response.send_message(embed=embed)
                     else:
-                        await interaction.response.send_message("このサーバーにはアイコンが設定されていません。", ephemeral=True)
+                        await interaction.response.send_message(
+                            "このサーバーにはアイコンが設定されていません。",
+                            ephemeral=True,
+                        )
             return
 
         await interaction.response.send_message("サーバーを特定できませんでした。", ephemeral=True)
@@ -153,12 +186,12 @@ class IconCog(commands.Cog):
         try:
             if self.guild_obj:
                 await self.bot.tree.sync(guild=self.guild_obj)
-                print(f"[IconCog] Synced commands to guild {self.guild_obj.id}")
+                logger.info(f"[IconCog] Synced commands to guild {self.guild_obj.id}")
             else:
                 await self.bot.tree.sync()
-                print("[IconCog] Synced global commands")
+                logger.info("[IconCog] Synced global commands")
         except Exception as e:
-            print("[IconCog] Command sync failed:", e)
+            logger.info("[IconCog] Command sync failed:", e)
 
 
 # --- setup for extension loader ---

@@ -1,6 +1,7 @@
-import sys
-import os
 import asyncio
+import logging
+import os
+import sys
 import traceback
 import logging
 import discord
@@ -9,6 +10,19 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import bot_markov as mu
 from discord.ext import commands
+from dotenv import load_dotenv
+
+import cogs.bot_markov as mu
+
+# =========================================
+# Logging 設定
+# =========================================
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+logger = logging.getLogger(__name__)
 
 # =========================================
 # 基本ログ設定 (GEMINI.md ガイドライン準拠)
@@ -29,6 +43,7 @@ load_dotenv()
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
+guild_id = 1312457053708484609
 
 bot = commands.Bot(command_prefix="^^", intents=intents, help_command=None)
 
@@ -38,12 +53,15 @@ TARGET_USER = 1118799600816492626  # 永久保存ユーザー
 
 FAILED_COGS = []  # Cogロード失敗を記録
 
+
 # =========================================
 # talkコマンド (Markov生成)
 # =========================================
 @bot.command()
 async def talk(ctx, length: int = 50, n: int = 5):
-    await ctx.send("^^talkは学習データが多いほど生成に時間が掛かります。\nそのため時間がかかる可能性があります。\n^^talkを使用中はすべてのサーバーまたはDMでのコマンドが使用不可になる可能性があります。")
+    await ctx.send(
+        "^^talkは学習データが多いほど生成に時間が掛かります。\nそのため時間がかかる可能性があります。\n^^talkを使用中はすべてのサーバーまたはDMでのコマンドが使用不可になる可能性があります。"
+    )
     """
     Markovモデルで文章生成
     length: 生成文字数 (デフォルト50)
@@ -63,11 +81,13 @@ async def talk(ctx, length: int = 50, n: int = 5):
     sentence = mu.generate_sentence(model, length=length)
     await ctx.send(sentence)
 
+
 # =========================================
 # Stdin command handler
 # =========================================
 class MockContext:
     """A mock context for invoking commands from stdin."""
+
     def __init__(self, channel, bot_instance):
         self.channel = channel
         self.bot = bot_instance
@@ -80,7 +100,7 @@ class MockContext:
             logger.info("MockContext send: %s", args)
 
 async def handle_stdin(bot_instance):
-    """Reads commands from stdin and executes them."""
+    """Read commands from stdin and executes them."""
     loop = asyncio.get_running_loop()
     await bot_instance.wait_until_ready()
 
@@ -201,8 +221,13 @@ async def main():
             stdin_task.cancel()
             return
 
+        if not TOKEN:
+            print("ERROR: .env に DISCORD_BOT_TOKEN が設定されていません。")
+            sys.exit(1)
+
         # Bot 起動
         await bot.start(TOKEN)
+
 
 # =========================================
 # 起動完了時に失敗したCogを通知
@@ -224,9 +249,11 @@ async def on_ready():
                 if channel:
                     if len(msg) > 1900:
                         for i in range(0, len(msg), 1900):
-                            await channel.send(msg[i:i+1900])
+                            await channel.send(msg[i : i + 1900])
                     else:
                         await channel.send(msg)
+
+
 # =========================================
 # 非同期で実行
 # =========================================

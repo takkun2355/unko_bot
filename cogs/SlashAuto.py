@@ -1,9 +1,13 @@
 # cogs/SlashAuto.py
-import discord
-from discord.ext import commands
-from discord import app_commands
+import logging
+
+logger = logging.getLogger(__name__)
 import inspect
 from typing import get_type_hints
+
+import discord
+from discord import app_commands
+from discord.ext import commands
 
 DISCORD_TYPES = {
     str: str,
@@ -13,8 +17,9 @@ DISCORD_TYPES = {
     discord.Member: discord.Member,
     discord.TextChannel: discord.TextChannel,
     discord.VoiceChannel: discord.VoiceChannel,
-    discord.Role: discord.Role
+    discord.Role: discord.Role,
 }
+
 
 class SlashAuto(commands.Cog):
     """既存のCogコマンドを自動でスラッシュ化するCog"""
@@ -35,7 +40,7 @@ class SlashAuto(commands.Cog):
                     continue
 
                 sig = inspect.signature(command.callback)
-                type_hints = get_type_hints(command.callback)
+                get_type_hints(command.callback)
                 params = list(sig.parameters.items())[1:]  # selfを飛ばす
 
                 # クロージャで固定
@@ -52,15 +57,12 @@ class SlashAuto(commands.Cog):
                             async def send(self, *args, **send_kwargs):
                                 if not interaction.response.is_done():
                                     return await interaction.response.send_message(*args, **send_kwargs)
-                                else:
-                                    return await interaction.followup.send(*args, **send_kwargs)
+                                return await interaction.followup.send(*args, **send_kwargs)
 
                         ctx = DummyCtx(interaction)
                         await command.callback(cog, ctx, **kwargs)
 
                     return slash_cmd
-
-
 
                 callback = make_slash_callback(command, cog, params)
 
@@ -69,11 +71,11 @@ class SlashAuto(commands.Cog):
                         app_commands.Command(
                             name=command.name,
                             description=command.help or "No description",
-                            callback=callback
+                            callback=callback,
                         )
                     )
                 except Exception as e:
-                    print(f"[SlashAuto] {command.name} 登録失敗: {e}")
+                    logger.info(f"[SlashAuto] {command.name} 登録失敗: {e}")
 
 
 async def setup(bot: commands.Bot):

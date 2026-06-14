@@ -1,5 +1,10 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import random
+
 from discord.ext import commands
+
 
 class SlotGame(commands.Cog):
     """スロットゲーム"""
@@ -9,7 +14,7 @@ class SlotGame(commands.Cog):
 
     @commands.command()
     async def slot(self, ctx):
-        symbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"]
+        symbols = ["🍒", "🍋", "🔔", "⭐", "7⃣"]
         result = [random.choice(symbols) for _ in range(3)]
         display = " | ".join(result)
         await ctx.send(f"🎰 スロット！\n{display}")
@@ -20,6 +25,7 @@ class SlotGame(commands.Cog):
             await ctx.send("👌 おしい！2つそろった！")
         else:
             await ctx.send("😢 はずれ…")
+
 
 # async setup
 async def setup(bot):

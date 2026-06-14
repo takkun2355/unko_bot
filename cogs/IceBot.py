@@ -1,9 +1,13 @@
-import discord
-from discord.ext import commands
+import logging
+
+logger = logging.getLogger(__name__)
 import random
 
+from discord.ext import commands
+
 # 氷化演出用絵文字
-ICE_EMOJIS = ["❄️", "🧊", "🌨️"]
+ICE_EMOJIS = ["❄", "🧊", "🌨"]
+
 
 class IceBot(commands.Cog):
     """氷Bot（発言を凍らせる演出）"""
@@ -13,13 +17,13 @@ class IceBot(commands.Cog):
 
     @commands.command(name="freeze")
     async def freeze_message(self, ctx, *, message: str):
-        """
-        ユーザーの発言を“凍らせた”形で返す
+        """ユーザーの発言を“凍らせた”形で返す
         例: /freeze Hello world
         """
         ice = random.choice(ICE_EMOJIS)
         frozen = " ".join([char + ice for char in message])
         await ctx.send(f"🧊 {ctx.author.name} の発言が凍結！\n{frozen}")
+
 
 # CogをBotに登録
 async def setup(bot):

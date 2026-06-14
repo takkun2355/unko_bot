@@ -1,7 +1,11 @@
+import logging
+
+logger = logging.getLogger(__name__)
+import random
+
 import discord
 from discord.ext import commands, tasks
-import random
-import asyncio
+
 
 class RandomNameAuto(commands.Cog):
     def __init__(self, bot):
@@ -13,7 +17,7 @@ class RandomNameAuto(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("✅ Bot起動完了。ランダムネーム変更タスクを起動します。")
+        logger.info(" Bot起動完了。ランダムネーム変更タスクを起動します。")
         await self.change_name_once()  # 起動時にも1回実行
 
     @tasks.loop(hours=1)
@@ -24,38 +28,72 @@ class RandomNameAuto(commands.Cog):
     @commands.command()
     async def name(self, ctx):
         await self.change_name_once()
-        await ctx.send("✅ ニックネームを変更しました。")
-        
+        await ctx.send(" ニックネームを変更しました。")
+
     async def change_name_once(self):
         """実際の変更処理"""
         # ===== 設定ここ =====
         guild_id = 1312457053708484609  # ← サーバーID
-        user_id = 1118799600816492626   # ← 対象ユーザーID
+        user_id = 1118799600816492626  # ← 対象ユーザーID
         # ===================
 
-        prefixes = ["スーパー", "激辛", "最強口臭", "謎の", "爆裂", "臭い", "最恐", "伝説", "ド変態", "ニ”ニー服来た"]
-        bases = [":hugging:", "22", "ペブカック", "AGAり的", "full", "スーパー22人", "違法人", "ナナホシ", "有名人（笑）", "奇声虫"]
-        suffixes = ["AGA", "あがり", "242", "あーさん", "smell体", "22", "AGAり", "男性型脱毛症", "にがり", "ナナホシ"]
+        prefixes = [
+            "スーパー",
+            "激辛",
+            "最強口臭",
+            "謎の",
+            "爆裂",
+            "臭い",
+            "最恐",
+            "伝説",
+            "ド変態",
+            "ニ”ニー服来た",
+        ]
+        bases = [
+            ":hugging:",
+            "22",
+            "ペブカック",
+            "AGAり的",
+            "full",
+            "スーパー22人",
+            "違法人",
+            "ナナホシ",
+            "有名人（笑）",
+            "奇声虫",
+        ]
+        suffixes = [
+            "AGA",
+            "あがり",
+            "242",
+            "あーさん",
+            "smell体",
+            "22",
+            "AGAり",
+            "男性型脱毛症",
+            "にがり",
+            "ナナホシ",
+        ]
 
         new_name = random.choice(prefixes) + random.choice(bases) + random.choice(suffixes)
 
         guild = self.bot.get_guild(guild_id)
         if not guild:
-            print("none! サーバーが見つかりません。guild_idを確認してください。")
+            logger.info("none! サーバーが見つかりません。guild_idを確認してください。")
             return
 
         member = guild.get_member(user_id)
         if not member:
-            print("none! メンバーが見つかりません。user_idを確認してください。")
+            logger.info("none! メンバーが見つかりません。user_idを確認してください。")
             return
 
         try:
             await member.edit(nick=new_name)
-            print(f"🎲 {member.name} のニックネームを「{new_name}」に変更しました。")
+            logger.info(f" {member.name} のニックネームを「{new_name}」に変更しました。")
         except discord.Forbidden:
-            print("[Warning] : 権限不足。ニックネームを変更できません。")
+            logger.info("[Warning] : 権限不足。ニックネームを変更できません。")
         except Exception as e:
-            print(f"[Warning] : {e}")
+            logger.info(f"[Warning] : {e}")
+
 
 async def setup(bot):
     await bot.add_cog(RandomNameAuto(bot))

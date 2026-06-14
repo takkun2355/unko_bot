@@ -1,5 +1,9 @@
 # cogs/not_find_command.py
-from discord.ext import commands
+from discord.ext import logging
+
+logger = logging.getLogger(__name__)
+import commands
+
 
 class CommandCheckerCog(commands.Cog):
     """未登録コマンド検知Cog"""
@@ -16,17 +20,16 @@ class CommandCheckerCog(commands.Cog):
             raise error
 
     async def not_find_command(self, ctx):
-        """
-        未登録コマンドが使われたときに呼ばれる処理
-        """
+        """未登録コマンドが使われたときに呼ばれる処理"""
         # 入力されたコマンド名を取得（接頭辞 ^^ を除去）
         cmd_name = ctx.message.content.lstrip(ctx.prefix).split()[0]
         await ctx.send(
-            f"そんなコマンドねーよ😅 (`{cmd_name}`)\n"
+            f"そんなコマンドロードされてねーよ😅 (`{cmd_name}`)\n"
             f"`^^help` で使えるコマンドを確認してね！\n"
             f"あっ、でも見てもわかんないよね！\n"
             f"残念^^"
         )
+
 
 # CogをBotに追加する関数
 async def setup(bot):

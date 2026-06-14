@@ -1,19 +1,32 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import asyncio
+
 import discord
 from discord.ext import commands
+
 
 class SpamCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="spam", help="指定したユーザーに指定した回数メンションを送信します。(管理者権限が必要です)")
+    @commands.command(
+        name="spam",
+        help="指定したユーザーに指定した回数メンションを送信します。(管理者権限が必要です)",
+    )
     @commands.has_permissions(administrator=False)
-    async def spam(self, ctx: commands.Context, member: discord.Member, count: int = 10, delay: float = 1.0):
-        """
-        指定したユーザーに繰り返しメンションを送信します。
+    async def spam(
+        self,
+        ctx: commands.Context,
+        member: discord.Member,
+        count: int = 10,
+        delay: float = 1.0,
+    ):
+        """指定したユーザーに繰り返しメンションを送信します。
 
-        使用法: !spam @ユーザー名 [回数] [遅延(秒)]
-        例: !spam @User 20 0.5
+        使用法: ^^spam @ユーザー名 [回数] [遅延(秒)]
+        例: ^^spam @User 20 0.5
 
         パラメータ:
         - member: メンションするユーザー (必須)
@@ -43,7 +56,7 @@ class SpamCog(commands.Cog):
     @spam.error
     async def spam_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("使用法: `!spam @ユーザー名 [回数] [遅延]`")
+            await ctx.send("使用法: `^^spam @ユーザー名 [回数] [遅延]`")
         elif isinstance(error, commands.BadArgument):
             await ctx.send("指定されたユーザーが見つかりません。")
         elif isinstance(error, commands.MissingPermissions):
@@ -51,7 +64,10 @@ class SpamCog(commands.Cog):
         else:
             await ctx.send(f"予期せぬエラーが発生しました: {error}")
 
-    @commands.command(name="flood", help="指定ユーザーのメンションを1メッセージに詰め込みます。(管理者権限が必要です)")
+    @commands.command(
+        name="flood",
+        help="指定ユーザーのメンションを1メッセージに詰め込みます。(管理者権限が必要です)",
+    )
     @commands.has_permissions(administrator=False)
     async def flood(self, ctx: commands.Context, member: discord.Member, total: int = 1000000000):
         """指定したユーザーのメンションを、1つのメッセージに文字数制限いっぱいまで詰め込みます。"""
@@ -86,7 +102,10 @@ class SpamCog(commands.Cog):
         else:
             await ctx.send(f"予期せぬエラーが発生しました: {error}")
 
-    @commands.command(name="countup", help="指定回数、指定時間ごとに数字をカウントアップして送信します。(管理者権限が必要です)")
+    @commands.command(
+        name="countup",
+        help="指定回数、指定時間ごとに数字をカウントアップして送信します。(管理者権限が必要です)",
+    )
     @commands.has_permissions(administrator=False)
     async def countup(self, ctx: commands.Context, count: int, delay: float = 1.0):
         """指定回数、指定時間ごとに数字をカウントアップして送信します。"""
@@ -94,7 +113,7 @@ class SpamCog(commands.Cog):
             await ctx.send("回数は1以上の整数で指定してください。")
             return
 
-        delay = max(0.5, delay) # 安全のため最低遅延を設ける
+        delay = max(0.5, delay)  # 安全のため最低遅延を設ける
 
         for i in range(1, count + 1):
             try:
@@ -114,6 +133,7 @@ class SpamCog(commands.Cog):
             await ctx.send("このコマンドを使用するには管理者権限が必要です。")
         else:
             await ctx.send(f"予期せぬエラーが発生しました: {error}")
+
 
 async def setup(bot):
     await bot.add_cog(SpamCog(bot))

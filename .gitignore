@@ -1,5 +1,6 @@
 # Python 仮想環境
 .venv/
+.env/
 
 # キャッシュ・一時ファイル
 __pycache__/
@@ -24,6 +25,7 @@ Thumbs.db
 # ドキュメント
 README.md
 GEMINI.md
+CHANGELOG.md
 
 # ツール
 .typoschecks
@@ -31,3 +33,18 @@ GEMINI.md
 # 開発ツール
 Dockerfile
 bot_start.bat
+
+# データ
+pin_data/
+rpg_data/
+logs/
+data/
+rooms.json
+achievements.json
+chatlog.txt
+special_log.txt
+saved_file.txt
+choices.txt
+custom_words.txt
+valorant_agent.txt
+valorant_map.txt

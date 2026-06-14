@@ -3,28 +3,9 @@
 AIがコードを書く際に気をつけるべき点
 
 ## はじめに
-このドキュメントは、GEMINIがPythonコードを生成する際に、より高品質で保守性の高いコードを作成するためのガイドラインを提供します。特に、以下の点に焦点を当てます。
+このドキュメントは、AIがPythonコードを生成する際に、より高品質で保守性の高いコードを作成するためのガイドラインを提供します。特に、以下の点に焦点を当てます。
 
-基本ログ設定（print乱用からの脱却）
-まず最初に、AIが出力するprint()だらけのコードを防ぐ基本設定。
-
-```python
-# logging ベースライン（コピペ用）
-import logging
-import sys
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-logger = logging.getLogger(__name__)
-
-# 使用例
-logger.info("処理開始")
-logger.debug("デバッグ情報: %s", data)
-logger.error("エラーが発生: %s", error)
-```
+- 必ずloggingを使うこと
 
 ---
 
@@ -50,6 +31,7 @@ except Exception:  # または bare except:
 ```python
 # Good
 import logging
+
 logger = logging.getLogger(__name__)
 
 try:
@@ -75,6 +57,7 @@ AIでなくても初心者がやりがち。
 def add_item(item, bucket=[]):
     bucket.append(item)
     return bucket
+
 
 # 実行すると...
 list1 = add_item("a")  # ["a"]
@@ -137,10 +120,7 @@ result = json.loads('{"key": "value"}')
 config = ast.literal_eval("{'debug': True, 'port': 8080}")
 
 # シェル経由せずに直接実行（timeout必須）
-completed = subprocess.run(
-    ["convert", input_file, output_file],
-    check=True, timeout=30, capture_output=True, text=True
-)
+completed = subprocess.run(["convert", input_file, output_file], check=True, timeout=30, capture_output=True, text=True)
 
 # 安全なYAMLロード（信頼できる入力のみ）
 data = yaml.safe_load(yaml_string)
@@ -160,8 +140,11 @@ response = requests.get(url, timeout=10)  # verify=Trueがデフォルト
 ```python
 # Bad
 import sqlite3
+
+
 def get_user(name):
     cur.execute(f"SELECT * FROM users WHERE name='{name}'")
+
 
 def read_file(filename):
     return open(f"/uploads/{filename}").read()
@@ -178,8 +161,10 @@ def read_file(filename):
 # Good
 from pathlib import Path
 
+
 def get_user(name):
     cur.execute("SELECT * FROM users WHERE name = ?", (name,))
+
 
 def read_file(filename):
     # エンコーディング明示＋パス正規化でディレクトリ脱出を防ぐ
@@ -227,6 +212,7 @@ AIは時刻処理が苦手で、よくこんなコードを書きます。
 ```python
 # Bad
 from datetime import datetime
+
 now = datetime.now()  # ナイーブなdatetime
 expiry = now + timedelta(days=1)
 ```
@@ -246,10 +232,11 @@ from datetime import datetime, timezone, timedelta
 now = datetime.now(timezone.utc)
 expiry = now + timedelta(days=1)
 
+
 # 保存はUTC、表示時にローカル変換
 def format_for_user(utc_time, user_timezone):
     local_time = utc_time.astimezone(user_timezone)
-    return local_time.strftime('%Y-%m-%d %H:%M')
+    return local_time.strftime("%Y-%m-%d %H:%M")
 ```
 
 ---
@@ -281,10 +268,11 @@ if math.isclose(score, 0.3, rel_tol=1e-9):
 
 # 金銭計算はDecimalを使う（丸め方針も明示）
 from decimal import Decimal, getcontext, ROUND_HALF_UP
+
 getcontext().rounding = ROUND_HALF_UP
 
-price = Decimal('19.99')
-tax = Decimal('0.08')
+price = Decimal("19.99")
+tax = Decimal("0.08")
 total = price * (1 + tax)
 ```
 
@@ -295,7 +283,7 @@ total = price * (1 + tax)
 
 ```python
 # Bad - SettingWithCopyWarningが出る
-df[df.score > 80]['grade'] = 'A'
+df[df.score > 80]["grade"] = "A"
 ```
 
 何が危険？
@@ -308,11 +296,11 @@ df[df.score > 80]['grade'] = 'A'
 ```python
 # Good
 mask = df.score > 80
-df.loc[mask, 'grade'] = 'A'
+df.loc[mask, "grade"] = "A"
 
 # または
 df = df.copy()  # 明示的にコピーしてから操作
-df[df.score > 80]['grade'] = 'A'
+df[df.score > 80]["grade"] = "A"
 ```
 
 ---
@@ -323,6 +311,7 @@ async/awaitを使ってるのに中身がブロッキング。
 ```python
 # Bad
 import requests
+
 
 async def fetch_data(url):
     response = requests.get(url)  # ブロッキング
@@ -339,6 +328,7 @@ async def fetch_data(url):
 ```python
 # Good
 import httpx
+
 
 async def fetch_data(url):
     async with httpx.AsyncClient() as client:
@@ -377,10 +367,10 @@ def process_file(path):
         data = f.read()
     return data.upper()
 
+
 # 複数リソースの場合
 def copy_file(src, dst):
-    with open(src, encoding="utf-8") as f_in, \
-         open(dst, 'w', encoding="utf-8") as f_out:
+    with open(src, encoding="utf-8") as f_in, open(dst, "w", encoding="utf-8") as f_out:
         f_out.write(f_in.read())
 ```
 
@@ -409,6 +399,7 @@ SECRET_KEY = "abc123"
 import os
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     api_url: str = "http://localhost:8000"
     max_retries: int = 3
@@ -416,6 +407,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+
 
 settings = Settings()
 ```
@@ -467,7 +459,7 @@ for item in large_list:
 
 # Bad - 全ファイル読み込み
 with open("huge_file.txt") as f:
-    lines = f.read().split('\n')  # メモリを食い尽くす
+    lines = f.read().split("\n")  # メモリを食い尽くす
 
 # Bad - 二重ループ
 matches = []
@@ -506,7 +498,8 @@ matches = [(a, lookup[a.id]) for a in list1 if a.id in lookup]
 ```python
 # Bad - セキュリティ用途には不適切
 import random
-token = ''.join(random.choices('abcdefghijklmnopqrstuvwxyz', k=32))
+
+token = "".join(random.choices("abcdefghijklmnopqrstuvwxyz", k=32))
 ```
 
 何が危険？
@@ -520,11 +513,13 @@ token = ''.join(random.choices('abcdefghijklmnopqrstuvwxyz', k=32))
 ```python
 # Good - 暗号学的に安全
 import secrets
+
 token = secrets.token_urlsafe(32)
 password = secrets.token_hex(16)
 
 # セキュアな比較（タイミング攻撃対策）
 from hmac import compare_digest
+
 if compare_digest(provided_token, expected_token):
     authenticate_user()
 ```

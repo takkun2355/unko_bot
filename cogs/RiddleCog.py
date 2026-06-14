@@ -1,6 +1,10 @@
-import discord
-from discord.ext import commands
+import logging
+
+logger = logging.getLogger(__name__)
 import random
+
+from discord.ext import commands
+
 
 class RiddleCog(commands.Cog):
     """なぞなぞ / IQテスト Cog"""
@@ -9,10 +13,16 @@ class RiddleCog(commands.Cog):
         self.bot = bot
         # なぞなぞのリスト（質問:答え）
         self.riddles = [
-            {"question": "私は何でしょう？朝は4本足、昼は2本足、夜は3本足。", "answer": "人間"},
+            {
+                "question": "私は何でしょう？朝は4本足、昼は2本足、夜は3本足。",
+                "answer": "人間",
+            },
             {"question": "頭は青く、体は緑、歩くと赤いものは？", "answer": "信号"},
             {"question": "何を取っても増えるものは？", "answer": "穴"},
-            {"question": "パンはパンでも食べられないパンとは？", "answer": "フライパン"},
+            {
+                "question": "パンはパンでも食べられないパンとは？",
+                "answer": "フライパン",
+            },
         ]
 
     @commands.command(name="riddle")
@@ -26,12 +36,13 @@ class RiddleCog(commands.Cog):
 
         try:
             msg = await self.bot.wait_for("message", timeout=30.0, check=check)
-            if riddle['answer'] in msg.content:
+            if riddle["answer"] in msg.content:
                 await ctx.send("🎉 正解です！")
             else:
-                await ctx.send(f"❌ 残念、不正解です。答えは `{riddle['answer']}` でした。")
+                await ctx.send(f" 残念、不正解です。答えは `{riddle['answer']}` でした。")
         except:
             await ctx.send(f"⏰ 時間切れ！答えは `{riddle['answer']}` です。")
+
 
 # Cog登録用
 async def setup(bot):
