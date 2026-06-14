@@ -3,7 +3,6 @@ import asyncio
 import os
 from datetime import datetime, timedelta
 from discord.ext import commands
-import discord
 
 
 class Roulette(commands.Cog):

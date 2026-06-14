@@ -244,7 +244,7 @@ def run_console_roast():
     response = input("continue >> ").lower().strip()
     if response in ("next", "n", "続ける", "続き", "restart", "rs", "再始"):
         run_console_roast()
-        print(f"そんなに暇なんだね。")
+        print("そんなに暇なんだね。")
         time.sleep(1)
     else:
         return
@@ -466,12 +466,12 @@ def show_menu():
     if lde_enabled == False:
         print(f"Bot name: {bot_name}")
         print(
-            f"Bot version: Dev-Python inlog-SP\n" + f" " * 12 + "MCDB-UNMN-JP v5.82.11 "
+            "Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 "
         )
         print(f"login user: {login_user}")
         print(f"Bot Status: {bot_status}")
         print(f"Log Stoper Status: {lc_status}")
-        print(f"Discord Bot by \n Takkun2355 \n Akikukeo \n ChatGPT \n ...and you :)")
+        print("Discord Bot by \n Takkun2355 \n Akikukeo \n ChatGPT \n ...and you :)")
 
         print("-" * 58)
 
@@ -488,10 +488,10 @@ def show_menu():
         print("exit     - 閉じる")
         print("-" * 60)
         if ls_enabled == True:
-            print(f" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
+            print(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
 
         elif not ls_enabled:
-            print(f" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
+            print(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
             print("-" * 60)
 
             for line in log_lines[-MAX_LOG_LINES:]:
@@ -501,24 +501,24 @@ def show_menu():
 
     if lde_enabled == True:
         if ls_enabled == True:
-            print(f" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
+            print(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
 
         elif not ls_enabled:
             for line in log_lines[-MAX_LOG_LINES:]:
                 print(line)
             print("-" * 60)
-            print(f" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
+            print(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
 
         print("-" * 60)
 
         print(f"Bot name: {bot_name}")
         print(
-            f"Bot version: Dev-Python inlog-SP\n" + f" " * 12 + "MCDB-UNMN-JP v5.82.11 "
+            "Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 "
         )
         print(f"login user: {login_user}")
         print(f"Bot Status: {bot_status}")
         print(f"Log Stoper Status: {lc_status}")
-        print(f"Discord Bot by \n Takkun2355 \n Akikukeo \n ChatGPT \n ...and you :)")
+        print("Discord Bot by \n Takkun2355 \n Akikukeo \n ChatGPT \n ...and you :)")
 
         print("-" * 60)
 

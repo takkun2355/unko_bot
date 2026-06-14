@@ -1,6 +1,5 @@
 # cogs/agari_logger.py
 
-import discord
 from discord.ext import commands
 from pathlib import Path
 

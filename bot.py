@@ -3,7 +3,6 @@ import os
 import asyncio
 import traceback
 import discord
-import time
 from datetime import datetime, timedelta
 from pathlib import Path
 import cogs.bot_markov as mu

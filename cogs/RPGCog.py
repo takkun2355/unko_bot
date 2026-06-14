@@ -1,10 +1,8 @@
 # rpg_cog_full.py
-import discord
 from discord.ext import commands
 import json
 import os
 import random
-import math
 import asyncio
 
 RPG_FOLDER = "rpg_data"

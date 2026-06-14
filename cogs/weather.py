@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 import aiohttp
 import asyncio
@@ -602,7 +601,7 @@ class Weather(commands.Cog):
                 if typhoons:
                     for ty in typhoons:
                         typhoon_msg += f"- 台風{ty['num']}号（{ty['name']}）が発生中\n"
-                        typhoon_msg += f"降水: - mm\n"
+                        typhoon_msg += "降水: - mm\n"
                         typhoon_msg += (
                             f"風速: {ty['wind_kmh']}km/h, {ty['wind_ms']}m/s\n"
                         )
