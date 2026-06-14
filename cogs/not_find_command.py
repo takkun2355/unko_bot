@@ -1,6 +1,7 @@
 # cogs/not_find_command.py
 from discord.ext import commands
 
+
 class CommandCheckerCog(commands.Cog):
     """未登録コマンド検知Cog"""
 
@@ -27,6 +28,7 @@ class CommandCheckerCog(commands.Cog):
             f"あっ、でも見てもわかんないよね！\n"
             f"残念^^"
         )
+
 
 # CogをBotに追加する関数
 async def setup(bot):

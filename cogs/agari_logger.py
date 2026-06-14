@@ -1,6 +1,5 @@
 # cogs/agari_logger.py
 
-import discord
 from discord.ext import commands
 from pathlib import Path
 
@@ -30,21 +29,12 @@ class AgariLogger(commands.Cog):
 
         log_path = Path(LOG_FILE)
 
-        with log_path.open(
-            "w",
-            encoding="utf-8"
-        ) as f:
-
-            async for msg in channel.history(
-                limit=None,
-                oldest_first=True
-            ):
+        with log_path.open("w", encoding="utf-8") as f:
+            async for msg in channel.history(limit=None, oldest_first=True):
                 content = msg.content.replace("\n", "\\n")
 
                 f.write(
-                    f"[{msg.created_at}] "
-                    f"{msg.author} ({msg.author.id}) : "
-                    f"{content}\n"
+                    f"[{msg.created_at}] {msg.author} ({msg.author.id}) : {content}\n"
                 )
 
         print(f"保存完了: {LOG_FILE}")

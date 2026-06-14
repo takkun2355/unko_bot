@@ -25,10 +25,10 @@ if not DATA_FILE.exists():
     print("[WARNING] command_help.json not found")
 
 for cmd in self.bot.commands:
-    commands_found.append({
-        "name": cmd.name,
-        "description": cmd.help or cmd.brief or "説明なし"
-    })
+    commands_found.append(
+        {"name": cmd.name, "description": cmd.help or cmd.brief or "説明なし"}
+    )
+
 
 def _clean_text(value: Any) -> str:
     if value is None:
@@ -97,7 +97,9 @@ class HelpView(discord.ui.View):
         embed = self.cog.build_list_embed(self.page)
         await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="前へ", style=discord.ButtonStyle.secondary, custom_id="help_prev")
+    @discord.ui.button(
+        label="前へ", style=discord.ButtonStyle.secondary, custom_id="help_prev"
+    )
     async def prev_button(
         self,
         interaction: discord.Interaction,
@@ -107,7 +109,9 @@ class HelpView(discord.ui.View):
             self.page -= 1
         await self._refresh(interaction)
 
-    @discord.ui.button(label="次へ", style=discord.ButtonStyle.secondary, custom_id="help_next")
+    @discord.ui.button(
+        label="次へ", style=discord.ButtonStyle.secondary, custom_id="help_next"
+    )
     async def next_button(
         self,
         interaction: discord.Interaction,
@@ -163,15 +167,23 @@ class HelpCog(commands.Cog):
                 if not isinstance(groups, list):
                     continue
                 for group in groups:
-                    group_name = _clean_text(group.get("name")) if isinstance(group, dict) else ""
-                    group_commands = group.get("commands", []) if isinstance(group, dict) else []
+                    group_name = (
+                        _clean_text(group.get("name"))
+                        if isinstance(group, dict)
+                        else ""
+                    )
+                    group_commands = (
+                        group.get("commands", []) if isinstance(group, dict) else []
+                    )
                     if not isinstance(group_commands, list):
                         continue
                     for command in group_commands:
                         if isinstance(command, dict):
                             commands.append(
                                 {
-                                    "section": _clean_text(section.get("name")) if isinstance(section, dict) else "",
+                                    "section": _clean_text(section.get("name"))
+                                    if isinstance(section, dict)
+                                    else "",
                                     "group": group_name,
                                     "command": command,
                                 }
@@ -214,16 +226,24 @@ class HelpCog(commands.Cog):
         for child_key in ("subcommands", "admin_subcommands"):
             for child in command.get(child_key, []) or []:
                 if isinstance(child, dict):
-                    self._index_command(child, section, group, path + [child.get("name", "")])
+                    self._index_command(
+                        child, section, group, path + [child.get("name", "")]
+                    )
 
     @property
     def page_count(self) -> int:
         if not self.top_level_commands:
             return 1
-        return max(1, (len(self.top_level_commands) + self.per_page - 1) // self.per_page)
+        return max(
+            1, (len(self.top_level_commands) + self.per_page - 1) // self.per_page
+        )
 
     def _resolve_entry(self, query: str) -> Tuple[str, Any]:
-        tokens = [_normalize_query(part) for part in _clean_text(query).split() if _clean_text(part)]
+        tokens = [
+            _normalize_query(part)
+            for part in _clean_text(query).split()
+            if _clean_text(part)
+        ]
         if not tokens:
             return "empty", None
 
@@ -251,7 +271,9 @@ class HelpCog(commands.Cog):
             return "ambiguous", by_name
 
         # Fallback: exact last token name among all entries can still be useful.
-        tail_matches = [e for e in self.all_entries if _normalize_query(e["path"][-1]) == tokens[-1]]
+        tail_matches = [
+            e for e in self.all_entries if _normalize_query(e["path"][-1]) == tokens[-1]
+        ]
         if len(tail_matches) == 1:
             return "ok", tail_matches[0]
         if len(tail_matches) > 1:
@@ -273,7 +295,9 @@ class HelpCog(commands.Cog):
         path = _clean_text(command.get("name"))
         return f"{self.prefix}{path}" if path else self.prefix
 
-    def _render_subcommands(self, subcommands: List[Dict[str, Any]], parent_path: List[str], depth: int = 0) -> List[str]:
+    def _render_subcommands(
+        self, subcommands: List[Dict[str, Any]], parent_path: List[str], depth: int = 0
+    ) -> List[str]:
         lines: List[str] = []
         indent = "  " * depth
         for child in subcommands:
@@ -283,7 +307,10 @@ class HelpCog(commands.Cog):
             if not child_name:
                 continue
             child_path = parent_path + [child_name]
-            usage = _clean_text(child.get("usage")) or f"{self.prefix}{' '.join(child_path)}"
+            usage = (
+                _clean_text(child.get("usage"))
+                or f"{self.prefix}{' '.join(child_path)}"
+            )
             description = _clean_text(child.get("description"))
             line = f"{indent}• {_inline_code(usage)}"
             if description:
@@ -323,7 +350,9 @@ class HelpCog(commands.Cog):
         if notes:
             embed.add_field(
                 name="補足",
-                value="\n".join(f"• {_clean_text(note)}" for note in notes if _clean_text(note)),
+                value="\n".join(
+                    f"• {_clean_text(note)}" for note in notes if _clean_text(note)
+                ),
                 inline=False,
             )
 
@@ -365,11 +394,15 @@ class HelpCog(commands.Cog):
                 mode_desc = _clean_text(mode.get("description"))
                 if mode_name:
                     if mode_desc:
-                        option_lines.append(f"• {_inline_code(mode_name)}\n  {mode_desc}")
+                        option_lines.append(
+                            f"• {_inline_code(mode_name)}\n  {mode_desc}"
+                        )
                     else:
                         option_lines.append(f"• {_inline_code(mode_name)}")
         if option_lines:
-            embed.add_field(name="オプション", value="\n".join(option_lines), inline=False)
+            embed.add_field(
+                name="オプション", value="\n".join(option_lines), inline=False
+            )
 
         child_lines: List[str] = []
         subcommands = command.get("subcommands", []) or []
@@ -380,7 +413,9 @@ class HelpCog(commands.Cog):
             if child_lines:
                 child_lines.append("")
             child_lines.append("管理者向け")
-            child_lines.extend(self._render_subcommands(admin_subcommands, entry["path"]))
+            child_lines.extend(
+                self._render_subcommands(admin_subcommands, entry["path"])
+            )
         if child_lines:
             embed.add_field(name="子要素", value="\n".join(child_lines), inline=False)
 
@@ -426,7 +461,9 @@ class HelpCog(commands.Cog):
         embed.set_footer(text=f"{page + 1}/{self.page_count} ページ")
         return embed
 
-    def _build_ambiguous_embed(self, query: str, matches: List[Dict[str, Any]]) -> discord.Embed:
+    def _build_ambiguous_embed(
+        self, query: str, matches: List[Dict[str, Any]]
+    ) -> discord.Embed:
         embed = discord.Embed(
             title="候補が複数あります",
             description=f"`{query}` に一致するコマンドが複数見つかりました。",
@@ -438,7 +475,9 @@ class HelpCog(commands.Cog):
                 f"• `{self.prefix}{' '.join(entry['path'])}` - {_truncate(self._command_short_desc(entry['command']), 120)}"
             )
         embed.add_field(name="候補", value="\n".join(lines), inline=False)
-        embed.set_footer(text=f"`{self.prefix}help <CMD>` で、できるだけ正確に指定してください。")
+        embed.set_footer(
+            text=f"`{self.prefix}help <CMD>` で、できるだけ正確に指定してください。"
+        )
         return embed
 
     @commands.command(name="help", aliases=["h"])

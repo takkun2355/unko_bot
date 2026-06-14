@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+
 class Server(commands.Cog):
     """サーバーステータス関連"""
 
@@ -16,13 +17,13 @@ class Server(commands.Cog):
         humans = members - bots
 
         embed = discord.Embed(
-            title=f"📊 サーバーステータス: {guild.name}",
-            color=discord.Color.green()
+            title=f"📊 サーバーステータス: {guild.name}", color=discord.Color.green()
         )
         embed.add_field(name="👥 メンバー", value=humans)
         embed.add_field(name="🤖 BOT", value=bots)
         embed.add_field(name="合計", value=members, inline=False)
         await ctx.send(embed=embed)
+
 
 async def setup(bot):
     await bot.add_cog(Server(bot))

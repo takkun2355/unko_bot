@@ -223,61 +223,103 @@ MASTER_WORDS = {
         "挿れちゃやだ",
         "挿れな…でぇ",
         "抜い…",
-    ]
+    ],
 }
 
 
 KANA_TO_VOWEL = {
-    "あ":"あ","か":"あ","さ":"あ","た":"あ","な":"あ","は":"あ","ま":"あ","や":"あ","ら":"あ","わ":"あ",
-    "が":"あ","ざ":"あ","だ":"あ","ば":"あ","ぱ":"あ",
-
-    "い":"い","き":"い","し":"い","ち":"い","に":"い","ひ":"い","み":"い","り":"い",
-    "ぎ":"い","じ":"い","ぢ":"い","び":"い","ぴ":"い",
-
-    "う":"う","く":"う","す":"う","つ":"う","ぬ":"う","ふ":"う","む":"う","ゆ":"う","る":"う",
-    "ぐ":"う","ず":"う","づ":"う","ぶ":"う","ぷ":"う",
-
-    "え":"え","け":"え","せ":"え","て":"え","ね":"え","へ":"え","め":"え","れ":"え",
-    "げ":"え","ぜ":"え","で":"え","べ":"え","ぺ":"え",
-
-    "お":"お","こ":"お","そ":"お","と":"お","の":"お","ほ":"お","も":"お","よ":"お","ろ":"お","を":"お",
-    "ご":"お","ぞ":"お","ど":"お","ぼ":"お","ぽ":"お",
+    "あ": "あ",
+    "か": "あ",
+    "さ": "あ",
+    "た": "あ",
+    "な": "あ",
+    "は": "あ",
+    "ま": "あ",
+    "や": "あ",
+    "ら": "あ",
+    "わ": "あ",
+    "が": "あ",
+    "ざ": "あ",
+    "だ": "あ",
+    "ば": "あ",
+    "ぱ": "あ",
+    "い": "い",
+    "き": "い",
+    "し": "い",
+    "ち": "い",
+    "に": "い",
+    "ひ": "い",
+    "み": "い",
+    "り": "い",
+    "ぎ": "い",
+    "じ": "い",
+    "ぢ": "い",
+    "び": "い",
+    "ぴ": "い",
+    "う": "う",
+    "く": "う",
+    "す": "う",
+    "つ": "う",
+    "ぬ": "う",
+    "ふ": "う",
+    "む": "う",
+    "ゆ": "う",
+    "る": "う",
+    "ぐ": "う",
+    "ず": "う",
+    "づ": "う",
+    "ぶ": "う",
+    "ぷ": "う",
+    "え": "え",
+    "け": "え",
+    "せ": "え",
+    "て": "え",
+    "ね": "え",
+    "へ": "え",
+    "め": "え",
+    "れ": "え",
+    "げ": "え",
+    "ぜ": "え",
+    "で": "え",
+    "べ": "え",
+    "ぺ": "え",
+    "お": "お",
+    "こ": "お",
+    "そ": "お",
+    "と": "お",
+    "の": "お",
+    "ほ": "お",
+    "も": "お",
+    "よ": "お",
+    "ろ": "お",
+    "を": "お",
+    "ご": "お",
+    "ぞ": "お",
+    "ど": "お",
+    "ぼ": "お",
+    "ぽ": "お",
 }
 
-SMALL_VOWELS = {
-    "あ":"ぁ",
-    "い":"ぃ",
-    "う":"ぅ",
-    "え":"ぇ",
-    "お":"ぉ"
-}
+SMALL_VOWELS = {"あ": "ぁ", "い": "ぃ", "う": "ぅ", "え": "ぇ", "お": "ぉ"}
 
 DEFAULT_SETTINGS = {
     "insert_comma": True,
     "comma_prob": 50,
-
     "insert_dots": True,
     "dots_prob": 50,
-
     "insert_period": True,
     "period_prob": 50,
-
     "insert_heart": True,
     "heart_prob": 50,
-
     "insert_exclamation": True,
     "exclamation_prob": 50,
-
     "star_enabled": True,
     "star_prob": 50,
-
     "circle_enabled": True,
     "circle_prob": 50,
-
     "kana_enabled": True,
     "kana_prob": 50,
     "kana_count": 2,
-
     "sentence_count": 3,
     "output_separator": "newline",
 }
@@ -369,8 +411,7 @@ class DatabaseManager:
         """サーバー設定を取得"""
         async with aiosqlite.connect(self.db_path) as db:
             cur = await db.execute(
-                "SELECT settings_json FROM guild_settings WHERE guild_id=?",
-                (guild_id,)
+                "SELECT settings_json FROM guild_settings WHERE guild_id=?", (guild_id,)
             )
             row = await cur.fetchone()
 
@@ -379,7 +420,7 @@ class DatabaseManager:
 
             await db.execute(
                 "INSERT INTO guild_settings VALUES (?,?)",
-                (guild_id, json.dumps(DEFAULT_SETTINGS))
+                (guild_id, json.dumps(DEFAULT_SETTINGS)),
             )
             await db.commit()
             return DEFAULT_SETTINGS.copy()
@@ -389,7 +430,7 @@ class DatabaseManager:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(
                 "REPLACE INTO guild_settings VALUES (?,?)",
-                (guild_id, json.dumps(settings))
+                (guild_id, json.dumps(settings)),
             )
             await db.commit()
 
@@ -398,7 +439,7 @@ class DatabaseManager:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(
                 "INSERT OR IGNORE INTO guild_custom_words (guild_id, word) VALUES (?,?)",
-                (guild_id, word)
+                (guild_id, word),
             )
             await db.commit()
 
@@ -407,7 +448,7 @@ class DatabaseManager:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(
                 "DELETE FROM guild_custom_words WHERE guild_id=? AND word=?",
-                (guild_id, word)
+                (guild_id, word),
             )
             await db.commit()
 
@@ -415,8 +456,7 @@ class DatabaseManager:
         """カスタム単語一覧を取得"""
         async with aiosqlite.connect(self.db_path) as db:
             cur = await db.execute(
-                "SELECT word FROM guild_custom_words WHERE guild_id=?",
-                (guild_id,)
+                "SELECT word FROM guild_custom_words WHERE guild_id=?", (guild_id,)
             )
             rows = await cur.fetchall()
             return [r[0] for r in rows]
@@ -426,7 +466,7 @@ class DatabaseManager:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(
                 "INSERT OR IGNORE INTO guild_disabled_words (guild_id, word) VALUES (?,?)",
-                (guild_id, word)
+                (guild_id, word),
             )
             await db.commit()
 
@@ -435,7 +475,7 @@ class DatabaseManager:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(
                 "DELETE FROM guild_disabled_words WHERE guild_id=? AND word=?",
-                (guild_id, word)
+                (guild_id, word),
             )
             await db.commit()
 
@@ -443,8 +483,7 @@ class DatabaseManager:
         """無効化単語一覧を取得"""
         async with aiosqlite.connect(self.db_path) as db:
             cur = await db.execute(
-                "SELECT word FROM guild_disabled_words WHERE guild_id=?",
-                (guild_id,)
+                "SELECT word FROM guild_disabled_words WHERE guild_id=?", (guild_id,)
             )
             rows = await cur.fetchall()
             return [r[0] for r in rows]
@@ -453,8 +492,12 @@ class DatabaseManager:
         """サーバーの全データをリセット"""
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("DELETE FROM guild_settings WHERE guild_id=?", (guild_id,))
-            await db.execute("DELETE FROM guild_custom_words WHERE guild_id=?", (guild_id,))
-            await db.execute("DELETE FROM guild_disabled_words WHERE guild_id=?", (guild_id,))
+            await db.execute(
+                "DELETE FROM guild_custom_words WHERE guild_id=?", (guild_id,)
+            )
+            await db.execute(
+                "DELETE FROM guild_disabled_words WHERE guild_id=?", (guild_id,)
+            )
             await db.commit()
 
 
@@ -470,7 +513,9 @@ class GeneratorEngine:
         result = ""
         for ch in word:
             result += ch
-            if ch in KANA_TO_VOWEL and random.randint(1, 100) <= settings.get("kana_prob", 50):
+            if ch in KANA_TO_VOWEL and random.randint(1, 100) <= settings.get(
+                "kana_prob", 50
+            ):
                 vowel = KANA_TO_VOWEL[ch]
                 for _ in range(settings.get("kana_count", 2)):
                     if random.random() < 0.5:
@@ -485,9 +530,13 @@ class GeneratorEngine:
         result = ""
         for ch in word:
             result += ch
-            if settings.get("star_enabled", True) and random.randint(1, 100) <= settings.get("star_prob", 50):
+            if settings.get("star_enabled", True) and random.randint(
+                1, 100
+            ) <= settings.get("star_prob", 50):
                 result += "っ"
-            if settings.get("circle_enabled", True) and random.randint(1, 100) <= settings.get("circle_prob", 50):
+            if settings.get("circle_enabled", True) and random.randint(
+                1, 100
+            ) <= settings.get("circle_prob", 50):
                 result += "…"
         return result
 
@@ -521,19 +570,29 @@ class GeneratorEngine:
 
                 sentence += word
 
-                if settings.get("insert_comma", True) and random.randint(1, 100) <= settings.get("comma_prob", 50):
+                if settings.get("insert_comma", True) and random.randint(
+                    1, 100
+                ) <= settings.get("comma_prob", 50):
                     sentence += "、"
 
-                if settings.get("insert_period", True) and random.randint(1, 100) <= settings.get("period_prob", 50):
+                if settings.get("insert_period", True) and random.randint(
+                    1, 100
+                ) <= settings.get("period_prob", 50):
                     sentence += "…"
 
-                if settings.get("insert_dots", True) and random.randint(1, 100) <= settings.get("dots_prob", 50):
+                if settings.get("insert_dots", True) and random.randint(
+                    1, 100
+                ) <= settings.get("dots_prob", 50):
                     sentence += random.choice(["っ", "ッ"])
 
-                if settings.get("insert_heart", True) and random.randint(1, 100) <= settings.get("heart_prob", 50):
+                if settings.get("insert_heart", True) and random.randint(
+                    1, 100
+                ) <= settings.get("heart_prob", 50):
                     sentence += "♥"
 
-                if settings.get("insert_exclamation", True) and random.randint(1, 100) <= settings.get("exclamation_prob", 50):
+                if settings.get("insert_exclamation", True) and random.randint(
+                    1, 100
+                ) <= settings.get("exclamation_prob", 50):
                     sentence += "！"
 
             results.append(sentence)
@@ -561,14 +620,19 @@ class CustomSession:
 
 # ---------- 単語取得 ----------
 
-async def get_category_words_async(guild_id: int, category: str, db: DatabaseManager) -> list[str]:
+
+async def get_category_words_async(
+    guild_id: int, category: str, db: DatabaseManager
+) -> list[str]:
     """カテゴリに応じた単語リストを非同期で返す"""
     if category == "custom":
         return await db.get_custom_words(guild_id)
     return MASTER_WORDS.get(category, [])
 
 
-async def get_all_category_words_with_meta(guild_id: int, db: DatabaseManager) -> dict[str, list[str]]:
+async def get_all_category_words_with_meta(
+    guild_id: int, db: DatabaseManager
+) -> dict[str, list[str]]:
     """全カテゴリの単語を {category: [words]} で返す"""
     result: dict[str, list[str]] = {}
     for cat in CATEGORY_ORDER:
@@ -577,6 +641,7 @@ async def get_all_category_words_with_meta(guild_id: int, db: DatabaseManager) -
 
 
 # ---------- UI Components ----------
+
 
 class BackButton(discord.ui.Button):
     """戻るボタン（汎用）"""
@@ -604,7 +669,9 @@ class GenerateButton(discord.ui.Button):
 
         session = cog.get_custom_session(self.guild_id, self.user_id)
         if not session.words:
-            await interaction.response.send_message("単語を選択してください", ephemeral=True)
+            await interaction.response.send_message(
+                "単語を選択してください", ephemeral=True
+            )
             return
 
         settings = await cog.db.get_settings(self.guild_id)
@@ -643,10 +710,7 @@ class WordSelectBase(discord.ui.Select):
         page_words = words[start:end]
 
         if page_words:
-            options = [
-                discord.SelectOption(label=w[:100], value=w)
-                for w in page_words
-            ]
+            options = [discord.SelectOption(label=w[:100], value=w) for w in page_words]
         else:
             options = [
                 discord.SelectOption(label="単語なし", value=EMPTY_WORD_PLACEHOLDER)
@@ -658,7 +722,14 @@ class WordSelectBase(discord.ui.Select):
 class DisableWordSelect(WordSelectBase):
     """無効化/有効化用の単語選択"""
 
-    def __init__(self, guild_id: int, category: str, page: int, disable_mode: bool, words: list[str]):
+    def __init__(
+        self,
+        guild_id: int,
+        category: str,
+        page: int,
+        disable_mode: bool,
+        words: list[str],
+    ):
         super().__init__(words, page, "単語選択")
         self.guild_id = guild_id
         self.category = category
@@ -687,7 +758,9 @@ class DisableWordSelect(WordSelectBase):
 class CustomWordSelect(WordSelectBase):
     """カスタムセッション用の単語選択"""
 
-    def __init__(self, guild_id: int, user_id: int, category: str, page: int, words: list[str]):
+    def __init__(
+        self, guild_id: int, user_id: int, category: str, page: int, words: list[str]
+    ):
         super().__init__(words, page, "単語追加")
         self.guild_id = guild_id
         self.user_id = user_id
@@ -711,7 +784,14 @@ class CustomWordSelect(WordSelectBase):
 class DisablePageButton(discord.ui.Button):
     """無効化/有効化モード用ページボタン"""
 
-    def __init__(self, guild_id: int, category: str, disable_mode: bool, page: int, direction: int):
+    def __init__(
+        self,
+        guild_id: int,
+        category: str,
+        disable_mode: bool,
+        page: int,
+        direction: int,
+    ):
         label = "▶" if direction > 0 else "◀"
         super().__init__(label=label, style=discord.ButtonStyle.blurple)
         self.guild_id = guild_id
@@ -725,16 +805,20 @@ class DisablePageButton(discord.ui.Button):
         if not cog:
             return
 
-        words = await get_category_words_async(self.guild_id, self.category, cog.db)
+        await get_category_words_async(self.guild_id, self.category, cog.db)
         new_page = max(0, self.page + self.direction)
-        view = await DisableWordView.create(self.guild_id, self.category, self.disable_mode, new_page, cog.db)
+        view = await DisableWordView.create(
+            self.guild_id, self.category, self.disable_mode, new_page, cog.db
+        )
         await interaction.response.edit_message(view=view)
 
 
 class CustomPageButton(discord.ui.Button):
     """カスタムセッション用ページボタン"""
 
-    def __init__(self, guild_id: int, user_id: int, category: str, page: int, direction: int):
+    def __init__(
+        self, guild_id: int, user_id: int, category: str, page: int, direction: int
+    ):
         label = "▶" if direction > 0 else "◀"
         super().__init__(label=label, style=discord.ButtonStyle.blurple)
         self.guild_id = guild_id
@@ -748,9 +832,11 @@ class CustomPageButton(discord.ui.Button):
         if not cog:
             return
 
-        words = await get_category_words_async(self.guild_id, self.category, cog.db)
+        await get_category_words_async(self.guild_id, self.category, cog.db)
         new_page = max(0, self.page + self.direction)
-        view = await CustomWordView.create(self.guild_id, self.user_id, self.category, new_page, cog.db)
+        view = await CustomWordView.create(
+            self.guild_id, self.user_id, self.category, new_page, cog.db
+        )
         await interaction.response.edit_message(view=view)
 
 
@@ -773,7 +859,9 @@ class CategorySelectBase(discord.ui.Select):
 class DisableCategorySelect(CategorySelectBase):
     """無効化/有効化モード用カテゴリ選択"""
 
-    def __init__(self, guild_id: int, disable_mode: bool, all_words: dict[str, list[str]]):
+    def __init__(
+        self, guild_id: int, disable_mode: bool, all_words: dict[str, list[str]]
+    ):
         super().__init__("カテゴリ選択", all_words)
         self.guild_id = guild_id
         self.disable_mode = disable_mode
@@ -785,8 +873,10 @@ class DisableCategorySelect(CategorySelectBase):
             return
 
         category = self.values[0]
-        words = await get_category_words_async(self.guild_id, category, cog.db)
-        view = await DisableWordView.create(self.guild_id, category, self.disable_mode, 0, cog.db)
+        await get_category_words_async(self.guild_id, category, cog.db)
+        view = await DisableWordView.create(
+            self.guild_id, category, self.disable_mode, 0, cog.db
+        )
         await interaction.response.edit_message(content=f"{category}", view=view)
 
 
@@ -805,15 +895,27 @@ class CustomCategorySelect(CategorySelectBase):
             return
 
         category = self.values[0]
-        words = await get_category_words_async(self.guild_id, category, cog.db)
-        view = await CustomWordView.create(self.guild_id, self.user_id, category, 0, cog.db)
-        await interaction.response.edit_message(content=f"カテゴリ: {category}", view=view)
+        await get_category_words_async(self.guild_id, category, cog.db)
+        view = await CustomWordView.create(
+            self.guild_id, self.user_id, category, 0, cog.db
+        )
+        await interaction.response.edit_message(
+            content=f"カテゴリ: {category}", view=view
+        )
 
 
 class DisableWordView(discord.ui.View):
     """無効化/有効化モードの単語選択ビュー"""
 
-    def __init__(self, guild_id: int, category: str, disable_mode: bool, page: int, words: list[str], db: DatabaseManager):
+    def __init__(
+        self,
+        guild_id: int,
+        category: str,
+        disable_mode: bool,
+        page: int,
+        words: list[str],
+        db: DatabaseManager,
+    ):
         super().__init__(timeout=300)
         self.guild_id = guild_id
         self.category = category
@@ -832,14 +934,23 @@ class DisableWordView(discord.ui.View):
             self.add_item(DisablePageButton(guild_id, category, disable_mode, page, 1))
 
     async def _build_back_view(self) -> discord.ui.View:
-        return await DisableCategoryView.create(self.guild_id, self.disable_mode, self._db)
+        return await DisableCategoryView.create(
+            self.guild_id, self.disable_mode, self._db
+        )
 
     async def add_back_button(self) -> None:
         back_view = await self._build_back_view()
         self.add_item(BackButton(back_view))
 
     @classmethod
-    async def create(cls, guild_id: int, category: str, disable_mode: bool, page: int, db: DatabaseManager) -> "DisableWordView":
+    async def create(
+        cls,
+        guild_id: int,
+        category: str,
+        disable_mode: bool,
+        page: int,
+        db: DatabaseManager,
+    ) -> "DisableWordView":
         words = await get_category_words_async(guild_id, category, db)
         view = cls(guild_id, category, disable_mode, page, words, db)
         await view.add_back_button()
@@ -849,12 +960,16 @@ class DisableWordView(discord.ui.View):
 class DisableCategoryView(discord.ui.View):
     """無効化/有効化モードのカテゴリ選択ビュー"""
 
-    def __init__(self, guild_id: int, disable_mode: bool, all_words: dict[str, list[str]]):
+    def __init__(
+        self, guild_id: int, disable_mode: bool, all_words: dict[str, list[str]]
+    ):
         super().__init__(timeout=300)
         self.add_item(DisableCategorySelect(guild_id, disable_mode, all_words))
 
     @classmethod
-    async def create(cls, guild_id: int, disable_mode: bool, db: DatabaseManager) -> "DisableCategoryView":
+    async def create(
+        cls, guild_id: int, disable_mode: bool, db: DatabaseManager
+    ) -> "DisableCategoryView":
         all_words = await get_all_category_words_with_meta(guild_id, db)
         return cls(guild_id, disable_mode, all_words)
 
@@ -862,7 +977,9 @@ class DisableCategoryView(discord.ui.View):
 class CustomWordView(discord.ui.View):
     """カスタムセッションの単語選択ビュー"""
 
-    def __init__(self, guild_id: int, user_id: int, category: str, page: int, words: list[str]):
+    def __init__(
+        self, guild_id: int, user_id: int, category: str, page: int, words: list[str]
+    ):
         super().__init__(timeout=300)
 
         self.add_item(CustomWordSelect(guild_id, user_id, category, page, words))
@@ -877,12 +994,16 @@ class CustomWordView(discord.ui.View):
         self.add_item(GenerateButton(guild_id, user_id))
         self.add_item(ClearButton(guild_id, user_id))
 
-    async def add_back_button(self, guild_id: int, user_id: int, db: DatabaseManager) -> None:
+    async def add_back_button(
+        self, guild_id: int, user_id: int, db: DatabaseManager
+    ) -> None:
         back_view = await CustomCategoryView.create(guild_id, user_id, db)
         self.add_item(BackButton(back_view))
 
     @classmethod
-    async def create(cls, guild_id: int, user_id: int, category: str, page: int, db: DatabaseManager) -> "CustomWordView":
+    async def create(
+        cls, guild_id: int, user_id: int, category: str, page: int, db: DatabaseManager
+    ) -> "CustomWordView":
         words = await get_category_words_async(guild_id, category, db)
         view = cls(guild_id, user_id, category, page, words)
         await view.add_back_button(guild_id, user_id, db)
@@ -899,17 +1020,22 @@ class CustomCategoryView(discord.ui.View):
         self.add_item(ClearButton(guild_id, user_id))
 
     @classmethod
-    async def create(cls, guild_id: int, user_id: int, db: DatabaseManager) -> "CustomCategoryView":
+    async def create(
+        cls, guild_id: int, user_id: int, db: DatabaseManager
+    ) -> "CustomCategoryView":
         all_words = await get_all_category_words_with_meta(guild_id, db)
         return cls(guild_id, user_id, all_words)
 
 
 # ---------- Setting UI ----------
 
+
 class ToggleButton(discord.ui.Button):
     """ON/OFF 切り替えボタン"""
 
-    def __init__(self, guild_id: int, key: str, current_value: bool, db: DatabaseManager):
+    def __init__(
+        self, guild_id: int, key: str, current_value: bool, db: DatabaseManager
+    ):
         self.guild_id = guild_id
         self.key = key
         self.db = db
@@ -943,7 +1069,9 @@ class ProbModal(discord.ui.Modal, title="確率設定"):
             value = int(str(self.value))
             value = max(0, min(value, 100))
         except ValueError:
-            await interaction.response.send_message("0〜100の数字を入力してください", ephemeral=True)
+            await interaction.response.send_message(
+                "0〜100の数字を入力してください", ephemeral=True
+            )
             return
 
         settings = await self.db.get_settings(self.guild_id)
@@ -970,7 +1098,9 @@ class KanaCountModal(discord.ui.Modal, title="かな文字連続数"):
             value = int(str(self.value))
             value = max(1, min(value, 6))
         except ValueError:
-            await interaction.response.send_message("1〜6の数字を入力してください", ephemeral=True)
+            await interaction.response.send_message(
+                "1〜6の数字を入力してください", ephemeral=True
+            )
             return
 
         settings = await self.db.get_settings(self.guild_id)
@@ -997,7 +1127,9 @@ class SentenceCountModal(discord.ui.Modal, title="生成行数"):
             value = int(str(self.value))
             value = max(1, min(value, 10))
         except ValueError:
-            await interaction.response.send_message("1〜10の数字を入力してください", ephemeral=True)
+            await interaction.response.send_message(
+                "1〜10の数字を入力してください", ephemeral=True
+            )
             return
 
         settings = await self.db.get_settings(self.guild_id)
@@ -1011,7 +1143,9 @@ class SentenceCountModal(discord.ui.Modal, title="生成行数"):
 class ProbButton(discord.ui.Button):
     """数値設定ボタン"""
 
-    def __init__(self, guild_id: int, key: str, current_value: int | str, db: DatabaseManager):
+    def __init__(
+        self, guild_id: int, key: str, current_value: int | str, db: DatabaseManager
+    ):
         self.guild_id = guild_id
         self.key = key
         self.db = db
@@ -1042,22 +1176,22 @@ class SeparatorSelect(discord.ui.Select):
             discord.SelectOption(
                 label="改行 (newline)",
                 value="newline",
-                default=(current_value == "newline")
+                default=(current_value == "newline"),
             ),
             discord.SelectOption(
                 label="スペース (space)",
                 value="space",
-                default=(current_value == "space")
+                default=(current_value == "space"),
             ),
             discord.SelectOption(
-                label="なし (none)",
-                value="none",
-                default=(current_value == "none")
+                label="なし (none)", value="none", default=(current_value == "none")
             ),
             discord.SelectOption(
-                label=f"カスタム: {current_value}" if is_custom else "カスタム (custom)",
+                label=f"カスタム: {current_value}"
+                if is_custom
+                else "カスタム (custom)",
                 value="__custom__",
-                default=is_custom
+                default=is_custom,
             ),
         ]
 
@@ -1103,13 +1237,25 @@ class SettingView(discord.ui.View):
     """設定変更ビュー"""
 
     TOGGLE_KEYS = [
-        "insert_comma", "insert_dots", "insert_period", "insert_heart",
-        "insert_exclamation", "star_enabled", "circle_enabled", "kana_enabled"
+        "insert_comma",
+        "insert_dots",
+        "insert_period",
+        "insert_heart",
+        "insert_exclamation",
+        "star_enabled",
+        "circle_enabled",
+        "kana_enabled",
     ]
 
     PROB_KEYS = [
-        "comma_prob", "dots_prob", "period_prob", "heart_prob",
-        "exclamation_prob", "star_prob", "circle_prob", "kana_prob"
+        "comma_prob",
+        "dots_prob",
+        "period_prob",
+        "heart_prob",
+        "exclamation_prob",
+        "star_prob",
+        "circle_prob",
+        "kana_prob",
     ]
 
     def __init__(self, guild_id: int, db: DatabaseManager, settings: dict):
@@ -1123,8 +1269,14 @@ class SettingView(discord.ui.View):
         for key in self.PROB_KEYS:
             self.add_item(ProbButton(guild_id, key, settings.get(key, 50), db))
 
-        self.add_item(ProbButton(guild_id, "kana_count", settings.get("kana_count", 2), db))
-        self.add_item(ProbButton(guild_id, "sentence_count", settings.get("sentence_count", 3), db))
+        self.add_item(
+            ProbButton(guild_id, "kana_count", settings.get("kana_count", 2), db)
+        )
+        self.add_item(
+            ProbButton(
+                guild_id, "sentence_count", settings.get("sentence_count", 3), db
+            )
+        )
 
         sep_value = settings.get("output_separator", "newline")
         self.add_item(SeparatorSelect(guild_id, sep_value, db))
@@ -1136,6 +1288,7 @@ class SettingView(discord.ui.View):
 
 
 # ---------- Main Cog ----------
+
 
 class AegiGenerator(commands.Cog):
     """あえぎ声生成 Cog"""
@@ -1159,11 +1312,7 @@ class AegiGenerator(commands.Cog):
 
     async def build_word_pool(self, guild_id: int) -> list[str]:
         """有効な全単語を取得"""
-        words = [
-            word
-            for category in MASTER_WORDS.values()
-            for word in category
-        ]
+        words = [word for category in MASTER_WORDS.values() for word in category]
 
         custom_words = await self.db.get_custom_words(guild_id)
         disabled_words = await self.db.get_disabled_words(guild_id)
@@ -1206,7 +1355,7 @@ class AegiGenerator(commands.Cog):
             # UIでカテゴリ選択 → ページ分割表示
             view = await AllWordsCategoryView.create(ctx.guild.id, self.db)
             await ctx.send("カテゴリを選択してください", view=view)
-            
+
     @aegi.command(name="random")
     async def aegi_random(self, ctx: commands.Context) -> None:
         """ランダムな単語数(3〜25)を選び、3通りの並び順で生成"""
@@ -1243,7 +1392,9 @@ class AegiGenerator(commands.Cog):
             await ctx.send(result)
 
     @aegi.command(name="category")
-    async def aegi_category(self, ctx: commands.Context, category: str | None = None) -> None:
+    async def aegi_category(
+        self, ctx: commands.Context, category: str | None = None
+    ) -> None:
         """カテゴリ別単語表示"""
         if category is None:
             embed = discord.Embed(title="カテゴリ一覧")
@@ -1326,12 +1477,21 @@ class AegiGenerator(commands.Cog):
         view = await SettingView.create(ctx.guild.id, self.db)
         await ctx.send("設定変更", view=view)
 
+
 # ---------- All Words Paged View ----------
+
 
 class AllWordsPageButton(discord.ui.Button):
     """単語一覧ページ送りボタン"""
 
-    def __init__(self, guild_id: int, category: str, page: int, direction: int, db: DatabaseManager):
+    def __init__(
+        self,
+        guild_id: int,
+        category: str,
+        page: int,
+        direction: int,
+        db: DatabaseManager,
+    ):
         label = "▶" if direction > 0 else "◀"
         super().__init__(label=label, style=discord.ButtonStyle.blurple)
         self.guild_id = guild_id
@@ -1342,7 +1502,9 @@ class AllWordsPageButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction) -> None:
         new_page = max(0, self.page + self.direction)
-        view = await AllWordsView.create(self.guild_id, self.category, new_page, self.db)
+        view = await AllWordsView.create(
+            self.guild_id, self.category, new_page, self.db
+        )
         await interaction.response.edit_message(view=view)
 
 
@@ -1351,7 +1513,14 @@ class AllWordsView(discord.ui.View):
 
     WORDS_PER_PAGE = 100
 
-    def __init__(self, guild_id: int, category: str, page: int, words: list[str], db: DatabaseManager):
+    def __init__(
+        self,
+        guild_id: int,
+        category: str,
+        page: int,
+        words: list[str],
+        db: DatabaseManager,
+    ):
         super().__init__(timeout=300)
         self.guild_id = guild_id
         self.category = category
@@ -1371,7 +1540,9 @@ class AllWordsView(discord.ui.View):
         self.add_item(BackButton(back_view))
 
     @classmethod
-    async def create(cls, guild_id: int, category: str, page: int, db: DatabaseManager) -> "AllWordsView":
+    async def create(
+        cls, guild_id: int, category: str, page: int, db: DatabaseManager
+    ) -> "AllWordsView":
         words = await get_category_words_async(guild_id, category, db)
         view = cls(guild_id, category, page, words, db)
         await view.add_back_button()
@@ -1397,7 +1568,9 @@ class AllWordsView(discord.ui.View):
 class AllWordsCategorySelect(discord.ui.Select):
     """単語一覧用カテゴリ選択"""
 
-    def __init__(self, guild_id: int, all_words: dict[str, list[str]], db: DatabaseManager):
+    def __init__(
+        self, guild_id: int, all_words: dict[str, list[str]], db: DatabaseManager
+    ):
         self.guild_id = guild_id
         self._db = db
 
@@ -1422,7 +1595,9 @@ class AllWordsCategorySelect(discord.ui.Select):
 class AllWordsCategoryView(discord.ui.View):
     """単語一覧カテゴリ選択ビュー"""
 
-    def __init__(self, guild_id: int, all_words: dict[str, list[str]], db: DatabaseManager):
+    def __init__(
+        self, guild_id: int, all_words: dict[str, list[str]], db: DatabaseManager
+    ):
         super().__init__(timeout=300)
         self.add_item(AllWordsCategorySelect(guild_id, all_words, db))
 
@@ -1430,6 +1605,7 @@ class AllWordsCategoryView(discord.ui.View):
     async def create(cls, guild_id: int, db: DatabaseManager) -> "AllWordsCategoryView":
         all_words = await get_all_category_words_with_meta(guild_id, db)
         return cls(guild_id, all_words, db)
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(AegiGenerator(bot))

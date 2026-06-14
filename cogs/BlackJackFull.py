@@ -5,8 +5,10 @@ import random
 SUITS = ["♠", "♥", "♦", "♣"]
 RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 
+
 def draw_card():
     return f"{random.choice(SUITS)}{random.choice(RANKS)}"
+
 
 def card_value(card):
     rank = card[1:]  # ♠A → A
@@ -15,6 +17,7 @@ def card_value(card):
     if rank == "A":
         return 11
     return int(rank)
+
 
 def hand_value(cards):
     """手札の合計値計算（Aは11か1で最適化）"""
@@ -25,10 +28,12 @@ def hand_value(cards):
         aces -= 1
     return total
 
+
 def get_game_type(number: int = None):
     if number is None:
         return 21
     return int(f"{number}1")
+
 
 class BlackJackFull(commands.Cog):
     """本格ブラックジャックCog"""
@@ -70,7 +75,9 @@ class BlackJackFull(commands.Cog):
 
         # バースト判定
         if total > 21:
-            await ctx.send(f"💥 {user.mention} さんがバーストしました！手札: {len(hand)} 枚")
+            await ctx.send(
+                f"💥 {user.mention} さんがバーストしました！手札: {len(hand)} 枚"
+            )
             del self.games[user.id]
 
     @commands.command(name="blackjack_reset")
@@ -79,7 +86,10 @@ class BlackJackFull(commands.Cog):
         user = ctx.author
         if user.id in self.games:
             del self.games[user.id]
-        await ctx.send(f"{user.mention} さんのブラックジャックゲームをリセットしました。")
+        await ctx.send(
+            f"{user.mention} さんのブラックジャックゲームをリセットしました。"
+        )
+
 
 # Cog登録
 async def setup(bot):

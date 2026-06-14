@@ -1,7 +1,7 @@
-import discord
 from discord.ext import commands
 import random
 from datetime import date
+
 
 class HentaiRank(commands.Cog):
     """サーバー民ランキング「今日の変態度」Cog"""
@@ -27,9 +27,7 @@ class HentaiRank(commands.Cog):
 
         # スコア順にソート
         sorted_members = sorted(
-            self.daily_ranks[today_str].items(),
-            key=lambda x: x[1],
-            reverse=True
+            self.daily_ranks[today_str].items(), key=lambda x: x[1], reverse=True
         )
 
         # 上位5名表示
@@ -40,6 +38,7 @@ class HentaiRank(commands.Cog):
                 description += f"{rank}. {member.name} → 変態度: {score}%\n"
 
         await ctx.send(f"🌟 **今日の変態度ランキング** 🌟\n{description}")
+
 
 # CogをBotに登録
 async def setup(bot):

@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 import random
 
@@ -6,6 +5,7 @@ import random
 PREFIXES = ["アブラカダ", "エクス", "インフェルノ", "ルミナス", "シャドウ", "アルケミ"]
 SUFFIXES = ["リウス", "トロン", "フィカス", "マンドラ", "サリオン", "ボルテクス"]
 ELEMENTS = ["🔥", "❄️", "⚡", "🌪️", "💧", "🌟"]
+
 
 class MagicSpellBot(commands.Cog):
     """魔法詠唱Bot（発言で呪文生成）"""
@@ -23,7 +23,10 @@ class MagicSpellBot(commands.Cog):
         suffix = random.choice(SUFFIXES)
         element = random.choice(ELEMENTS)
         spell = f"{prefix}{suffix} {element}！"
-        await ctx.send(f"💬 {ctx.author.name} が唱えた: 「{phrase}」\n✨ 呪文生成: {spell}")
+        await ctx.send(
+            f"💬 {ctx.author.name} が唱えた: 「{phrase}」\n✨ 呪文生成: {spell}"
+        )
+
 
 # CogをBotに登録
 async def setup(bot):

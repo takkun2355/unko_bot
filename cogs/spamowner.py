@@ -2,13 +2,23 @@ import asyncio
 import discord
 from discord.ext import commands
 
+
 class SpamOwnerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="spam1", help="指定したユーザーに指定した回数メンションを送信します。(ボットオーナー専用)")
+    @commands.command(
+        name="spam1",
+        help="指定したユーザーに指定した回数メンションを送信します。(ボットオーナー専用)",
+    )
     @commands.is_owner()
-    async def spam1(self, ctx: commands.Context, member: discord.Member, count: int = 10, delay: float = 1.0):
+    async def spam1(
+        self,
+        ctx: commands.Context,
+        member: discord.Member,
+        count: int = 10,
+        delay: float = 1.0,
+    ):
         if not isinstance(member, discord.Member):
             await ctx.send("有効なユーザーを指定してください。")
             return
@@ -36,9 +46,14 @@ class SpamOwnerCog(commands.Cog):
         else:
             await ctx.send(f"予期せぬエラーが発生しました: {error}")
 
-    @commands.command(name="flood1", help="指定ユーザーのメンションを1メッセージに詰め込みます。(ボットオーナー専用)")
+    @commands.command(
+        name="flood1",
+        help="指定ユーザーのメンションを1メッセージに詰め込みます。(ボットオーナー専用)",
+    )
     @commands.is_owner()
-    async def flood1(self, ctx: commands.Context, member: discord.Member, total: int = 1000000000):
+    async def flood1(
+        self, ctx: commands.Context, member: discord.Member, total: int = 1000000000
+    ):
         message_content = ""
         i = 1
         limit = 2000
@@ -70,7 +85,10 @@ class SpamOwnerCog(commands.Cog):
         else:
             await ctx.send(f"予期せぬエラーが発生しました: {error}")
 
-    @commands.command(name="countup1", help="指定回数、指定時間ごとに数字をカウントアップして送信します。(ボットオーナー専用)")
+    @commands.command(
+        name="countup1",
+        help="指定回数、指定時間ごとに数字をカウントアップして送信します。(ボットオーナー専用)",
+    )
     @commands.is_owner()
     async def countup1(self, ctx: commands.Context, count: int, delay: float = 1.0):
         if count <= 0:
@@ -97,6 +115,7 @@ class SpamOwnerCog(commands.Cog):
             await ctx.send("このコマンドはボットオーナー専用です。")
         else:
             await ctx.send(f"予期せぬエラーが発生しました: {error}")
+
 
 async def setup(bot):
     await bot.add_cog(SpamOwnerCog(bot))

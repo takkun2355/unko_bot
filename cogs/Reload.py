@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 from typing import List
 import os
@@ -62,7 +61,7 @@ class Reload(commands.Cog):
             return
 
         for i in range(0, len(message), 1900):
-            await ctx.send(message[i:i + 1900])
+            await ctx.send(message[i : i + 1900])
 
     # ------------------------------
     # Reload
@@ -85,18 +84,13 @@ class Reload(commands.Cog):
             cogs = parsed
 
         results = []
-        
+
         if parsed == "all":
             print("[RELOAD-LOG] All cogs reloaded.")
         else:
-            targets = [
-                cog.replace("cogs.", "")
-                for cog in cogs
-            ]
+            targets = [cog.replace("cogs.", "") for cog in cogs]
 
-            print(
-                f"[RELOAD-LOG] {', '.join(targets)} cog reload."
-            )
+            print(f"[RELOAD-LOG] {', '.join(targets)} cog reload.")
 
         print("[RELOAD-LOG] --- reload cogs ---")
 
@@ -107,41 +101,24 @@ class Reload(commands.Cog):
                 if cog in self.bot.extensions:
                     await self.bot.reload_extension(cog)
                     results.append(f"✅ {cog}")
-                    print(
-                        f"[RELOAD-LOG] - {cog_name}.py reload Success"
-                    )
+                    print(f"[RELOAD-LOG] - {cog_name}.py reload Success")
 
                 else:
                     await self.bot.load_extension(cog)
-                    results.append(
-                        f"📦 {cog} (新規ロード)"
-                    )
-                    print(
-                        f"[RELOAD-LOG] - {cog_name}.py load Success"
-                    )
-                    
+                    results.append(f"📦 {cog} (新規ロード)")
+                    print(f"[RELOAD-LOG] - {cog_name}.py load Success")
+
             except commands.ExtensionNotFound:
-                results.append(
-                    f"❌ {cog} (見つかりません)"
-                )
-                print(
-                    f"[RELOAD-LOG] - {cog_name}.py reload Failure"
-                )
+                results.append(f"❌ {cog} (見つかりません)")
+                print(f"[RELOAD-LOG] - {cog_name}.py reload Failure")
 
             except Exception as e:
-                results.append(
-                    f"❌ {cog}\n{e}"
-                )
-                print(
-                    f"[RELOAD-LOG] - {cog_name}.py reload Failure"
-                )
+                results.append(f"❌ {cog}\n{e}")
+                print(f"[RELOAD-LOG] - {cog_name}.py reload Failure")
 
         print("[RELOAD-LOG] --------------------")
 
-        await self._send_results(
-            ctx,
-            results
-        )
+        await self._send_results(ctx, results)
 
     # ------------------------------
     # Load
@@ -208,7 +185,6 @@ class Reload(commands.Cog):
         results = []
 
         for cog in cogs:
-
             if cog.lower() == "cogs.reload":
                 results.append("⚠️ cogs.reload は保護されています")
                 continue
@@ -244,17 +220,11 @@ class Reload(commands.Cog):
 
         if loaded_cogs:
             lines.append("\n✅ ロード済み")
-            lines.extend(
-                f"・{cog}"
-                for cog in sorted(loaded_cogs)
-            )
+            lines.extend(f"・{cog}" for cog in sorted(loaded_cogs))
 
         if unloaded_cogs:
             lines.append("\n⬜ 未ロード")
-            lines.extend(
-                f"・{cog}"
-                for cog in sorted(unloaded_cogs)
-            )
+            lines.extend(f"・{cog}" for cog in sorted(unloaded_cogs))
 
         await self._send_results(ctx, lines)
 
@@ -276,9 +246,7 @@ class Reload(commands.Cog):
         if len(tb) > 1500:
             tb = tb[:1500] + "\n...(省略)"
 
-        await ctx.send(
-            f"❌ エラー発生\n```py\n{tb}\n```"
-        )
+        await ctx.send(f"❌ エラー発生\n```py\n{tb}\n```")
 
 
 async def setup(bot):

@@ -2,13 +2,23 @@ import asyncio
 import discord
 from discord.ext import commands
 
+
 class SpamCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="spam", help="指定したユーザーに指定した回数メンションを送信します。(管理者権限が必要です)")
+    @commands.command(
+        name="spam",
+        help="指定したユーザーに指定した回数メンションを送信します。(管理者権限が必要です)",
+    )
     @commands.has_permissions(administrator=False)
-    async def spam(self, ctx: commands.Context, member: discord.Member, count: int = 10, delay: float = 1.0):
+    async def spam(
+        self,
+        ctx: commands.Context,
+        member: discord.Member,
+        count: int = 10,
+        delay: float = 1.0,
+    ):
         """
         指定したユーザーに繰り返しメンションを送信します。
 
@@ -51,9 +61,14 @@ class SpamCog(commands.Cog):
         else:
             await ctx.send(f"予期せぬエラーが発生しました: {error}")
 
-    @commands.command(name="flood", help="指定ユーザーのメンションを1メッセージに詰め込みます。(管理者権限が必要です)")
+    @commands.command(
+        name="flood",
+        help="指定ユーザーのメンションを1メッセージに詰め込みます。(管理者権限が必要です)",
+    )
     @commands.has_permissions(administrator=False)
-    async def flood(self, ctx: commands.Context, member: discord.Member, total: int = 1000000000):
+    async def flood(
+        self, ctx: commands.Context, member: discord.Member, total: int = 1000000000
+    ):
         """指定したユーザーのメンションを、1つのメッセージに文字数制限いっぱいまで詰め込みます。"""
         message_content = ""
         i = 1
@@ -86,7 +101,10 @@ class SpamCog(commands.Cog):
         else:
             await ctx.send(f"予期せぬエラーが発生しました: {error}")
 
-    @commands.command(name="countup", help="指定回数、指定時間ごとに数字をカウントアップして送信します。(管理者権限が必要です)")
+    @commands.command(
+        name="countup",
+        help="指定回数、指定時間ごとに数字をカウントアップして送信します。(管理者権限が必要です)",
+    )
     @commands.has_permissions(administrator=False)
     async def countup(self, ctx: commands.Context, count: int, delay: float = 1.0):
         """指定回数、指定時間ごとに数字をカウントアップして送信します。"""
@@ -94,7 +112,7 @@ class SpamCog(commands.Cog):
             await ctx.send("回数は1以上の整数で指定してください。")
             return
 
-        delay = max(0.5, delay) # 安全のため最低遅延を設ける
+        delay = max(0.5, delay)  # 安全のため最低遅延を設ける
 
         for i in range(1, count + 1):
             try:
@@ -114,6 +132,7 @@ class SpamCog(commands.Cog):
             await ctx.send("このコマンドを使用するには管理者権限が必要です。")
         else:
             await ctx.send(f"予期せぬエラーが発生しました: {error}")
+
 
 async def setup(bot):
     await bot.add_cog(SpamCog(bot))

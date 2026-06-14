@@ -1,15 +1,24 @@
 # rpg_cog_full.py
-import discord
 from discord.ext import commands
 import json
 import os
 import random
-import math
 import asyncio
 
 RPG_FOLDER = "rpg_data"
 
-MONSTERS_NORMAL = ["スライム", "ゴブリン", "コボルト", "オーク", "ウルフ", "バット", "ゾンビ", "クモ", "サソリ", "カエル"]
+MONSTERS_NORMAL = [
+    "スライム",
+    "ゴブリン",
+    "コボルト",
+    "オーク",
+    "ウルフ",
+    "バット",
+    "ゾンビ",
+    "クモ",
+    "サソリ",
+    "カエル",
+]
 MONSTERS_RARE = ["ドラゴン", "ミノタウロス", "リッチ", "ワイバーン", "ヒドラ"]
 MONSTERS_EPIC = ["古代ゴーレム", "大魔王"]
 
@@ -33,22 +42,23 @@ QUESTS = [
     "湖の怪物退治",
     "洞窟のゴブリン掃討",
     "砂漠の盗賊討伐",
-    "幽霊船を撃退せよ"
+    "幽霊船を撃退せよ",
 ]
 
 SHOP_ITEMS = {
-    "回復薬": {"効果": "HP10回復", "価格":50},
-    "大回復薬": {"効果": "HP全回復", "価格":200},
-    "攻撃強化薬": {"効果": "攻撃力+3", "価格":100},
-    "防御強化薬": {"効果": "防御力+3", "価格":100},
-    "魔法の巻物": {"効果": "ランダム効果", "価格":150}
+    "回復薬": {"効果": "HP10回復", "価格": 50},
+    "大回復薬": {"効果": "HP全回復", "価格": 200},
+    "攻撃強化薬": {"効果": "攻撃力+3", "価格": 100},
+    "防御強化薬": {"効果": "防御力+3", "価格": 100},
+    "魔法の巻物": {"効果": "ランダム効果", "価格": 150},
 }
+
 
 class RPGCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.active_battles = {}  # 通常戦闘中
-        self.active_pvp = {}      # PvP戦闘待機
+        self.active_pvp = {}  # PvP戦闘待機
 
     # ----------------------
     # ユーザーフォルダ/セーブ
@@ -80,13 +90,25 @@ class RPGCog(commands.Cog):
         user_data = self.load_user(ctx.author.id)
         if not user_data:
             await ctx.send("キャラクターが存在しません。名前を入力してください:")
+
             def check(m):
                 return m.author == ctx.author and m.channel == ctx.channel
+
             try:
                 msg = await self.bot.wait_for("message", check=check, timeout=60)
                 name = msg.content.strip()
-                user_data = {"name":name, "level":1, "exp":0, "hp":10, "max_hp":10,
-                             "attack":2, "defense":1, "gold":100, "items":[], "equipment":{}}
+                user_data = {
+                    "name": name,
+                    "level": 1,
+                    "exp": 0,
+                    "hp": 10,
+                    "max_hp": 10,
+                    "attack": 2,
+                    "defense": 1,
+                    "gold": 100,
+                    "items": [],
+                    "equipment": {},
+                }
                 self.save_user(ctx.author.id, user_data)
                 await ctx.send(f"{name} を作成しました！")
             except:
@@ -107,10 +129,12 @@ class RPGCog(commands.Cog):
     # 行動可能コマンド
     # ----------------------
     async def send_available_commands(self, ctx):
-        cmds = ("次にできること:\n"
-                "- ステータス\n- 所持品\n- 装備\n- クエスト\n"
-                "- 攻撃\n- 防御\n- アイテム使用 <アイテム名>\n- 逃げる\n"
-                "- 自動戦闘\n- ショップ\n- リセット\n- PVP開始 @相手")
+        cmds = (
+            "次にできること:\n"
+            "- ステータス\n- 所持品\n- 装備\n- クエスト\n"
+            "- 攻撃\n- 防御\n- アイテム使用 <アイテム名>\n- 逃げる\n"
+            "- 自動戦闘\n- ショップ\n- リセット\n- PVP開始 @相手"
+        )
         await ctx.send(cmds)
 
     # ----------------------
@@ -125,33 +149,47 @@ class RPGCog(commands.Cog):
 
         quest_text = random.choice(QUESTS)
         monster_name = random.choice(MONSTERS_NORMAL + MONSTERS_RARE + MONSTERS_EPIC)
-        monster_level = max(1, user_data['level'] + random.randint(-5,5))
+        monster_level = max(1, user_data["level"] + random.randint(-5, 5))
         monster_hp = int(monster_level * 7.5)
-        monster_attack = round((monster_level**3.5)/2)
-        monster_defense = round((monster_level**3)/2)
+        monster_attack = round((monster_level**3.5) / 2)
+        monster_defense = round((monster_level**3) / 2)
         monster_exp = monster_level * 5
-        monster_gold = monster_level*2 + random.randint(0,15)
+        monster_gold = monster_level * 2 + random.randint(0, 15)
 
         self.active_battles[ctx.author.id] = {
-            "monster_name":monster_name, "monster_level":monster_level, "monster_hp":monster_hp,
-            "monster_attack":monster_attack, "monster_defense":monster_defense,
-            "monster_exp":monster_exp, "monster_gold":monster_gold,
-            "user_hp":user_data['hp']
+            "monster_name": monster_name,
+            "monster_level": monster_level,
+            "monster_hp": monster_hp,
+            "monster_attack": monster_attack,
+            "monster_defense": monster_defense,
+            "monster_exp": monster_exp,
+            "monster_gold": monster_gold,
+            "user_hp": user_data["hp"],
         }
 
-        await ctx.send(f"🗡️ クエスト: {quest_text}\nモンスター: {monster_name} (Lv{monster_level}) が出現！挑戦しますか？ yes/no")
-        def check(m): return m.author==ctx.author and m.channel==ctx.channel and m.content.lower() in ["yes","no"]
+        await ctx.send(
+            f"🗡️ クエスト: {quest_text}\nモンスター: {monster_name} (Lv{monster_level}) が出現！挑戦しますか？ yes/no"
+        )
+
+        def check(m):
+            return (
+                m.author == ctx.author
+                and m.channel == ctx.channel
+                and m.content.lower() in ["yes", "no"]
+            )
+
         try:
             msg = await self.bot.wait_for("message", check=check, timeout=30)
-            if msg.content.lower()=="yes":
+            if msg.content.lower() == "yes":
                 await ctx.send(f"{monster_name} に挑戦します！")
                 await self.send_available_commands(ctx)
             else:
                 await ctx.send("クエストをキャンセルしました。")
-                self.active_battles.pop(ctx.author.id,None)
+                self.active_battles.pop(ctx.author.id, None)
         except:
             await ctx.send("時間切れでクエストをキャンセルしました。")
-            self.active_battles.pop(ctx.author.id,None)
+            self.active_battles.pop(ctx.author.id, None)
+
     # ----------------------
     # ダメージ計算
     # ----------------------
@@ -196,7 +234,9 @@ class RPGCog(commands.Cog):
             user_data["hp"] = 1
             self.save_user(ctx.author.id, user_data)
             self.active_battles.pop(ctx.author.id)
-            msg += f"💀 {user_data['name']} は倒されました。G {user_data['level']} 減少！"
+            msg += (
+                f"💀 {user_data['name']} は倒されました。G {user_data['level']} 減少！"
+            )
         else:
             self.active_battles[ctx.author.id] = battle
             user_data["hp"] = battle["user_hp"]
@@ -204,6 +244,7 @@ class RPGCog(commands.Cog):
             msg += f"現在HP: {battle['user_hp']} / {user_data['max_hp']}"
 
         await ctx.send(msg)
+
     # ----------------------
     # 防御コマンド
     # ----------------------
@@ -222,7 +263,9 @@ class RPGCog(commands.Cog):
         user_data["hp"] = battle["user_hp"]
         self.save_user(ctx.author.id, user_data)
 
-        await ctx.send(f"{user_data['name']} は防御！{battle['monster_name']} の攻撃を半減 {dmg_to_player} ダメージ。現在HP: {battle['user_hp']} / {user_data['max_hp']}")
+        await ctx.send(
+            f"{user_data['name']} は防御！{battle['monster_name']} の攻撃を半減 {dmg_to_player} ダメージ。現在HP: {battle['user_hp']} / {user_data['max_hp']}"
+        )
 
     # ----------------------
     # アイテム使用
@@ -247,7 +290,9 @@ class RPGCog(commands.Cog):
         user_data["items"].remove(item_name)
         self.save_user(ctx.author.id, user_data)
 
-        await ctx.send(f"{user_data['name']} が {item_name} を使用！現在HP: {user_data['hp']} / {user_data['max_hp']}")
+        await ctx.send(
+            f"{user_data['name']} が {item_name} を使用！現在HP: {user_data['hp']} / {user_data['max_hp']}"
+        )
 
     # ----------------------
     # 逃走コマンド
@@ -269,7 +314,9 @@ class RPGCog(commands.Cog):
             battle["user_hp"] -= dmg_to_player
             user_data["hp"] = battle["user_hp"]
             self.save_user(ctx.author.id, user_data)
-            await ctx.send(f"{user_data['name']} は {dmg_to_player} ダメージを受けました。現在HP: {battle['user_hp']} / {user_data['max_hp']}")
+            await ctx.send(
+                f"{user_data['name']} は {dmg_to_player} ダメージを受けました。現在HP: {battle['user_hp']} / {user_data['max_hp']}"
+            )
 
     # ----------------------
     # 自動戦闘
@@ -292,7 +339,7 @@ class RPGCog(commands.Cog):
     async def pvp_attack(self, ctx):
         user_data = self.load_user(ctx.author.id)
         target_id = None
-        for k,v in self.active_pvp.items():
+        for k, v in self.active_pvp.items():
             if v.get("challenger") == ctx.author.id or k == ctx.author.id:
                 target_id = k if k != ctx.author.id else v["challenger"]
                 break
@@ -314,8 +361,9 @@ class RPGCog(commands.Cog):
             self.save_user(ctx.author.id, user_data)
             self.save_user(target_id, target_data)
             msg += f"\n🏆 {target_data['name']} を倒した！全Gを獲得！"
-            self.active_pvp.pop(target_id,None)
+            self.active_pvp.pop(target_id, None)
         await ctx.send(msg)
+
 
 # Cog登録
 async def setup(bot):

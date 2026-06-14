@@ -1,6 +1,6 @@
-import discord
 from discord.ext import commands
 import random
+
 
 class OnionFortune(commands.Cog):
     """玉ねぎ占いCog"""
@@ -20,10 +20,11 @@ class OnionFortune(commands.Cog):
             "🧅 今日の皮むき度: 50%…中くらいの皮むき日",
             "🧅 今日の皮むき度: 75%…結構むけそう！",
             "🧅 今日の皮むき度: 90%…むけまくり注意！",
-            "🧅 今日の皮むき度: 100%…フルでむける！玉ねぎ注意⚠️"
+            "🧅 今日の皮むき度: 100%…フルでむける！玉ねぎ注意⚠️",
         ]
         fortune = random.choice(fortunes)
         await ctx.send(fortune)
+
 
 # CogをBotに登録
 async def setup(bot):

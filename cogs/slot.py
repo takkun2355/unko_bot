@@ -1,6 +1,7 @@
 import random
 from discord.ext import commands
 
+
 class SlotGame(commands.Cog):
     """スロットゲーム"""
 
@@ -20,6 +21,7 @@ class SlotGame(commands.Cog):
             await ctx.send("👌 おしい！2つそろった！")
         else:
             await ctx.send("😢 はずれ…")
+
 
 # async setup
 async def setup(bot):

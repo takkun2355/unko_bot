@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+
 class AutoRoleAssigner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -8,7 +9,7 @@ class AutoRoleAssigner(commands.Cog):
         self.target_users = {
             885841692832464907: "メンバー",
             968755981326639104: "管理者",
-            1295371078704824351: "メンバー"
+            1295371078704824351: "メンバー",
         }
 
     @commands.Cog.listener()
@@ -29,7 +30,9 @@ class AutoRoleAssigner(commands.Cog):
                 if role not in member.roles:
                     try:
                         await member.add_roles(role)
-                        print(f"✅ {member.name} にロール '{role_name}' を付与しました。")
+                        print(
+                            f"✅ {member.name} にロール '{role_name}' を付与しました。"
+                        )
                     except discord.Forbidden:
                         print(f"⚠️ 権限不足で {member.name} にロールを付与できません。")
                     except Exception as e:
@@ -46,6 +49,7 @@ class AutoRoleAssigner(commands.Cog):
             if role and role not in member.roles:
                 await member.add_roles(role)
                 print(f"✨ {member.name} が参加時に '{role_name}' を付与しました。")
+
 
 async def setup(bot):
     await bot.add_cog(AutoRoleAssigner(bot))

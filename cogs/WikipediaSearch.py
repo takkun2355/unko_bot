@@ -1,9 +1,9 @@
-import discord
 from discord.ext import commands
 import wikipedia
 
 # 言語設定（日本語版）
 wikipedia.set_lang("ja")
+
 
 class WikipediaSearch(commands.Cog):
     """Wikipedia検索Cog"""
@@ -30,6 +30,7 @@ class WikipediaSearch(commands.Cog):
             await ctx.send(f"❌ ページが見つかりません: {query}")
         except Exception as e:
             await ctx.send(f"❌ エラー: {e}")
+
 
 # CogをBotに登録
 async def setup(bot):

@@ -5,11 +5,12 @@ from discord.ext import commands
 # 固定結果にするユーザーIDの辞書
 FIXED_RESULTS = {
     1118799600816492626: {  # 特定ユーザーのDiscord ID
-        "omikuji": "あがり\n今日一日口が臭くなるでしょう", 
-        "fortune": "-931ランク :face_vomiting: :face_vomiting: :face_vomiting: :thumbsdown: :skull:"
+        "omikuji": "あがり\n今日一日口が臭くなるでしょう",
+        "fortune": "-931ランク :face_vomiting: :face_vomiting: :face_vomiting: :thumbsdown: :skull:",
     },
     # 他のユーザーも追加可能
 }
+
 
 class FunGames(commands.Cog):
     """サイコロ、コイン、おみくじ、占いなどの楽しいコマンド"""
@@ -26,7 +27,7 @@ class FunGames(commands.Cog):
         embed = discord.Embed(
             title="🎲 サイコロ振り",
             description=f"{ctx.author.mention} さんが {sides} 面のサイコロを振りました！\n結果: **{result}**",
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
         )
         await ctx.send(embed=embed)
 
@@ -36,7 +37,7 @@ class FunGames(commands.Cog):
         embed = discord.Embed(
             title="🪙 コイン投げ",
             description=f"{ctx.author.mention} さんがコインを投げました！\n結果: **{result}**",
-            color=discord.Color.gold()
+            color=discord.Color.gold(),
         )
         await ctx.send(embed=embed)
 
@@ -45,8 +46,16 @@ class FunGames(commands.Cog):
         """おみくじ（任意のメンション可能）"""
         target = member or ctx.author
         fortunes = [
-            "大大大吉", "大大吉", "大吉", "中吉", "小吉",
-            "末吉", "凶", "大凶", "大大凶", "アガり"
+            "大大大吉",
+            "大大吉",
+            "大吉",
+            "中吉",
+            "小吉",
+            "末吉",
+            "凶",
+            "大凶",
+            "大大凶",
+            "アガり",
         ]
 
         if target.id in FIXED_RESULTS:
@@ -57,7 +66,7 @@ class FunGames(commands.Cog):
         embed = discord.Embed(
             title="🎋 おみくじ",
             description=f"{target.mention} さんのおみくじの結果は…\n**{result}**",
-            color=discord.Color.purple()
+            color=discord.Color.purple(),
         )
         await ctx.send(embed=embed)
 
@@ -66,7 +75,24 @@ class FunGames(commands.Cog):
         """占い（任意のメンション可能）"""
         target = member or ctx.author
         ranks = [
-            "SSS+ランク ⭐⭐⭐", "SSSランク ⭐⭐⭐", "SSS-ランク ⭐⭐⭐", "SS+ランク ⭐⭐", "SSランク ⭐⭐", "SS-ランク ⭐⭐", "S+ランク ⭐", "Sランク ⭐", "S-ランク ⭐", "A+ランク⚡⚡⚡", "Aランク ⚡⚡⚡", "A-ランク⚡⚡⚡", "B+ランク ⚡⚡", "Bランク ⚡⚡", "B-ランク ⚡⚡", "C+ランク ⚡", "Cランク⚡", "C-ランク⚡"
+            "SSS+ランク ⭐⭐⭐",
+            "SSSランク ⭐⭐⭐",
+            "SSS-ランク ⭐⭐⭐",
+            "SS+ランク ⭐⭐",
+            "SSランク ⭐⭐",
+            "SS-ランク ⭐⭐",
+            "S+ランク ⭐",
+            "Sランク ⭐",
+            "S-ランク ⭐",
+            "A+ランク⚡⚡⚡",
+            "Aランク ⚡⚡⚡",
+            "A-ランク⚡⚡⚡",
+            "B+ランク ⚡⚡",
+            "Bランク ⚡⚡",
+            "B-ランク ⚡⚡",
+            "C+ランク ⚡",
+            "Cランク⚡",
+            "C-ランク⚡",
         ]
 
         if target.id in FIXED_RESULTS:
@@ -77,7 +103,7 @@ class FunGames(commands.Cog):
         embed = discord.Embed(
             title="🔮 今日の運勢",
             description=f"{target.mention} さんの今日の運勢は\n**{result}**",
-            color=discord.Color.green()
+            color=discord.Color.green(),
         )
         await ctx.send(embed=embed)
 
