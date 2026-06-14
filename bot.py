@@ -2,16 +2,15 @@ import asyncio
 import logging
 import os
 import sys
-import os
-import asyncio
 import traceback
-import discord
-import time
 from datetime import datetime, timedelta
 from pathlib import Path
-import cogs.bot_markov as mu
+
+import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+
+import cogs.bot_markov as mu
 
 # =========================================
 # Logging 設定
