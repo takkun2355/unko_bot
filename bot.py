@@ -144,6 +144,11 @@ async def main():
         TOKEN = os.getenv("DISCORD_BOT_TOKEN")
         if not TOKEN:
             print("❌ Botトークンが設定されていません！")
+            TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+            TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+            TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+            TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+            TOKEN = os.getenv("DISCORD_BOT_TOKEN")
             stdin_task.cancel()
             return
 
