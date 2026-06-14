@@ -85,7 +85,7 @@ class MockContext:
 
 
 async def handle_stdin(bot_instance):
-    """Reads commands from stdin and executes them."""
+    """Read commands from stdin and executes them."""
     loop = asyncio.get_running_loop()
     await bot_instance.wait_until_ready()
 
