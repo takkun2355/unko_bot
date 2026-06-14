@@ -1595,7 +1595,9 @@ class VoteCog(commands.Cog):
                 names = []
                 for uid in voter_ids[:30]:
                     member = None
-                    if (isinstance(interaction_or_ctx, commands.Context) and interaction_or_ctx.guild is not None) or (isinstance(interaction_or_ctx, discord.Interaction) and interaction_or_ctx.guild is not None):
+                    if (isinstance(interaction_or_ctx, commands.Context) and interaction_or_ctx.guild is not None) or (
+                        isinstance(interaction_or_ctx, discord.Interaction) and interaction_or_ctx.guild is not None
+                    ):
                         member = interaction_or_ctx.guild.get_member(uid)
                     if member is None:
                         names.append(f"<@{uid}>")

@@ -14,8 +14,7 @@ class OnionFortune(commands.Cog):
 
     @commands.command(name="onion")
     async def onion_fortune(self, ctx):
-        """今日の皮むき度をランダムで表示
-        """
+        """今日の皮むき度をランダムで表示"""
         fortunes = [
             "🧅 今日の皮むき度: 0%…安全日です",
             "🧅 今日の皮むき度: 10%…ほんの少し皮がむけそう",

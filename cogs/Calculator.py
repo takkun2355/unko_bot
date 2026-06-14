@@ -43,8 +43,7 @@ class Calculator(commands.Cog):
 
     @commands.command(name="calc_help")
     async def calc_help(self, ctx):
-        """使用可能な演算子・関数・定数一覧を表示
-        """
+        """使用可能な演算子・関数・定数一覧を表示"""
         funcs = ", ".join(sorted(k for k in self.allowed_names.keys() if k.isalpha()))
         constants = ", ".join(k for k in self.allowed_names.keys() if not k.isalpha())
         operators = "+, -, *, /, ^ (累乗), (), **"

@@ -301,9 +301,7 @@ class Weather(commands.Cog):
     @commands.command()
     async def weather(self, ctx, *args):
         if not self.prefectures:
-            await ctx.send(
-                " 地域データが読み込まれていません。weather.jsonが正しく配置されているか確認してください。"
-            )
+            await ctx.send(" 地域データが読み込まれていません。weather.jsonが正しく配置されているか確認してください。")
             return
 
         try:

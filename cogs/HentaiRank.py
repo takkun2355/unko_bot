@@ -16,8 +16,7 @@ class HentaiRank(commands.Cog):
 
     @commands.command(name="hentai_rank")
     async def hentai_rank(self, ctx):
-        """今日のサーバー民ランキング「変態度」をランダムで生成
-        """
+        """今日のサーバー民ランキング「変態度」をランダムで生成"""
         today_str = str(date.today())
         members = [m for m in ctx.guild.members if not m.bot]
 

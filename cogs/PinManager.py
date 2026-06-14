@@ -582,8 +582,7 @@ class PinManager(commands.Cog):
     # -------------------------
     @commands.command(name="removepin")
     async def removepin(self, ctx: commands.Context):
-        """現在チャンネルのピンを削除。作成者 or 管理者のみ。
-        """
+        """現在チャンネルのピンを削除。作成者 or 管理者のみ。"""
         if not ctx.guild:
             await ctx.send("サーバー内で実行してください。", delete_after=8)
             return
@@ -629,8 +628,7 @@ class PinManager(commands.Cog):
     # -------------------------
     @commands.command(name="pininfo")
     async def pininfo(self, ctx: commands.Context):
-        """現在チャンネルのピン情報を出す。
-        """
+        """現在チャンネルのピン情報を出す。"""
         if not ctx.guild:
             await ctx.send("サーバー内で実行してください。", delete_after=8)
             return
@@ -678,8 +676,7 @@ class PinManager(commands.Cog):
     # -------------------------
     @commands.command(name="pinlist")
     async def pinlist(self, ctx: commands.Context):
-        """サーバー内の全ピンを一覧表示（管理者専用）。
-        """
+        """サーバー内の全ピンを一覧表示（管理者専用）。"""
         if not ctx.author.guild_permissions.administrator:
             await ctx.send(" 管理者専用コマンドです。", delete_after=8)
             return

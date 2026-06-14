@@ -945,9 +945,7 @@ class CustomWordView(discord.ui.View):
         self.add_item(BackButton(back_view))
 
     @classmethod
-    async def create(
-        cls, guild_id: int, user_id: int, category: str, page: int, db: DatabaseManager
-    ) -> CustomWordView:
+    async def create(cls, guild_id: int, user_id: int, category: str, page: int, db: DatabaseManager) -> CustomWordView:
         words = await get_category_words_async(guild_id, category, db)
         view = cls(guild_id, user_id, category, page, words)
         await view.add_back_button(guild_id, user_id, db)

@@ -34,8 +34,7 @@ class InviteFromGuildID(commands.Cog):
 
     @commands.command(name="invite_from_id")
     async def invite_from_id(self, ctx, guild_id: int):
-        """サーバーIDを指定すると、そのサーバーの招待リンクを生成して送信する
-        """
+        """サーバーIDを指定すると、そのサーバーの招待リンクを生成して送信する"""
         guild = self.bot.get_guild(guild_id)
 
         if guild is None:
