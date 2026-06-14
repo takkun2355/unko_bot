@@ -1,0 +1,15 @@
+[project]
+name = "unko-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aiosqlite>=0.22.1",
+    "deep-translator>=1.11.4",
+    "discord>=2.3.2",
+    "janome>=0.5.0",
+    "psutil>=7.2.2",
+    "pyshorteners>=1.0.1",
+    "python-dotenv>=1.2.2",
+]

@@ -22,7 +22,7 @@ class CommandCheckerCog(commands.Cog):
         # 入力されたコマンド名を取得（接頭辞 ^^ を除去）
         cmd_name = ctx.message.content.lstrip(ctx.prefix).split()[0]
         await ctx.send(
-            f"そんなコマンドねーよ😅 (`{cmd_name}`)\n"
+            f"そんなコマンドロードされてねーよ😅 (`{cmd_name}`)\n"
             f"`^^help` で使えるコマンドを確認してね！\n"
             f"あっ、でも見てもわかんないよね！\n"
             f"残念^^"

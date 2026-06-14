@@ -1,5 +1,5 @@
 """
-Discord.py Cog: /icon, /servericon および !icon, !servericon の両方を提供します。
+Discord.py Cog: /icon, /servericon および ^^icon, ^^servericon の両方を提供します。
 使い方:
   - cogs フォルダに置いて bot 側で `bot.load_extension('cogs.icon_cog')` または
     `await bot.load_extension('cogs.icon_cog')` でロードしてください。

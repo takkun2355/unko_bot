@@ -5,7 +5,8 @@ import traceback
 import discord
 import time
 from datetime import datetime, timedelta
-import bot_markov as mu
+from pathlib import Path
+import cogs.bot_markov as mu
 from discord.ext import commands
 
 # =========================================
@@ -123,53 +124,14 @@ async def main():
         # stdin handler
         stdin_task = asyncio.create_task(handle_stdin(bot))
 
-        # Cogロード
+        # cogsフォルダ内の .py ファイルをすべて自動検出
+        cogs_dir = Path("cogs")
         cogs = [
-            "cogs.roulette",
-            "cogs.weather",
-            "cogs.help",
-            "cogs.file_explorer",
-            "cogs.fun_games",
-            "cogs.server",
-            "cogs.fun",
-            "cogs.spam",
-            "cogs.translate",
-            "cogs.utility_url",
-            "cogs.janken",
-            "cogs.number",
-            "cogs.slot",
-            "cogs.shiritori",
-            "cogs.bot_event",
-            "cogs.Basic_command",
-            "cogs.not_find_command",
-            "cogs.roast",
-            "cogs.SlashAuto",
-            "cogs.AutoRoleAssigner",
-            "cogs.nameaga",
-            "cogs.WorldClock",
-            "cogs.OnionFortune",
-            "cogs.PizzaGenerator",
-            "cogs.Achievements",
-            "cogs.AntiSpam",
-            "cogs.WikipediaSearch",
-            "cogs.HentaiRank",
-            "cogs.TPStock",
-            "cogs.BirthdayManager",
-            "cogs.IceBot",
-            "cogs.IQDownQuotes",
-            "cogs.BlackJackFull",
-            "cogs.WishBot",
-            "cogs.Calculator",
-            "cogs.RPGCog",
-            "cogs.ReactionGameCog",
-            "cogs.QuoteCog",
-            "cogs.RiddleCog",
-            "cogs.MagicSpellBot",
-            "cogs.SpamOwnerCog",
-            "cogs.random_name_auto",
-            "cogs.PinManeger",
-            "cogs.IconCog"
+            f"cogs.{f.stem}"
+            for f in sorted(cogs_dir.glob("*.py"))
+            if f.stem != "__init__"
         ]
+
         for cog in cogs:
             try:
                 await bot.load_extension(cog)
