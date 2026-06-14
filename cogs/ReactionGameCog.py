@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import asyncio
 import random
 
@@ -16,7 +19,7 @@ class ReactionGameCog(commands.Cog):
         emojis = ["⚡", "🔥", "💥", "🎯", "⭐"]
         chosen_emoji = random.choice(emojis)
         await ctx.send(
-            f"⚠️ 準備完了！リアクション `{chosen_emoji}` が出たらすぐにリアクションを押してください！\n3秒後に開始…"
+            f" 準備完了！リアクション `{chosen_emoji}` が出たらすぐにリアクションを押してください！\n3秒後に開始…"
         )
 
         # 少し待つ（準備時間）

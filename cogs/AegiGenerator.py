@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import json
+import logging
 import random
 from pathlib import Path
 
 import aiosqlite
 import discord
 from discord.ext import commands
+
+logger = logging.getLogger(__name__)
 
 DB_PATH = "data/aegi.db"
 
@@ -1220,7 +1223,7 @@ class AegiGenerator(commands.Cog):
     async def cog_load(self) -> None:
         """Cog読み込み時にDB初期化"""
         await self.db.initialize()
-        print("[AegiGenerator] Ready")
+        logger.info("AegiGenerator Ready")
 
     def get_custom_session(self, guild_id: int, user_id: int) -> CustomSession:
         """(guild_id, user_id) でカスタムセッションを取得"""

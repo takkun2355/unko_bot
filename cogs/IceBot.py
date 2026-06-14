@@ -1,9 +1,12 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import random
 
 from discord.ext import commands
 
 # 氷化演出用絵文字
-ICE_EMOJIS = ["❄️", "🧊", "🌨️"]
+ICE_EMOJIS = ["❄", "🧊", "🌨"]
 
 
 class IceBot(commands.Cog):

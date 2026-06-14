@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import random
 
 from discord.ext import commands
@@ -12,7 +15,7 @@ class NumberGame(commands.Cog):
     async def start_number(self, ctx):
         answer = random.randint(1, 100)
         self.number_games[ctx.channel.id] = answer
-        await ctx.send("🎲 数当てゲーム開始！ 1〜100の数字を当ててね！")
+        await ctx.send(" 数当てゲーム開始！ 1〜100の数字を当ててね！")
 
     @commands.command()
     async def guess(self, ctx, number: int):

@@ -276,10 +276,10 @@ class BotControl(commands.Cog, name="BotControl"):
         if await self._is_owner(ctx):
             return True
         if scope == "all":
-            await ctx.send("❌ `all` スコープはBotオーナーのみ使用できます。")
+            await ctx.send(" `all` スコープはBotオーナーのみ使用できます。")
             return False
         if not self._is_admin(ctx):
-            await ctx.send("❌ このコマンドはサーバー管理者のみ使用できます。")
+            await ctx.send(" このコマンドはサーバー管理者のみ使用できます。")
             return False
         return True
 
@@ -319,7 +319,7 @@ class BotControl(commands.Cog, name="BotControl"):
         elif isinstance(error, BotPausedError):
             await ctx.send(
                 embed=self._embed(
-                    "⏸️ 一時停止中",
+                    "⏸ 一時停止中",
                     "このチャンネル／サーバーのコマンドは一時停止しています。\n"
                     "管理者が `^^resume` を実行するまで使用できません。",
                     discord.Color.orange(),
@@ -343,7 +343,7 @@ class BotControl(commands.Cog, name="BotControl"):
 
         ok, label, scope_id = await _resolve_scope(ctx, scope, target)
         if not ok:
-            return await ctx.send(f"❌ {label}")
+            return await ctx.send(f" {label}")
 
         if _get_scope_state(scope, scope_id) == BotState.STOPPED:
             return await ctx.send(
@@ -389,13 +389,13 @@ class BotControl(commands.Cog, name="BotControl"):
 
         ok, label, scope_id = await _resolve_scope(ctx, scope, target)
         if not ok:
-            return await ctx.send(f"❌ {label}")
+            return await ctx.send(f" {label}")
 
         current = _get_scope_state(scope, scope_id)
         if current == BotState.PAUSED:
             return await ctx.send(
                 embed=self._embed(
-                    "⏸️ すでに一時停止中",
+                    "⏸ すでに一時停止中",
                     f"{label} はすでに一時停止中です。",
                     discord.Color.orange(),
                 )
@@ -414,7 +414,7 @@ class BotControl(commands.Cog, name="BotControl"):
 
         await ctx.send(
             embed=self._embed(
-                "⏸️ 一時停止しました",
+                "⏸ 一時停止しました",
                 f"**{label}** のコマンドを一時停止しました。\n再開するには `^^resume` を実行してください。",
                 discord.Color.orange(),
             )
@@ -435,13 +435,13 @@ class BotControl(commands.Cog, name="BotControl"):
 
         ok, label, scope_id = await _resolve_scope(ctx, scope, target)
         if not ok:
-            return await ctx.send(f"❌ {label}")
+            return await ctx.send(f" {label}")
 
         current = _get_scope_state(scope, scope_id)
         if current == BotState.RUNNING:
             return await ctx.send(
                 embed=self._embed(
-                    "✅ すでに稼働中",
+                    " すでに稼働中",
                     f"{label} はすでに稼働中です。",
                     discord.Color.green(),
                 )
@@ -460,7 +460,7 @@ class BotControl(commands.Cog, name="BotControl"):
 
         await ctx.send(
             embed=self._embed(
-                "▶️ 再開しました",
+                "▶ 再開しました",
                 f"**{label}** を{prev_label}状態から再開しました。",
                 discord.Color.green(),
             )
@@ -508,8 +508,8 @@ class BotControl(commands.Cog, name="BotControl"):
 
 def _state_label(state: BotState) -> str:
     return {
-        BotState.RUNNING: "✅ 稼働中",
-        BotState.PAUSED: "⏸️ 一時停止中",
+        BotState.RUNNING: " 稼働中",
+        BotState.PAUSED: "⏸ 一時停止中",
         BotState.STOPPED: "🚫 停止中",
     }[state]
 

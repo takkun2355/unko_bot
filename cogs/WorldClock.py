@@ -1,4 +1,7 @@
-from datetime import datetime
+from datetime import logging
+
+logger = logging.getLogger(__name__)
+import datetime
 
 import pytz  # pip install pytz
 from discord.ext import commands

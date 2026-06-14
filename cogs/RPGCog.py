@@ -1,4 +1,7 @@
 # rpg_cog_full.py
+import logging
+
+logger = logging.getLogger(__name__)
 import asyncio
 import json
 import os
@@ -170,7 +173,7 @@ class RPGCog(commands.Cog):
         }
 
         await ctx.send(
-            f"🗡️ クエスト: {quest_text}\nモンスター: {monster_name} (Lv{monster_level}) が出現！挑戦しますか？ yes/no"
+            f"🗡 クエスト: {quest_text}\nモンスター: {monster_name} (Lv{monster_level}) が出現！挑戦しますか？ yes/no"
         )
 
         def check(m):

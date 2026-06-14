@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import asyncio
 import pathlib
 import random
@@ -18,7 +21,7 @@ class Roulette(commands.Cog):
         ^^roulette fast loop topN5 countdown duplicate gif background winner sound history A B C,D.txt
         """
         if not args:
-            await ctx.send("❌ 候補を指定してください！")
+            await ctx.send(" 候補を指定してください！")
             return
 
         # ---------- 引数解析 ----------
@@ -68,7 +71,7 @@ class Roulette(commands.Cog):
                 try:
                     scheduled_time = datetime.strptime(low[5:], "%H:%M")
                 except:
-                    await ctx.send("❌ 時間指定は HH:MM 形式で入力してください")
+                    await ctx.send(" 時間指定は HH:MM 形式で入力してください")
                     return
             elif low.isdigit() and loop_mode:
                 loop_count = int(low)
@@ -81,7 +84,7 @@ class Roulette(commands.Cog):
             filenames = remaining_args[0].split(",")  # 複数ファイル対応
             for filename in filenames:
                 if not pathlib.Path(filename).exists():
-                    await ctx.send(f"❌ ファイル `{filename}` が見つかりません！")
+                    await ctx.send(f" ファイル `{filename}` が見つかりません！")
                     return
                 with pathlib.Path(filename).open(encoding="utf-8") as f:
                     candidates += [line.strip() for line in f if line.strip()]
@@ -89,7 +92,7 @@ class Roulette(commands.Cog):
             candidates = remaining_args
 
         if not candidates:
-            await ctx.send("❌ 候補が空です！")
+            await ctx.send(" 候補が空です！")
             return
 
         # ---------- 時間指定ルーレット ----------
@@ -162,12 +165,12 @@ class Roulette(commands.Cog):
             return
 
         # 回転中メッセージ
-        message = await ctx.send("🎲 回転中…")
+        message = await ctx.send(" 回転中…")
 
         # カウントダウン演出
         if countdown_mode:
             for i in range(3, 0, -1):
-                await message.edit(content=f"🎲 回転開始まで… {i}")
+                await message.edit(content=f" 回転開始まで… {i}")
                 await asyncio.sleep(1)
 
         # GIF/背景演出（テキスト上で表現）
@@ -182,7 +185,7 @@ class Roulette(commands.Cog):
         shuffled = random.sample(pool, len(pool))
         delay = 0.1
         for choice in shuffled * 2:
-            await message.edit(content=f"🎲 回転中… → **{choice}**")
+            await message.edit(content=f" 回転中… → **{choice}**")
             await asyncio.sleep(delay)
             delay *= 1.1
 
@@ -202,7 +205,7 @@ class Roulette(commands.Cog):
         medals = ["🥇", "🥈", "🥉", "🏅", "🏅"]
         text = "🎉🏆 最終結果 🏆🎉\n"
         for idx, item in enumerate(winners):
-            eff = "✨" if winner_effect_mode else ""
+            eff = "" if winner_effect_mode else ""
             text += f"{medals[idx]} {idx + 1}位: **{item}** {eff}\n"
         return text
 

@@ -1,4 +1,7 @@
-from discord.ext import commands
+from discord.ext import logging
+
+logger = logging.getLogger(__name__)
+import commands
 
 
 class TPStock(commands.Cog):
@@ -17,19 +20,19 @@ class TPStock(commands.Cog):
     async def buy_tp(self, ctx, amount: int):
         """トイレットペーパーを購入"""
         if amount <= 0:
-            await ctx.send("❌ 1以上の数を指定してください。")
+            await ctx.send(" 1以上の数を指定してください。")
             return
         if amount > self.stock:
-            await ctx.send(f"❌ 在庫が足りません！現在の在庫: {self.stock}")
+            await ctx.send(f" 在庫が足りません！現在の在庫: {self.stock}")
         else:
             self.stock -= amount
-            await ctx.send(f"✅ {ctx.author.name} が {amount} ロール購入しました。在庫残り: {self.stock}")
+            await ctx.send(f" {ctx.author.name} が {amount} ロール購入しました。在庫残り: {self.stock}")
 
     @commands.command(name="tp_restock")
     async def restock_tp(self, ctx, amount: int):
         """在庫補充（管理者用想定）"""
         if amount <= 0:
-            await ctx.send("❌ 1以上の数を指定してください。")
+            await ctx.send(" 1以上の数を指定してください。")
             return
         self.stock += amount
         await ctx.send(f"🟢 在庫を {amount} ロール補充しました。在庫: {self.stock}")

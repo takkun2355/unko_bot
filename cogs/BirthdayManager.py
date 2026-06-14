@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import json
 import pathlib
 from datetime import datetime
@@ -66,12 +69,12 @@ class BirthdayManager(commands.Cog):
     async def set_birthday(self, ctx, month: int, day: int):
         """自分の誕生日を登録"""
         if month < 1 or month > 12 or day < 1 or day > 31:
-            await ctx.send("❌ 無効な日付です。例: /set_birthday 10 13")
+            await ctx.send(" 無効な日付です。例: /set_birthday 10 13")
             return
         self.birthdays[str(ctx.author.id)] = f"{month:02d}-{day:02d}"
         with pathlib.Path(BIRTHDAY_FILE).open("w", encoding="utf-8") as f:
             json.dump(self.birthdays, f, ensure_ascii=False, indent=2)
-        await ctx.send(f"✅ {ctx.author.name} の誕生日を {month}月{day}日 に登録しました。")
+        await ctx.send(f" {ctx.author.name} の誕生日を {month}月{day}日 に登録しました。")
 
     @commands.command(name="birthday_list")
     async def birthday_list(self, ctx):

@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import random
 
 import discord
@@ -62,12 +65,12 @@ class BlackJackFull(commands.Cog):
         try:
             await user.send(f"🃏 ブラックジャック [{game_type}] 現在の手札: {', '.join(hand)}\n合計値: {total}")
         except discord.Forbidden:
-            await ctx.send(f"⚠️ {user.mention} にDMを送れません。DMを許可してください。")
+            await ctx.send(f" {user.mention} にDMを送れません。DMを許可してください。")
             return
 
         # サーバーには進行状況だけ
         await ctx.send(
-            f"🎲 {user.mention} さんがカードを引きました。 現在 {len(hand)} 枚目。種類: {game_type} 合計値非表示"
+            f" {user.mention} さんがカードを引きました。 現在 {len(hand)} 枚目。種類: {game_type} 合計値非表示"
         )
 
         # バースト判定
