@@ -68,7 +68,7 @@ async def handle_stdin(bot_instance):
     """Reads commands from stdin and executes them."""
     loop = asyncio.get_running_loop()
     await bot_instance.wait_until_ready()
-    
+
     channel_id = 1416694818339291147
     channel = bot_instance.get_channel(channel_id)
     if not channel:
@@ -112,7 +112,7 @@ async def daily_midnight_task(bot_instance):
                 await channel.send("🌙 0時のサイキ処理を実行しました！")
         except Exception as e:
             print(f"0時処理でエラー: {e}")
-            
+
 # =========================================
 # Cog をロードして起動
 # =========================================
