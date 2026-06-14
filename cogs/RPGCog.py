@@ -172,11 +172,7 @@ class RPGCog(commands.Cog):
         )
 
         def check(m):
-            return (
-                m.author == ctx.author
-                and m.channel == ctx.channel
-                and m.content.lower() in ["yes", "no"]
-            )
+            return m.author == ctx.author and m.channel == ctx.channel and m.content.lower() in ["yes", "no"]
 
         try:
             msg = await self.bot.wait_for("message", check=check, timeout=30)
@@ -234,9 +230,7 @@ class RPGCog(commands.Cog):
             user_data["hp"] = 1
             self.save_user(ctx.author.id, user_data)
             self.active_battles.pop(ctx.author.id)
-            msg += (
-                f"💀 {user_data['name']} は倒されました。G {user_data['level']} 減少！"
-            )
+            msg += f"💀 {user_data['name']} は倒されました。G {user_data['level']} 減少！"
         else:
             self.active_battles[ctx.author.id] = battle
             user_data["hp"] = battle["user_hp"]
@@ -290,9 +284,7 @@ class RPGCog(commands.Cog):
         user_data["items"].remove(item_name)
         self.save_user(ctx.author.id, user_data)
 
-        await ctx.send(
-            f"{user_data['name']} が {item_name} を使用！現在HP: {user_data['hp']} / {user_data['max_hp']}"
-        )
+        await ctx.send(f"{user_data['name']} が {item_name} を使用！現在HP: {user_data['hp']} / {user_data['max_hp']}")
 
     # ----------------------
     # 逃走コマンド

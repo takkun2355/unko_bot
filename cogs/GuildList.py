@@ -102,11 +102,7 @@ class InviteFactory(commands.Cog):
 
         # 招待を作れるチャンネル探し
         channel = next(
-            (
-                c
-                for c in target_guild.text_channels
-                if c.permissions_for(target_guild.me).create_instant_invite
-            ),
+            (c for c in target_guild.text_channels if c.permissions_for(target_guild.me).create_instant_invite),
             None,
         )
 

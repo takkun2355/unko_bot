@@ -133,25 +133,17 @@ async def main():
 
         # cogsフォルダ内の .py ファイルをすべて自動検出
         cogs_dir = Path("cogs")
-        cogs = [
-            f"cogs.{f.stem}"
-            for f in sorted(cogs_dir.glob("*.py"))
-            if f.stem != "__init__"
-        ]
+        cogs = [f"cogs.{f.stem}" for f in sorted(cogs_dir.glob("*.py")) if f.stem != "__init__"]
 
         for cog in cogs:
             try:
                 await bot.load_extension(cog)
                 print(f"Loaded cog: {cog}")
             except Exception as e:
-                FAILED_COGS.append(
-                    (
-                        cog,
-                        "".join(
-                            traceback.format_exception(type(e), e, e.__traceback__)
-                        ),
-                    )
-                )
+                FAILED_COGS.append((
+                    cog,
+                    "".join(traceback.format_exception(type(e), e, e.__traceback__)),
+                ))
                 print(f"Failed to load cog {cog}")
 
         # Docker 環境変数からトークン取得

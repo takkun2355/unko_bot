@@ -100,9 +100,7 @@ class Achievements(commands.Cog):
             threshold = get_triple_threshold(i)
             if msg_count == threshold and title not in self.data[user_id]["titles"]:
                 self.data[user_id]["titles"].append(title)
-                await message.channel.send(
-                    f"🏆 {message.author.name} に称号「{title}」を授与！"
-                )
+                await message.channel.send(f"🏆 {message.author.name} に称号「{title}」を授与！")
                 break  # 1回の発言で1つだけ付与
 
         await self.save_data()
@@ -121,9 +119,7 @@ class Achievements(commands.Cog):
             threshold = get_triple_threshold(i)
             if react_count == threshold and title not in self.data[user_id]["titles"]:
                 self.data[user_id]["titles"].append(title)
-                await reaction.message.channel.send(
-                    f"🏆 {user.name} に称号「{title}」を授与！"
-                )
+                await reaction.message.channel.send(f"🏆 {user.name} に称号「{title}」を授与！")
                 break
 
         await self.save_data()

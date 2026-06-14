@@ -52,13 +52,9 @@ class SlashAuto(commands.Cog):
 
                             async def send(self, *args, **send_kwargs):
                                 if not interaction.response.is_done():
-                                    return await interaction.response.send_message(
-                                        *args, **send_kwargs
-                                    )
+                                    return await interaction.response.send_message(*args, **send_kwargs)
                                 else:
-                                    return await interaction.followup.send(
-                                        *args, **send_kwargs
-                                    )
+                                    return await interaction.followup.send(*args, **send_kwargs)
 
                         ctx = DummyCtx(interaction)
                         await command.callback(cog, ctx, **kwargs)

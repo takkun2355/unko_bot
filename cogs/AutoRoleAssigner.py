@@ -30,9 +30,7 @@ class AutoRoleAssigner(commands.Cog):
                 if role not in member.roles:
                     try:
                         await member.add_roles(role)
-                        print(
-                            f"✅ {member.name} にロール '{role_name}' を付与しました。"
-                        )
+                        print(f"✅ {member.name} にロール '{role_name}' を付与しました。")
                     except discord.Forbidden:
                         print(f"⚠️ 権限不足で {member.name} にロールを付与できません。")
                     except Exception as e:

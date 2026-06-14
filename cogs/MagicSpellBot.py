@@ -23,9 +23,7 @@ class MagicSpellBot(commands.Cog):
         suffix = random.choice(SUFFIXES)
         element = random.choice(ELEMENTS)
         spell = f"{prefix}{suffix} {element}！"
-        await ctx.send(
-            f"💬 {ctx.author.name} が唱えた: 「{phrase}」\n✨ 呪文生成: {spell}"
-        )
+        await ctx.send(f"💬 {ctx.author.name} が唱えた: 「{phrase}」\n✨ 呪文生成: {spell}")
 
 
 # CogをBotに登録

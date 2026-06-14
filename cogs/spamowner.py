@@ -51,9 +51,7 @@ class SpamOwnerCog(commands.Cog):
         help="指定ユーザーのメンションを1メッセージに詰め込みます。(ボットオーナー専用)",
     )
     @commands.is_owner()
-    async def flood1(
-        self, ctx: commands.Context, member: discord.Member, total: int = 1000000000
-    ):
+    async def flood1(self, ctx: commands.Context, member: discord.Member, total: int = 1000000000):
         message_content = ""
         i = 1
         limit = 2000

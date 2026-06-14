@@ -16,17 +16,13 @@ class UtilityURL(commands.Cog):
             print(f"[WARNING] pyshorteners初期化失敗: {e}")
 
     def error_embed(self, title, description):
-        return discord.Embed(
-            title=f"❌ {title}", description=description, color=discord.Color.red()
-        )
+        return discord.Embed(title=f"❌ {title}", description=description, color=discord.Color.red())
 
     @commands.command(name="shorten")
     async def shorten(self, ctx, url: str):
         """URLを短縮"""
         if not self.available:
-            await ctx.send(
-                embed=self.error_embed("URL短縮エラー", "この機能は現在利用できません")
-            )
+            await ctx.send(embed=self.error_embed("URL短縮エラー", "この機能は現在利用できません"))
             return
         try:
             short_url = self.s.tinyurl.short(url)
@@ -43,9 +39,7 @@ class UtilityURL(commands.Cog):
     async def expand(self, ctx, url: str):
         """短縮URLを展開"""
         if not self.available:
-            await ctx.send(
-                embed=self.error_embed("URL展開エラー", "この機能は現在利用できません")
-            )
+            await ctx.send(embed=self.error_embed("URL展開エラー", "この機能は現在利用できません"))
             return
         try:
             long_url = self.s.tinyurl.expand(url)

@@ -16,9 +16,7 @@ class Server(commands.Cog):
         bots = len([m for m in guild.members if m.bot])
         humans = members - bots
 
-        embed = discord.Embed(
-            title=f"📊 サーバーステータス: {guild.name}", color=discord.Color.green()
-        )
+        embed = discord.Embed(title=f"📊 サーバーステータス: {guild.name}", color=discord.Color.green())
         embed.add_field(name="👥 メンバー", value=humans)
         embed.add_field(name="🤖 BOT", value=bots)
         embed.add_field(name="合計", value=members, inline=False)

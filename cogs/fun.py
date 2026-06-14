@@ -27,9 +27,7 @@ class Fun(commands.Cog):
             names = ", ".join(m.mention for m in t)
             result += f"**チーム {i}:** {names}\n"
 
-        embed = discord.Embed(
-            title="⚔ チーム分け結果", description=result, color=discord.Color.orange()
-        )
+        embed = discord.Embed(title="⚔ チーム分け結果", description=result, color=discord.Color.orange())
         await ctx.send(embed=embed)
 
     @commands.command(name="randname")

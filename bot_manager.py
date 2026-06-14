@@ -236,9 +236,7 @@ def run_console_roast():
     elif response in ("no", "n", "いいえ"):
         print(f"\n{Fore.YELLOW}{roast['no']}\n")
     else:
-        print(
-            f"\n{Fore.RED}Can't even answer a simple yes/no question? That's... not surprising.\n"
-        )
+        print(f"\n{Fore.RED}Can't even answer a simple yes/no question? That's... not surprising.\n")
 
     print(f"{Fore.WHITE}( next / n / 続ける / 続き / restart / rs / 再始 )")
     response = input("continue >> ").lower().strip()
@@ -321,9 +319,7 @@ def start_bot():
             errors="replace",
         )
 
-        threading.Thread(
-            target=enqueue_output, args=(bot_process.stdout,), daemon=True
-        ).start()
+        threading.Thread(target=enqueue_output, args=(bot_process.stdout,), daemon=True).start()
 
         time.sleep(1)
 
@@ -447,17 +443,9 @@ def show_menu():
 
     os.system("cls" if os.name == "nt" else "clear")
 
-    bot_status = (
-        Fore.GREEN + "🟢 Running"
-        if bot_process and bot_process.poll() is None
-        else Fore.RED + "🔴 Stopped"
-    )
+    bot_status = Fore.GREEN + "🟢 Running" if bot_process and bot_process.poll() is None else Fore.RED + "🔴 Stopped"
 
-    lc_status = (
-        Fore.GREEN + "🟢 true"
-        if bot_process and bot_process.poll() is None
-        else Fore.RED + "🔴 false"
-    )
+    lc_status = Fore.GREEN + "🟢 true" if bot_process and bot_process.poll() is None else Fore.RED + "🔴 false"
 
     print("▣" + "=" * 58 + "▣")
     print(" " * 17 + "Bot Control Menu v2.0.0")
@@ -465,9 +453,7 @@ def show_menu():
 
     if not lde_enabled:
         print(f"Bot name: {bot_name}")
-        print(
-            "Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 "
-        )
+        print("Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 ")
         print(f"login user: {login_user}")
         print(f"Bot Status: {bot_status}")
         print(f"Log Stoper Status: {lc_status}")
@@ -512,9 +498,7 @@ def show_menu():
         print("-" * 60)
 
         print(f"Bot name: {bot_name}")
-        print(
-            "Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 "
-        )
+        print("Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 ")
         print(f"login user: {login_user}")
         print(f"Bot Status: {bot_status}")
         print(f"Log Stoper Status: {lc_status}")
@@ -651,18 +635,14 @@ def main():
                     if target.lower() == "all":
                         send_command("reload all")
                         time.sleep(0.5)
-                        print(
-                            Fore.WHITE + f"All cogs reloaded successfully.\n {target}"
-                        )
+                        print(Fore.WHITE + f"All cogs reloaded successfully.\n {target}")
 
                     # ^^reload cog1
                     # ^^reload cog1,cog2,cog3
                     else:
                         send_command(f"reload {target}")
                         time.sleep(0.5)
-                        print(
-                            Fore.WHITE + f"All cogs reloaded successfully.\n {target}"
-                        )
+                        print(Fore.WHITE + f"All cogs reloaded successfully.\n {target}")
 
             else:
                 print(Fore.RED + "WARNING: Bot未起動")

@@ -21,11 +21,7 @@ class Reload(commands.Cog):
         if not os.path.isdir(cog_dir):
             return []
 
-        return [
-            f"{cog_dir}.{f[:-3]}"
-            for f in os.listdir(cog_dir)
-            if f.endswith(".py") and not f.startswith("_")
-        ]
+        return [f"{cog_dir}.{f[:-3]}" for f in os.listdir(cog_dir) if f.endswith(".py") and not f.startswith("_")]
 
     def _parse_cogs(self, cog_names: str):
         """
@@ -174,11 +170,7 @@ class Reload(commands.Cog):
         parsed = self._parse_cogs(cog_names)
 
         if parsed == "all":
-            cogs = [
-                cog
-                for cog in self.bot.extensions.keys()
-                if cog.lower() != "cogs.reload"
-            ]
+            cogs = [cog for cog in self.bot.extensions.keys() if cog.lower() != "cogs.reload"]
         else:
             cogs = parsed
 

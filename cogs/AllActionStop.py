@@ -223,9 +223,7 @@ def _get_scope_state(scope: str, scope_id: Optional[int]) -> BotState:
     return BotState.RUNNING
 
 
-def _cancel_tasks_in_scope(
-    scope: str, scope_id: Optional[int], current_task: asyncio.Task
-) -> int:
+def _cancel_tasks_in_scope(scope: str, scope_id: Optional[int], current_task: asyncio.Task) -> int:
     """スコープ内の実行中タスクをキャンセルし、キャンセル数を返す。"""
     cancelled = 0
     for msg_id, (task, task_ctx) in list(_running_tasks.items()):
@@ -292,9 +290,7 @@ class BotControl(commands.Cog, name="BotControl"):
         return True
 
     # ── Embed ────────────────────────────────
-    def _embed(
-        self, title: str, description: str, color: discord.Color
-    ) -> discord.Embed:
+    def _embed(self, title: str, description: str, color: discord.Color) -> discord.Embed:
         embed = discord.Embed(title=title, description=description, color=color)
         embed.set_footer(text=f"Bot: {self.bot.user}")
         return embed
@@ -313,9 +309,7 @@ class BotControl(commands.Cog, name="BotControl"):
         _running_tasks.pop(ctx.message.id, None)
 
     @commands.Cog.listener()
-    async def on_command_error(
-        self, ctx: commands.Context, error: commands.CommandError
-    ):
+    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
         _running_tasks.pop(ctx.message.id, None)
 
         if isinstance(error, CommandStoppedError):
@@ -341,9 +335,7 @@ class BotControl(commands.Cog, name="BotControl"):
 
     # ── コマンド ──────────────────────────────
     @commands.command(name="commandstop", aliases=["cmdstop", "コマンド停止"])
-    async def commandstop_cmd(
-        self, ctx: commands.Context, scope: str = "server", *, target: str = None
-    ):
+    async def commandstop_cmd(self, ctx: commands.Context, scope: str = "server", *, target: str = None):
         """
         実行中の全コマンドを強制終了し、以降の受付も停止する。
 
@@ -387,16 +379,10 @@ class BotControl(commands.Cog, name="BotControl"):
             f"実行中だった **{cancelled}件** のコマンドを強制終了しました。\n"
             "再開するには `^^resume` を実行してください。"
         )
-        await ctx.send(
-            embed=self._embed(
-                "🚫 コマンドを完全停止しました", desc, discord.Color.red()
-            )
-        )
+        await ctx.send(embed=self._embed("🚫 コマンドを完全停止しました", desc, discord.Color.red()))
 
     @commands.command(name="pause", aliases=["一時停止"])
-    async def pause_cmd(
-        self, ctx: commands.Context, scope: str = "server", *, target: str = None
-    ):
+    async def pause_cmd(self, ctx: commands.Context, scope: str = "server", *, target: str = None):
         """
         以降のコマンドを一時停止する（実行中のものは完了まで継続）。
 
@@ -432,23 +418,18 @@ class BotControl(commands.Cog, name="BotControl"):
             )
 
         _set_state(scope, scope_id, BotState.PAUSED)
-        logger.warning(
-            "pause [%s/%s] by %s (%d)", scope, scope_id, ctx.author, ctx.author.id
-        )
+        logger.warning("pause [%s/%s] by %s (%d)", scope, scope_id, ctx.author, ctx.author.id)
 
         await ctx.send(
             embed=self._embed(
                 "⏸️ 一時停止しました",
-                f"**{label}** のコマンドを一時停止しました。\n"
-                "再開するには `^^resume` を実行してください。",
+                f"**{label}** のコマンドを一時停止しました。\n再開するには `^^resume` を実行してください。",
                 discord.Color.orange(),
             )
         )
 
     @commands.command(name="resume", aliases=["再開"])
-    async def resume_cmd(
-        self, ctx: commands.Context, scope: str = "server", *, target: str = None
-    ):
+    async def resume_cmd(self, ctx: commands.Context, scope: str = "server", *, target: str = None):
         """
         commandstop / pause 状態から再開する。
 
@@ -511,9 +492,7 @@ class BotControl(commands.Cog, name="BotControl"):
         # カテゴリ
         if hasattr(ctx.channel, "category") and ctx.channel.category:
             s = _category_states.get(ctx.channel.category.id, BotState.RUNNING)
-            lines.append(
-                f"📁 **カテゴリ ({ctx.channel.category.name})**: {_state_label(s)}"
-            )
+            lines.append(f"📁 **カテゴリ ({ctx.channel.category.name})**: {_state_label(s)}")
 
         # チャンネル
         s = _channel_states.get(ctx.channel.id, BotState.RUNNING)

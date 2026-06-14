@@ -27,9 +27,7 @@ class WishBot(commands.Cog):
     async def make_wish(self, ctx, *, wish: str):
         """ユーザーの願いに対して全く違う返事を返す"""
         response = random.choice(RESPONSES)
-        await ctx.send(
-            f"💭 {ctx.author.name} の願い: 「{wish}」\n🎲 願いの結果: {response}"
-        )
+        await ctx.send(f"💭 {ctx.author.name} の願い: 「{wish}」\n🎲 願いの結果: {response}")
 
 
 # CogをBotに登録

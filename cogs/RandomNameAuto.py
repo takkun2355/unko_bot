@@ -70,9 +70,7 @@ class RandomNameAuto(commands.Cog):
             "ナナホシ",
         ]
 
-        new_name = (
-            random.choice(prefixes) + random.choice(bases) + random.choice(suffixes)
-        )
+        new_name = random.choice(prefixes) + random.choice(bases) + random.choice(suffixes)
 
         guild = self.bot.get_guild(guild_id)
         if not guild:

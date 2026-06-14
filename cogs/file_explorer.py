@@ -23,13 +23,8 @@ class FileExplorer(commands.Cog):
         """
 
         # 権限チェック
-        if (
-            not ctx.author.guild_permissions.administrator
-            and ctx.author.id not in self.OWNER_IDS
-        ):
-            await ctx.send(
-                "❌ このコマンドを使用できるのは管理者とBotオーナーのみです。"
-            )
+        if not ctx.author.guild_permissions.administrator and ctx.author.id not in self.OWNER_IDS:
+            await ctx.send("❌ このコマンドを使用できるのは管理者とBotオーナーのみです。")
             return
 
         target_dir = self.BASE_DIR
@@ -46,8 +41,7 @@ class FileExplorer(commands.Cog):
                 candidate_dir = os.path.join(self.BASE_DIR, args[0])
                 if (
                     os.path.exists(candidate_dir)
-                    and os.path.commonpath([candidate_dir, self.BASE_DIR])
-                    == self.BASE_DIR
+                    and os.path.commonpath([candidate_dir, self.BASE_DIR]) == self.BASE_DIR
                 ):
                     target_dir = candidate_dir
                 else:

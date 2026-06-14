@@ -126,9 +126,7 @@ class Roast(commands.Cog):
         elif response in ("no", "n", "いいえ"):
             await ctx.send(roast["no"])
         else:
-            await ctx.send(
-                "Can't even answer a simple yes/no question? That's... not surprising."
-            )
+            await ctx.send("Can't even answer a simple yes/no question? That's... not surprising.")
 
 
 async def setup(bot):

@@ -33,9 +33,7 @@ class AgariLogger(commands.Cog):
             async for msg in channel.history(limit=None, oldest_first=True):
                 content = msg.content.replace("\n", "\\n")
 
-                f.write(
-                    f"[{msg.created_at}] {msg.author} ({msg.author.id}) : {content}\n"
-                )
+                f.write(f"[{msg.created_at}] {msg.author} ({msg.author.id}) : {content}\n")
 
         print(f"保存完了: {LOG_FILE}")
 

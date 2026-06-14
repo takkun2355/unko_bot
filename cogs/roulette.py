@@ -110,9 +110,7 @@ class Roulette(commands.Cog):
                 history_mode,
                 loop_count,
             )
-            await ctx.send(
-                f"⏰ {scheduled_time.strftime('%H:%M')} にルーレットを予約しました"
-            )
+            await ctx.send(f"⏰ {scheduled_time.strftime('%H:%M')} にルーレットを予約しました")
             return
 
         # ---------- 複数回ルーレット ----------

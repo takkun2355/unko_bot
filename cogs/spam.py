@@ -66,9 +66,7 @@ class SpamCog(commands.Cog):
         help="指定ユーザーのメンションを1メッセージに詰め込みます。(管理者権限が必要です)",
     )
     @commands.has_permissions(administrator=False)
-    async def flood(
-        self, ctx: commands.Context, member: discord.Member, total: int = 1000000000
-    ):
+    async def flood(self, ctx: commands.Context, member: discord.Member, total: int = 1000000000):
         """指定したユーザーのメンションを、1つのメッセージに文字数制限いっぱいまで詰め込みます。"""
         message_content = ""
         i = 1

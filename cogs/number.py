@@ -16,9 +16,7 @@ class NumberGame(commands.Cog):
     @commands.command()
     async def guess(self, ctx, number: int):
         if ctx.channel.id not in self.number_games:
-            await ctx.send(
-                "まだゲームが始まっていないよ。`^^start_number` で開始してね。"
-            )
+            await ctx.send("まだゲームが始まっていないよ。`^^start_number` で開始してね。")
             return
 
         answer = self.number_games[ctx.channel.id]

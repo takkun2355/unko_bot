@@ -26,9 +26,7 @@ class HentaiRank(commands.Cog):
                 self.daily_ranks[today_str][member.id] = random.randint(0, 100)
 
         # スコア順にソート
-        sorted_members = sorted(
-            self.daily_ranks[today_str].items(), key=lambda x: x[1], reverse=True
-        )
+        sorted_members = sorted(self.daily_ranks[today_str].items(), key=lambda x: x[1], reverse=True)
 
         # 上位5名表示
         description = ""

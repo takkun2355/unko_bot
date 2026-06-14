@@ -42,15 +42,13 @@ class ParticleCanvas(tk.Canvas):
         self.particles = []
         # ウィンドウサイズに応じた粒子の配置
         for _ in range(40):
-            self.particles.append(
-                {
-                    "x": random.randint(10, self.width - 10),
-                    "y": random.randint(10, self.height - 10),
-                    "vx": random.uniform(-1.0, 1.0),
-                    "vy": random.uniform(-1.0, 1.0),
-                    "r": random.randint(2, 4),
-                }
-            )
+            self.particles.append({
+                "x": random.randint(10, self.width - 10),
+                "y": random.randint(10, self.height - 10),
+                "vx": random.uniform(-1.0, 1.0),
+                "vy": random.uniform(-1.0, 1.0),
+                "r": random.randint(2, 4),
+            })
         self.animate()
 
     def stop_animation(self):
@@ -107,9 +105,7 @@ class ParticleCanvas(tk.Canvas):
                         color = "#0088cc"
                     else:
                         color = "#002b4d"
-                    self.create_line(
-                        p1["x"], p1["y"], p2["x"], p2["y"], fill=color, width=1
-                    )
+                    self.create_line(p1["x"], p1["y"], p2["x"], p2["y"], fill=color, width=1)
 
         self.after(30, self.animate)
 
@@ -138,9 +134,7 @@ class BotManagerGUI:
         self.top_frame = tk.Frame(self.root)
         self.top_frame.pack(fill=tk.X, padx=15, pady=8)
 
-        self.status_label = tk.Label(
-            self.top_frame, text="Checking status...", font=("Arial", 11, "bold")
-        )
+        self.status_label = tk.Label(self.top_frame, text="Checking status...", font=("Arial", 11, "bold"))
         self.status_label.pack(side=tk.LEFT)
 
         # テーマ選択ドロップダウン
@@ -153,9 +147,7 @@ class BotManagerGUI:
         )
         self.theme_combo.set("dark")
         self.theme_combo.pack(side=tk.RIGHT)
-        self.theme_combo.bind(
-            "<<ComboboxSelected>>", lambda e: self.apply_theme(self.theme_combo.get())
-        )
+        self.theme_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_theme(self.theme_combo.get()))
 
         # ログ表示フレームとスクロールテキスト
         self.log_frame = tk.Frame(self.root)
@@ -171,22 +163,16 @@ class BotManagerGUI:
         self.cmd_entry = tk.Entry(self.input_frame)
         self.cmd_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         self.cmd_entry.bind("<Return>", lambda e: self.send_cmd())
-        self.send_btn = tk.Button(
-            self.input_frame, text="送信", width=8, command=self.send_cmd
-        )
+        self.send_btn = tk.Button(self.input_frame, text="送信", width=8, command=self.send_cmd)
         self.send_btn.pack(side=tk.LEFT)
 
         # 操作パネル（ボタン群）
         self.btn_frame = tk.Frame(self.root)
         self.btn_frame.pack(fill=tk.X, padx=15, pady=5)
 
-        self.btn_start = tk.Button(
-            self.btn_frame, text="Start Bot", width=11, command=self.callbacks["start"]
-        )
+        self.btn_start = tk.Button(self.btn_frame, text="Start Bot", width=11, command=self.callbacks["start"])
         self.btn_start.pack(side=tk.LEFT, padx=2)
-        self.btn_stop = tk.Button(
-            self.btn_frame, text="Stop Bot", width=11, command=self.callbacks["stop"]
-        )
+        self.btn_stop = tk.Button(self.btn_frame, text="Stop Bot", width=11, command=self.callbacks["stop"])
         self.btn_stop.pack(side=tk.LEFT, padx=2)
         self.btn_restart = tk.Button(
             self.btn_frame,
@@ -195,17 +181,11 @@ class BotManagerGUI:
             command=self.callbacks["restart"],
         )
         self.btn_restart.pack(side=tk.LEFT, padx=2)
-        self.btn_save = tk.Button(
-            self.btn_frame, text="ログを保存", width=11, command=self.export_logs
-        )
+        self.btn_save = tk.Button(self.btn_frame, text="ログを保存", width=11, command=self.export_logs)
         self.btn_save.pack(side=tk.LEFT, padx=2)
-        self.btn_help = tk.Button(
-            self.btn_frame, text="Help", width=6, command=self.show_help
-        )
+        self.btn_help = tk.Button(self.btn_frame, text="Help", width=6, command=self.show_help)
         self.btn_help.pack(side=tk.LEFT, padx=2)
-        self.btn_close = tk.Button(
-            self.btn_frame, text="CMDに戻る", width=11, command=self.return_to_cmd
-        )
+        self.btn_close = tk.Button(self.btn_frame, text="CMDに戻る", width=11, command=self.return_to_cmd)
         self.btn_close.pack(side=tk.RIGHT, padx=2)
 
         # コマンドショートカット
@@ -324,9 +304,7 @@ class BotManagerGUI:
             foreground=fg,
             arrowcolor=fg,
         )
-        style.configure(
-            "TScrollbar", background=bg, troughcolor=bg, bordercolor=bg, arrowcolor=fg
-        )
+        style.configure("TScrollbar", background=bg, troughcolor=bg, bordercolor=bg, arrowcolor=fg)
 
         # ScrolledText内の標準Scrollbarへの簡易適用
         try:
@@ -340,9 +318,7 @@ class BotManagerGUI:
         try:
             with open(log_path, "w", encoding="utf-8") as f:
                 f.write(content)
-            messagebox.showinfo(
-                "保存完了", f"現在のログをファイルに書き出しました:\n{log_path}"
-            )
+            messagebox.showinfo("保存完了", f"現在のログをファイルに書き出しました:\n{log_path}")
         except Exception as e:
             messagebox.showerror("エラー", f"ログの保存に失敗しました: {e}")
 
