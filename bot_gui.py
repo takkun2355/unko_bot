@@ -1,9 +1,10 @@
 # bot_gui.py
-import tkinter as tk
-from tkinter import scrolledtext, messagebox, ttk
+import math
+import pathlib
 import queue
 import random
-import math
+import tkinter as tk
+from tkinter import messagebox, scrolledtext, ttk
 
 
 # --- particles.js風の最背面・カーソル回避対応キャンバス ---
@@ -316,7 +317,7 @@ class BotManagerGUI:
         content = self.log_area.get("1.0", tk.END).strip()
         log_path = self.base_dir / self.log_file_name
         try:
-            with open(log_path, "w", encoding="utf-8") as f:
+            with pathlib.Path(log_path).open("w", encoding="utf-8") as f:
                 f.write(content)
             messagebox.showinfo("保存完了", f"現在のログをファイルに書き出しました:\n{log_path}")
         except Exception as e:

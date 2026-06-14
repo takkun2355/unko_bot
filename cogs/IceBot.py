@@ -1,5 +1,6 @@
-from discord.ext import commands
 import random
+
+from discord.ext import commands
 
 # 氷化演出用絵文字
 ICE_EMOJIS = ["❄️", "🧊", "🌨️"]
@@ -13,8 +14,7 @@ class IceBot(commands.Cog):
 
     @commands.command(name="freeze")
     async def freeze_message(self, ctx, *, message: str):
-        """
-        ユーザーの発言を“凍らせた”形で返す
+        """ユーザーの発言を“凍らせた”形で返す
         例: /freeze Hello world
         """
         ice = random.choice(ICE_EMOJIS)

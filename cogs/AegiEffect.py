@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import random
+
 import discord
 from discord.ext import commands
 
@@ -144,8 +145,7 @@ TSU_TARGETS = set(
 
 
 def apply_effect_19(text: str) -> str:
-    """
-    1パスで全エフェクトを適用:
+    """1パスで全エフェクトを適用:
     文字重ね(15-40%) + 小文字化(30-50%) + 「っ」挿入(10-25%) + 濁点(100%) + 行末♥
     """
     prob_double = random.randint(15, 40)

@@ -1,5 +1,4 @@
-"""
-bot_control.py
+"""bot_control.py
 ==============
 スコープ付きでコマンドを停止／一時停止／再開するCog。
 
@@ -33,11 +32,11 @@ bot_control.py
 """
 
 import asyncio
-import discord
-from discord.ext import commands
 import logging
 from enum import Enum
-from typing import Optional
+
+import discord
+from discord.ext import commands
 
 logger = logging.getLogger(__name__)
 
@@ -61,8 +60,7 @@ _channel_states: dict[int, BotState] = {}  # channel_id  -> BotState
 
 
 def _effective_state(ctx: commands.Context) -> BotState:
-    """
-    チャンネル > カテゴリ > サーバー > グローバル の優先順位で
+    """チャンネル > カテゴリ > サーバー > グローバル の優先順位で
     そのコンテキストに適用される状態を返す。
     いずれかのスコープが STOPPED なら STOPPED を優先する。
     """
@@ -123,10 +121,9 @@ async def bot_state_check(ctx: commands.Context) -> bool:
 async def _resolve_scope(
     ctx: commands.Context,
     scope: str,
-    target: Optional[str],
-) -> tuple[bool, str, Optional[int]]:
-    """
-    (成功フラグ, エラーメッセージ or スコープ説明, スコープID or None) を返す。
+    target: str | None,
+) -> tuple[bool, str, int | None]:
+    """(成功フラグ, エラーメッセージ or スコープ説明, スコープID or None) を返す。
     スコープIDは server/category/channel のみ使用。
     """
     scope = scope.lower()
@@ -188,7 +185,7 @@ async def _resolve_scope(
     )
 
 
-def _set_state(scope: str, scope_id: Optional[int], new_state: BotState):
+def _set_state(scope: str, scope_id: int | None, new_state: BotState):
     """スコープに応じて状態を更新する。"""
     global _global_state
     if scope == "all":
@@ -210,29 +207,27 @@ def _set_state(scope: str, scope_id: Optional[int], new_state: BotState):
             _channel_states[scope_id] = new_state
 
 
-def _get_scope_state(scope: str, scope_id: Optional[int]) -> BotState:
+def _get_scope_state(scope: str, scope_id: int | None) -> BotState:
     """スコープの現在の状態を返す。"""
     if scope == "all":
         return _global_state
-    elif scope == "server":
+    if scope == "server":
         return _server_states.get(scope_id, BotState.RUNNING)
-    elif scope == "category":
+    if scope == "category":
         return _category_states.get(scope_id, BotState.RUNNING)
-    elif scope == "channel":
+    if scope == "channel":
         return _channel_states.get(scope_id, BotState.RUNNING)
     return BotState.RUNNING
 
 
-def _cancel_tasks_in_scope(scope: str, scope_id: Optional[int], current_task: asyncio.Task) -> int:
+def _cancel_tasks_in_scope(scope: str, scope_id: int | None, current_task: asyncio.Task) -> int:
     """スコープ内の実行中タスクをキャンセルし、キャンセル数を返す。"""
     cancelled = 0
     for msg_id, (task, task_ctx) in list(_running_tasks.items()):
         if task is current_task:
             continue
         match = False
-        if scope == "all":
-            match = True
-        elif scope == "server" and task_ctx.guild and task_ctx.guild.id == scope_id:
+        if scope == "all" or (scope == "server" and task_ctx.guild and task_ctx.guild.id == scope_id):
             match = True
         elif scope == "category":
             if (
@@ -275,8 +270,7 @@ class BotControl(commands.Cog, name="BotControl"):
         return ctx.author.guild_permissions.administrator
 
     async def _check_permission(self, ctx: commands.Context, scope: str) -> bool:
-        """
-        all     → オーナーのみ
+        """All     → オーナーのみ
         その他  → サーバー管理者 or オーナー
         """
         if await self._is_owner(ctx):
@@ -336,8 +330,7 @@ class BotControl(commands.Cog, name="BotControl"):
     # ── コマンド ──────────────────────────────
     @commands.command(name="commandstop", aliases=["cmdstop", "コマンド停止"])
     async def commandstop_cmd(self, ctx: commands.Context, scope: str = "server", *, target: str = None):
-        """
-        実行中の全コマンドを強制終了し、以降の受付も停止する。
+        """実行中の全コマンドを強制終了し、以降の受付も停止する。
 
         使い方:
             ^^commandstop all
@@ -346,7 +339,7 @@ class BotControl(commands.Cog, name="BotControl"):
             ^^commandstop channel [#チャンネル or チャンネル名]
         """
         if not await self._check_permission(ctx, scope):
-            return
+            return None
 
         ok, label, scope_id = await _resolve_scope(ctx, scope, target)
         if not ok:
@@ -383,8 +376,7 @@ class BotControl(commands.Cog, name="BotControl"):
 
     @commands.command(name="pause", aliases=["一時停止"])
     async def pause_cmd(self, ctx: commands.Context, scope: str = "server", *, target: str = None):
-        """
-        以降のコマンドを一時停止する（実行中のものは完了まで継続）。
+        """以降のコマンドを一時停止する（実行中のものは完了まで継続）。
 
         使い方:
             ^^pause all
@@ -393,7 +385,7 @@ class BotControl(commands.Cog, name="BotControl"):
             ^^pause channel [#チャンネル or チャンネル名]
         """
         if not await self._check_permission(ctx, scope):
-            return
+            return None
 
         ok, label, scope_id = await _resolve_scope(ctx, scope, target)
         if not ok:
@@ -430,8 +422,7 @@ class BotControl(commands.Cog, name="BotControl"):
 
     @commands.command(name="resume", aliases=["再開"])
     async def resume_cmd(self, ctx: commands.Context, scope: str = "server", *, target: str = None):
-        """
-        commandstop / pause 状態から再開する。
+        """Commandstop / pause 状態から再開する。
 
         使い方:
             ^^resume all
@@ -440,7 +431,7 @@ class BotControl(commands.Cog, name="BotControl"):
             ^^resume channel [#チャンネル or チャンネル名]
         """
         if not await self._check_permission(ctx, scope):
-            return
+            return None
 
         ok, label, scope_id = await _resolve_scope(ctx, scope, target)
         if not ok:

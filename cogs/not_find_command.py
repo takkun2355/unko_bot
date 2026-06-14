@@ -17,8 +17,7 @@ class CommandCheckerCog(commands.Cog):
             raise error
 
     async def not_find_command(self, ctx):
-        """
-        未登録コマンドが使われたときに呼ばれる処理
+        """未登録コマンドが使われたときに呼ばれる処理
         """
         # 入力されたコマンド名を取得（接頭辞 ^^ を除去）
         cmd_name = ctx.message.content.lstrip(ctx.prefix).split()[0]

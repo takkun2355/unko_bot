@@ -1,7 +1,8 @@
-from discord.ext import commands, tasks
-from datetime import datetime
 import json
-import os
+import pathlib
+from datetime import datetime
+
+from discord.ext import commands, tasks
 
 BIRTHDAY_FILE = "birthdays.json"
 
@@ -13,8 +14,8 @@ class BirthdayManager(commands.Cog):
         self.bot = bot
         self.bot = bot
         # 誕生日データ読み込み
-        if os.path.exists(BIRTHDAY_FILE):
-            with open(BIRTHDAY_FILE, "r", encoding="utf-8") as f:
+        if pathlib.Path(BIRTHDAY_FILE).exists():
+            with pathlib.Path(BIRTHDAY_FILE).open(encoding="utf-8") as f:
                 self.birthdays = json.load(f)
         else:
             self.birthdays = {}
@@ -68,7 +69,7 @@ class BirthdayManager(commands.Cog):
             await ctx.send("❌ 無効な日付です。例: /set_birthday 10 13")
             return
         self.birthdays[str(ctx.author.id)] = f"{month:02d}-{day:02d}"
-        with open(BIRTHDAY_FILE, "w", encoding="utf-8") as f:
+        with pathlib.Path(BIRTHDAY_FILE).open("w", encoding="utf-8") as f:
             json.dump(self.birthdays, f, ensure_ascii=False, indent=2)
         await ctx.send(f"✅ {ctx.author.name} の誕生日を {month}月{day}日 に登録しました。")
 

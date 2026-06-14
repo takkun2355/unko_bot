@@ -1,8 +1,10 @@
 # cogs/music_full.py
-import discord
-from discord.ext import commands
 import asyncio
 import os
+import pathlib
+
+import discord
+from discord.ext import commands
 
 try:
     import yt_dlp as youtube_dl
@@ -74,7 +76,7 @@ class music_full(commands.Cog):
         url_or_file = queue.pop(0)
         self.current_time[server_id] = 0
 
-        if os.path.exists(url_or_file):
+        if pathlib.Path(url_or_file).exists():
             source = discord.FFmpegOpusAudio(url_or_file, **ffmpeg_options)
             title = os.path.basename(url_or_file)
             thumbnail = None
@@ -119,7 +121,7 @@ class music_full(commands.Cog):
     # リアクション追加
     # ------------------------
     async def add_control_reactions(self, message, guild_id):
-        for emoji in REACTION_EMOJIS.keys():
+        for emoji in REACTION_EMOJIS:
             await message.add_reaction(emoji)
         self.control_messages[guild_id] = message
 

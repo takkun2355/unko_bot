@@ -1,4 +1,5 @@
 import random
+
 import discord
 from discord.ext import commands
 
@@ -11,8 +12,7 @@ class Fun(commands.Cog):
 
     @commands.command(name="team")
     async def team(self, ctx, team_size: int, *members: discord.Member):
-        """
-        チーム分け
+        """チーム分け
         例: ^^team 2 @A @B @C @D
         """
         if not members:

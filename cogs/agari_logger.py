@@ -1,8 +1,8 @@
 # cogs/agari_logger.py
 
-from discord.ext import commands
 from pathlib import Path
 
+from discord.ext import commands
 
 CHANNEL_ID = 1118799600816492626
 LOG_FILE = "AGARI.log"

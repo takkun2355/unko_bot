@@ -1,5 +1,6 @@
-from discord.ext import commands
 import random
+
+from discord.ext import commands
 
 # 返答パターン（無関係・予想外の返事）
 RESPONSES = [

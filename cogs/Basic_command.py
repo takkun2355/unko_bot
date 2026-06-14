@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 from discord.ext import commands
 
 

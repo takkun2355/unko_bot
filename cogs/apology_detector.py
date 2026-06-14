@@ -1,8 +1,9 @@
 # cogs/apology_detector.py
 
-import discord
-import re
 import random
+import re
+
+import discord
 from discord.ext import commands
 
 

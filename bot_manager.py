@@ -1,20 +1,21 @@
 # bot_manager.py
 
+import ctypes
+import datetime
+import os
+import queue
+import random
 import subprocess
+import sys
 import threading
 import time
-import sys
-import os
-import datetime
 import tkinter as tk
-import queue
-import ctypes
-import bot_gui
-import random
-
 from pathlib import Path
+
+from colorama import Fore, init
 from dotenv import load_dotenv
-from colorama import init, Fore
+
+import bot_gui
 
 # ===========================
 # 初期化
@@ -92,7 +93,7 @@ def enqueue_output(pipe):
     log_path = BASE_DIR / LOG_FILE
 
     try:
-        with open(log_path, "a", encoding="utf-8") as f:
+        with Path(log_path).open("a", encoding="utf-8") as f:
             for line in iter(pipe.readline, ""):
                 if not line:
                     continue

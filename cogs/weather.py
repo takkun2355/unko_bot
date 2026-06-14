@@ -1,11 +1,12 @@
-from discord.ext import commands
-import aiohttp
 import asyncio
 import json
-import os
+import pathlib
 import traceback
 from datetime import datetime, timedelta, timezone
+
+import aiohttp
 from dateutil import parser
+from discord.ext import commands
 
 
 class Weather(commands.Cog):
@@ -107,9 +108,9 @@ class Weather(commands.Cog):
     def load_prefectures(self):
         """weather.json から地域データを読み込む"""
         file_path = "weather.json"
-        if os.path.exists(file_path):
+        if pathlib.Path(file_path).exists():
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with pathlib.Path(file_path).open(encoding="utf-8") as f:
                     self.prefectures = json.load(f)
                     print("[Weather] Loaded prefectures data successfully from weather.json.")
             except Exception:

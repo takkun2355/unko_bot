@@ -1,7 +1,8 @@
-from discord.ext import commands
-from typing import List
 import os
+import pathlib
 import traceback
+
+from discord.ext import commands
 
 
 class Reload(commands.Cog):
@@ -14,22 +15,20 @@ class Reload(commands.Cog):
     # Utility
     # ------------------------------
 
-    def _get_cog_files(self) -> List[str]:
+    def _get_cog_files(self) -> list[str]:
         """cogsフォルダ内のCog一覧取得"""
         cog_dir = "cogs"
 
-        if not os.path.isdir(cog_dir):
+        if not pathlib.Path(cog_dir).is_dir():
             return []
 
         return [f"{cog_dir}.{f[:-3]}" for f in os.listdir(cog_dir) if f.endswith(".py") and not f.startswith("_")]
 
     def _parse_cogs(self, cog_names: str):
-        """
-        all または
+        """All または
         weather, admin
         を処理
         """
-
         if cog_names.lower() == "all":
             return "all"
 
@@ -66,12 +65,10 @@ class Reload(commands.Cog):
     @commands.command(name="reload", aliases=["re"])
     @commands.is_owner()
     async def reload_cmd(self, ctx, *, cog_names: str):
-        """
-        ^^reload all
+        """^^reload all
         ^^reload weather
         ^^reload weather, admin
         """
-
         parsed = self._parse_cogs(cog_names)
 
         if parsed == "all":
@@ -123,12 +120,10 @@ class Reload(commands.Cog):
     @commands.command(name="load")
     @commands.is_owner()
     async def load_cmd(self, ctx, *, cog_names: str):
-        """
-        ^^load all
+        """^^load all
         ^^load weather
         ^^load weather, admin
         """
-
         parsed = self._parse_cogs(cog_names)
 
         if parsed == "all":
@@ -161,12 +156,10 @@ class Reload(commands.Cog):
     @commands.command(name="unload", aliases=["un"])
     @commands.is_owner()
     async def unload_cmd(self, ctx, *, cog_names: str):
-        """
-        ^^unload all
+        """^^unload all
         ^^unload weather
         ^^unload weather, admin
         """
-
         parsed = self._parse_cogs(cog_names)
 
         if parsed == "all":
@@ -201,7 +194,6 @@ class Reload(commands.Cog):
     @commands.is_owner()
     async def list_cogs(self, ctx):
         """Cog一覧"""
-
         cog_files = set(self._get_cog_files())
         loaded = set(self.bot.extensions.keys())
 

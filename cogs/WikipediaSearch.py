@@ -1,5 +1,5 @@
-from discord.ext import commands
 import wikipedia
+from discord.ext import commands
 
 # 言語設定（日本語版）
 wikipedia.set_lang("ja")
@@ -13,8 +13,7 @@ class WikipediaSearch(commands.Cog):
 
     @commands.command(name="wiki")
     async def wiki_search(self, ctx, *, query: str):
-        """
-        Wikipediaでキーワードを検索して概要を返す
+        """Wikipediaでキーワードを検索して概要を返す
         例: /wiki Python
         """
         try:

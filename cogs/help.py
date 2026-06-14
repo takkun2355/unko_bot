@@ -1,7 +1,7 @@
 import json
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import discord
 from discord.ext import commands
@@ -57,7 +57,7 @@ class HelpView(discord.ui.View):
         self.cog = cog
         self.author_id = author_id
         self.page = page
-        self.message: Optional[discord.Message] = None
+        self.message: discord.Message | None = None
         self._sync_buttons()
 
     def _sync_buttons(self) -> None:
@@ -123,12 +123,12 @@ class HelpCog(commands.Cog):
         self.per_page = PER_PAGE
         self.data = self._load_help_json()
         self.top_level_commands = self._collect_top_level_commands()
-        self.all_entries: List[Dict[str, Any]] = []
-        self.path_index: Dict[Tuple[str, ...], List[Dict[str, Any]]] = {}
-        self.name_index: Dict[str, List[Dict[str, Any]]] = {}
+        self.all_entries: list[dict[str, Any]] = []
+        self.path_index: dict[tuple[str, ...], list[dict[str, Any]]] = {}
+        self.name_index: dict[str, list[dict[str, Any]]] = {}
         self._build_indexes()
 
-    def _load_help_json(self) -> Dict[str, Any]:
+    def _load_help_json(self) -> dict[str, Any]:
         try:
             with DATA_FILE.open("r", encoding="utf-8") as fp:
                 return json.load(fp)
@@ -151,8 +151,8 @@ class HelpCog(commands.Cog):
                 "sections": [],
             }
 
-    def _collect_top_level_commands(self) -> List[Dict[str, Any]]:
-        commands: List[Dict[str, Any]] = []
+    def _collect_top_level_commands(self) -> list[dict[str, Any]]:
+        commands: list[dict[str, Any]] = []
         sections = self.data.get("sections", [])
 
         if isinstance(sections, list):
@@ -183,10 +183,10 @@ class HelpCog(commands.Cog):
 
     def _index_command(
         self,
-        command: Dict[str, Any],
+        command: dict[str, Any],
         section: str,
         group: str,
-        path: List[str],
+        path: list[str],
     ) -> None:
         norm_path = tuple(_normalize_query(part) for part in path if _clean_text(part))
         entry = {
@@ -218,7 +218,7 @@ class HelpCog(commands.Cog):
             return 1
         return max(1, (len(self.top_level_commands) + self.per_page - 1) // self.per_page)
 
-    def _resolve_entry(self, query: str) -> Tuple[str, Any]:
+    def _resolve_entry(self, query: str) -> tuple[str, Any]:
         tokens = [_normalize_query(part) for part in _clean_text(query).split() if _clean_text(part)]
         if not tokens:
             return "empty", None
@@ -255,14 +255,14 @@ class HelpCog(commands.Cog):
 
         return "not_found", None
 
-    def _command_short_desc(self, command: Dict[str, Any]) -> str:
+    def _command_short_desc(self, command: dict[str, Any]) -> str:
         return _clean_text(command.get("description")) or "説明なし"
 
-    def _entry_title(self, entry: Dict[str, Any]) -> str:
+    def _entry_title(self, entry: dict[str, Any]) -> str:
         path = entry["path"]
         return f"{self.prefix}{' '.join(path)}"
 
-    def _entry_usage(self, command: Dict[str, Any]) -> str:
+    def _entry_usage(self, command: dict[str, Any]) -> str:
         usage = _clean_text(command.get("usage"))
         if usage:
             return usage
@@ -270,9 +270,9 @@ class HelpCog(commands.Cog):
         return f"{self.prefix}{path}" if path else self.prefix
 
     def _render_subcommands(
-        self, subcommands: List[Dict[str, Any]], parent_path: List[str], depth: int = 0
-    ) -> List[str]:
-        lines: List[str] = []
+        self, subcommands: list[dict[str, Any]], parent_path: list[str], depth: int = 0
+    ) -> list[str]:
+        lines: list[str] = []
         indent = "  " * depth
         for child in subcommands:
             if not isinstance(child, dict):
@@ -295,7 +295,7 @@ class HelpCog(commands.Cog):
                 lines.extend(self._render_subcommands(nested, child_path, depth + 1))
         return lines
 
-    def _build_detail_embed(self, entry: Dict[str, Any]) -> discord.Embed:
+    def _build_detail_embed(self, entry: dict[str, Any]) -> discord.Embed:
         command = entry["command"]
         title = self._entry_title(entry)
         embed = discord.Embed(
@@ -342,7 +342,7 @@ class HelpCog(commands.Cog):
 
         options = command.get("options", []) or []
         modes = command.get("modes", []) or []
-        option_lines: List[str] = []
+        option_lines: list[str] = []
         for opt in options:
             if not isinstance(opt, dict):
                 continue
@@ -369,7 +369,7 @@ class HelpCog(commands.Cog):
         if option_lines:
             embed.add_field(name="オプション", value="\n".join(option_lines), inline=False)
 
-        child_lines: List[str] = []
+        child_lines: list[str] = []
         subcommands = command.get("subcommands", []) or []
         admin_subcommands = command.get("admin_subcommands", []) or []
         if subcommands:
@@ -424,7 +424,7 @@ class HelpCog(commands.Cog):
         embed.set_footer(text=f"{page + 1}/{self.page_count} ページ")
         return embed
 
-    def _build_ambiguous_embed(self, query: str, matches: List[Dict[str, Any]]) -> discord.Embed:
+    def _build_ambiguous_embed(self, query: str, matches: list[dict[str, Any]]) -> discord.Embed:
         embed = discord.Embed(
             title="候補が複数あります",
             description=f"`{query}` に一致するコマンドが複数見つかりました。",
@@ -440,7 +440,7 @@ class HelpCog(commands.Cog):
         return embed
 
     @commands.command(name="help", aliases=["h"])
-    async def help_command(self, ctx: commands.Context, *, arg: Optional[str] = None):
+    async def help_command(self, ctx: commands.Context, *, arg: str | None = None):
         if not arg:
             view = HelpView(self, ctx.author.id, page=0)
             embed = self.build_list_embed(0)

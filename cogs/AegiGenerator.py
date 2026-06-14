@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import random
 import json
+import random
 from pathlib import Path
 
 import aiosqlite
@@ -336,8 +336,7 @@ EMPTY_WORD_PLACEHOLDER = "__empty__"
 
 
 def split_message(text: str, limit: int = 1900) -> list[str]:
-    """
-    メッセージを行単位で制限文字数に分割。
+    """メッセージを行単位で制限文字数に分割。
     改行がない場合は文字単位でフォールバック。
     """
     if "\n" not in text:
@@ -900,7 +899,7 @@ class DisableWordView(discord.ui.View):
         disable_mode: bool,
         page: int,
         db: DatabaseManager,
-    ) -> "DisableWordView":
+    ) -> DisableWordView:
         words = await get_category_words_async(guild_id, category, db)
         view = cls(guild_id, category, disable_mode, page, words, db)
         await view.add_back_button()
@@ -915,7 +914,7 @@ class DisableCategoryView(discord.ui.View):
         self.add_item(DisableCategorySelect(guild_id, disable_mode, all_words))
 
     @classmethod
-    async def create(cls, guild_id: int, disable_mode: bool, db: DatabaseManager) -> "DisableCategoryView":
+    async def create(cls, guild_id: int, disable_mode: bool, db: DatabaseManager) -> DisableCategoryView:
         all_words = await get_all_category_words_with_meta(guild_id, db)
         return cls(guild_id, disable_mode, all_words)
 
@@ -945,7 +944,7 @@ class CustomWordView(discord.ui.View):
     @classmethod
     async def create(
         cls, guild_id: int, user_id: int, category: str, page: int, db: DatabaseManager
-    ) -> "CustomWordView":
+    ) -> CustomWordView:
         words = await get_category_words_async(guild_id, category, db)
         view = cls(guild_id, user_id, category, page, words)
         await view.add_back_button(guild_id, user_id, db)
@@ -962,7 +961,7 @@ class CustomCategoryView(discord.ui.View):
         self.add_item(ClearButton(guild_id, user_id))
 
     @classmethod
-    async def create(cls, guild_id: int, user_id: int, db: DatabaseManager) -> "CustomCategoryView":
+    async def create(cls, guild_id: int, user_id: int, db: DatabaseManager) -> CustomCategoryView:
         all_words = await get_all_category_words_with_meta(guild_id, db)
         return cls(guild_id, user_id, all_words)
 
@@ -1202,7 +1201,7 @@ class SettingView(discord.ui.View):
         self.add_item(SeparatorSelect(guild_id, sep_value, db))
 
     @classmethod
-    async def create(cls, guild_id: int, db: DatabaseManager) -> "SettingView":
+    async def create(cls, guild_id: int, db: DatabaseManager) -> SettingView:
         settings = await db.get_settings(guild_id)
         return cls(guild_id, db, settings)
 
@@ -1456,7 +1455,7 @@ class AllWordsView(discord.ui.View):
         self.add_item(BackButton(back_view))
 
     @classmethod
-    async def create(cls, guild_id: int, category: str, page: int, db: DatabaseManager) -> "AllWordsView":
+    async def create(cls, guild_id: int, category: str, page: int, db: DatabaseManager) -> AllWordsView:
         words = await get_category_words_async(guild_id, category, db)
         view = cls(guild_id, category, page, words, db)
         await view.add_back_button()
@@ -1512,7 +1511,7 @@ class AllWordsCategoryView(discord.ui.View):
         self.add_item(AllWordsCategorySelect(guild_id, all_words, db))
 
     @classmethod
-    async def create(cls, guild_id: int, db: DatabaseManager) -> "AllWordsCategoryView":
+    async def create(cls, guild_id: int, db: DatabaseManager) -> AllWordsCategoryView:
         all_words = await get_all_category_words_with_meta(guild_id, db)
         return cls(guild_id, all_words, db)
 

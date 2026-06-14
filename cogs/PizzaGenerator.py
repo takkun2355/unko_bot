@@ -1,5 +1,6 @@
-from discord.ext import commands
 import random
+
+from discord.ext import commands
 
 
 class PizzaGenerator(commands.Cog):
@@ -10,8 +11,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza1")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [
@@ -33,8 +33,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza2")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [
@@ -57,8 +56,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza3")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [
@@ -82,8 +80,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza3")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [
@@ -107,8 +104,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza4")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [
@@ -133,8 +129,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza5")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [
@@ -160,8 +155,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza6")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [
@@ -188,8 +182,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza7")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [
@@ -217,8 +210,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza8")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [
@@ -247,8 +239,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza9")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [
@@ -278,8 +269,7 @@ class PizzaGenerator(commands.Cog):
 
     @commands.command(name="pizza10")
     async def pizza(self, ctx):
-        """
-        ランダムでピザトッピングを生成
+        """ランダムでピザトッピングを生成
         """
         base = ["マルゲリータ", "チーズ", "ペパロニ", "ハム", "ベジタリアン"]
         toppings = [

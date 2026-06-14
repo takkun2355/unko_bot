@@ -1,4 +1,5 @@
 import asyncio
+
 import discord
 from discord.ext import commands
 
@@ -19,8 +20,7 @@ class SpamCog(commands.Cog):
         count: int = 10,
         delay: float = 1.0,
     ):
-        """
-        指定したユーザーに繰り返しメンションを送信します。
+        """指定したユーザーに繰り返しメンションを送信します。
 
         使用法: ^^spam @ユーザー名 [回数] [遅延(秒)]
         例: ^^spam @User 20 0.5

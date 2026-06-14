@@ -5,9 +5,8 @@ import re
 import shlex
 import sqlite3
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Optional
 
 import discord
 from discord.ext import commands, tasks
@@ -23,16 +22,15 @@ DURATION_RE = re.compile(r"(?:(\d+)y)?(?:(\d+)M)?(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m
 
 
 def utcnow_ts() -> int:
-    return int(datetime.now(timezone.utc).timestamp())
+    return int(datetime.now(UTC).timestamp())
 
 
 def jst_now() -> datetime:
     return datetime.now(JST)
 
 
-def parse_duration(text: str) -> Optional[int]:
-    """
-    Parse duration strings like:
+def parse_duration(text: str) -> int | None:
+    """Parse duration strings like:
       1y2M3d4h5m6s
       1h30m
       10m
@@ -41,6 +39,7 @@ def parse_duration(text: str) -> Optional[int]:
     Notes:
       y = 365 days
       M = 30 days
+
     """
     text = text.strip()
     if not text:
@@ -178,12 +177,12 @@ class CreateSettings:
     public: int = 1  # 0 counts only, 1 voter list allowed
     live_result: int = 0
     max_select: int = 1
-    duration_seconds: Optional[int] = None
+    duration_seconds: int | None = None
     role_limit: list[int] | None = None
     channel_limit: list[int] | None = None
 
     @property
-    def end_at_ts(self) -> Optional[int]:
+    def end_at_ts(self) -> int | None:
         if self.duration_seconds is None:
             return None
         return utcnow_ts() + self.duration_seconds
@@ -208,7 +207,7 @@ class VoteStore:
 
     # ---------- low-level helpers ----------
 
-    def _fetchone(self, query: str, params: tuple = ()) -> Optional[sqlite3.Row]:
+    def _fetchone(self, query: str, params: tuple = ()) -> sqlite3.Row | None:
         with self._connect() as conn:
             cur = conn.execute(query, params)
             return cur.fetchone()
@@ -298,10 +297,10 @@ class VoteStore:
 
     # ---------- queries ----------
 
-    def get_poll(self, poll_id: int) -> Optional[sqlite3.Row]:
+    def get_poll(self, poll_id: int) -> sqlite3.Row | None:
         return self._fetchone("SELECT * FROM polls WHERE id = ?", (poll_id,))
 
-    def get_poll_by_message(self, message_id: int) -> Optional[sqlite3.Row]:
+    def get_poll_by_message(self, message_id: int) -> sqlite3.Row | None:
         return self._fetchone("SELECT * FROM polls WHERE message_id = ?", (message_id,))
 
     def get_options(self, poll_id: int, *, include_deleted: bool = False) -> list[sqlite3.Row]:
@@ -323,7 +322,7 @@ class VoteStore:
             (poll_id,),
         )
 
-    def get_option(self, option_id: int) -> Optional[sqlite3.Row]:
+    def get_option(self, option_id: int) -> sqlite3.Row | None:
         return self._fetchone("SELECT * FROM poll_options WHERE id = ?", (option_id,))
 
     def get_active_vote_option_ids(self, poll_id: int, user_id: int) -> list[int]:
@@ -388,7 +387,7 @@ class VoteStore:
         self,
         member: discord.Member | discord.User,
         poll_row: sqlite3.Row,
-        guild: Optional[discord.Guild] = None,
+        guild: discord.Guild | None = None,
     ) -> bool:
         if getattr(member, "id", None) == poll_row["creator_id"]:
             return True
@@ -447,7 +446,7 @@ class VoteStore:
     def set_poll_status(self, poll_id: int, status: int) -> None:
         self._execute("UPDATE polls SET status = ? WHERE id = ?", (status, poll_id))
 
-    def set_poll_end_at(self, poll_id: int, end_at: Optional[int]) -> None:
+    def set_poll_end_at(self, poll_id: int, end_at: int | None) -> None:
         self._execute("UPDATE polls SET end_at = ? WHERE id = ?", (end_at, poll_id))
 
     def update_poll_meta(
@@ -524,7 +523,7 @@ class VoteStore:
     def close_poll(self, poll_id: int) -> None:
         self._execute("UPDATE polls SET status = 1 WHERE id = ?", (poll_id,))
 
-    def reopen_poll(self, poll_id: int, *, new_end_at: Optional[int] = None) -> None:
+    def reopen_poll(self, poll_id: int, *, new_end_at: int | None = None) -> None:
         self._execute(
             "UPDATE polls SET status = 0, end_at = ? WHERE id = ?",
             (new_end_at, poll_id),
@@ -633,7 +632,7 @@ class VoteStore:
             """
         )
 
-    def list_due_polls(self, now_ts: Optional[int] = None) -> list[sqlite3.Row]:
+    def list_due_polls(self, now_ts: int | None = None) -> list[sqlite3.Row]:
         now_ts = now_ts or utcnow_ts()
         return self._fetchall(
             """
@@ -658,12 +657,12 @@ def poll_display_embed(
     poll_row: sqlite3.Row,
     options: list[sqlite3.Row],
     totals: dict[int, int],
-    guild: Optional[discord.Guild] = None,
+    guild: discord.Guild | None = None,
     include_voters: bool = False,
 ) -> discord.Embed:
     total_votes = sum(totals.values())
     end_at = poll_row["end_at"]
-    created_at = datetime.fromtimestamp(int(poll_row["created_at"]), tz=timezone.utc)
+    created_at = datetime.fromtimestamp(int(poll_row["created_at"]), tz=UTC)
 
     embed = discord.Embed(
         title=f"📊 {poll_row['title']}",
@@ -714,9 +713,9 @@ def poll_display_embed(
 
 
 class ConfirmView(discord.ui.View):
-    def __init__(self, *, timeout: float = 60, owner_id: Optional[int] = None):
+    def __init__(self, *, timeout: float = 60, owner_id: int | None = None):
         super().__init__(timeout=timeout)
-        self.value: Optional[bool] = None
+        self.value: bool | None = None
         self.owner_id = owner_id
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
@@ -760,7 +759,7 @@ class ModalLaunchView(discord.ui.View):
 
 
 class VoteCreateModal(discord.ui.Modal, title="投票を作成"):
-    def __init__(self, cog: "VoteCog", settings: CreateSettings):
+    def __init__(self, cog: VoteCog, settings: CreateSettings):
         super().__init__(timeout=300)
         self.cog = cog
         self.settings = settings
@@ -833,7 +832,7 @@ class VoteCreateModal(discord.ui.Modal, title="投票を作成"):
 
 
 class VoteEditModal(discord.ui.Modal, title="投票を編集"):
-    def __init__(self, cog: "VoteCog", poll_row: sqlite3.Row):
+    def __init__(self, cog: VoteCog, poll_row: sqlite3.Row):
         super().__init__(timeout=300)
         self.cog = cog
         self.poll_row = poll_row
@@ -887,7 +886,7 @@ class VoteEditModal(discord.ui.Modal, title="投票を編集"):
 
 
 class PollChoiceSelect(discord.ui.Select):
-    def __init__(self, cog: "VoteCog", poll_row: sqlite3.Row):
+    def __init__(self, cog: VoteCog, poll_row: sqlite3.Row):
         self.cog = cog
         self.poll_row = poll_row
         options = self.cog.store.get_options(int(poll_row["id"]), include_deleted=False)
@@ -911,7 +910,7 @@ class PollChoiceSelect(discord.ui.Select):
 
 
 class PollVoteView(discord.ui.View):
-    def __init__(self, cog: "VoteCog", poll_row: sqlite3.Row):
+    def __init__(self, cog: VoteCog, poll_row: sqlite3.Row):
         super().__init__(timeout=None)
         self.cog = cog
         self.poll_row = poll_row
@@ -937,7 +936,7 @@ class PollVoteView(discord.ui.View):
 
 
 class ResultRefreshView(discord.ui.View):
-    def __init__(self, cog: "VoteCog", poll_id: int):
+    def __init__(self, cog: VoteCog, poll_id: int):
         super().__init__(timeout=180)
         self.cog = cog
         self.poll_id = poll_id
@@ -948,7 +947,7 @@ class ResultRefreshView(discord.ui.View):
 
 
 class VoteActionSelect(discord.ui.Select):
-    def __init__(self, cog: "VoteCog"):
+    def __init__(self, cog: VoteCog):
         self.cog = cog
         options = [
             discord.SelectOption(label="create", description="投票を作成"),
@@ -973,7 +972,7 @@ class VoteActionSelect(discord.ui.Select):
 
 
 class VoteManagementView(discord.ui.View):
-    def __init__(self, cog: "VoteCog", owner_id: int):
+    def __init__(self, cog: VoteCog, owner_id: int):
         super().__init__(timeout=180)
         self.cog = cog
         self.owner_id = owner_id
@@ -996,7 +995,7 @@ class VoteManagementView(discord.ui.View):
 
 
 class PollTargetSelect(discord.ui.Select):
-    def __init__(self, cog: "VoteCog", action: str, polls: list[sqlite3.Row]):
+    def __init__(self, cog: VoteCog, action: str, polls: list[sqlite3.Row]):
         self.cog = cog
         self.action = action
         self.polls = polls
@@ -1030,7 +1029,7 @@ class PollTargetSelect(discord.ui.Select):
 
 
 class PollTargetView(discord.ui.View):
-    def __init__(self, cog: "VoteCog", action: str, polls: list[sqlite3.Row], owner_id: int):
+    def __init__(self, cog: VoteCog, action: str, polls: list[sqlite3.Row], owner_id: int):
         super().__init__(timeout=180)
         self.owner_id = owner_id
         self.add_item(PollTargetSelect(cog, action, polls))
@@ -1286,7 +1285,7 @@ class VoteCog(commands.Cog):
         description: str | None,
         settings: CreateSettings,
         options: list[str],
-    ) -> tuple[int, Optional[discord.Message]]:
+    ) -> tuple[int, discord.Message | None]:
         # For the creation flow we need the final message_id, so send the placeholder first.
         channel = interaction.channel
         if not isinstance(channel, discord.TextChannel | discord.Thread | discord.VoiceChannel):
@@ -1594,9 +1593,7 @@ class VoteCog(commands.Cog):
                 names = []
                 for uid in voter_ids[:30]:
                     member = None
-                    if isinstance(interaction_or_ctx, commands.Context) and interaction_or_ctx.guild is not None:
-                        member = interaction_or_ctx.guild.get_member(uid)
-                    elif isinstance(interaction_or_ctx, discord.Interaction) and interaction_or_ctx.guild is not None:
+                    if (isinstance(interaction_or_ctx, commands.Context) and interaction_or_ctx.guild is not None) or (isinstance(interaction_or_ctx, discord.Interaction) and interaction_or_ctx.guild is not None):
                         member = interaction_or_ctx.guild.get_member(uid)
                     if member is None:
                         names.append(f"<@{uid}>")

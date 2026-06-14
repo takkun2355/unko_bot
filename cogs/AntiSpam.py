@@ -1,6 +1,7 @@
-from discord.ext import commands
-from collections import defaultdict, deque
 import time
+from collections import defaultdict, deque
+
+from discord.ext import commands
 
 # 設定
 SPAM_LIMIT = 20  # 発言回数

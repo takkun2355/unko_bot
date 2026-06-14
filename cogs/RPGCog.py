@@ -1,9 +1,11 @@
 # rpg_cog_full.py
-from discord.ext import commands
+import asyncio
 import json
 import os
+import pathlib
 import random
-import asyncio
+
+from discord.ext import commands
 
 RPG_FOLDER = "rpg_data"
 
@@ -65,20 +67,20 @@ class RPGCog(commands.Cog):
     # ----------------------
     def get_user_folder(self, user_id):
         folder = os.path.join(RPG_FOLDER, str(user_id))
-        os.makedirs(folder, exist_ok=True)
+        pathlib.Path(folder).mkdir(exist_ok=True, parents=True)
         return folder
 
     def save_user(self, user_id, data):
         folder = self.get_user_folder(user_id)
         path = os.path.join(folder, "player.json")
-        with open(path, "w", encoding="utf-8") as f:
+        with pathlib.Path(path).open("w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
     def load_user(self, user_id):
         folder = self.get_user_folder(user_id)
         path = os.path.join(folder, "player.json")
-        if os.path.exists(path):
-            with open(path, "r", encoding="utf-8") as f:
+        if pathlib.Path(path).exists():
+            with pathlib.Path(path).open(encoding="utf-8") as f:
                 return json.load(f)
         return None
 
