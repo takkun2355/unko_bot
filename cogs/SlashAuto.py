@@ -36,7 +36,7 @@ class SlashAuto(commands.Cog):
                     continue
 
                 sig = inspect.signature(command.callback)
-                type_hints = get_type_hints(command.callback)
+                get_type_hints(command.callback)
                 params = list(sig.parameters.items())[1:]  # selfを飛ばす
 
                 # クロージャで固定

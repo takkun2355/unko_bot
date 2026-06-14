@@ -752,7 +752,6 @@ def poll_display_embed(
             and int(poll_row["public"]) == 1
             and guild is not None
         ):
-            voter_ids = []  # filled by callers when needed
             # placeholder: keep the embed readable; detailed voter listing is added outside by the caller
             pass
 
@@ -1506,12 +1505,10 @@ class VoteCog(commands.Cog):
             guild = interaction_or_ctx.guild
             member = interaction_or_ctx.author
             channel_id = interaction_or_ctx.channel.id
-            channel = interaction_or_ctx.channel
         else:
             guild = interaction_or_ctx.guild
             member = interaction_or_ctx.user
             channel_id = interaction_or_ctx.channel_id or 0
-            channel = interaction_or_ctx.channel
 
         # channel/role restrictions
         if isinstance(

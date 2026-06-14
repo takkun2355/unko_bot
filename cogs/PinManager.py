@@ -347,7 +347,6 @@ class PinManager(commands.Cog):
 
             # 残り時間の計算
             expires_at_iso = data.get("expires_at")
-            jump_url = None  # 新しく送るメッセージの jump_url を後で設定
             # author name resolution
             author_name = "不明"
             try:
@@ -433,7 +432,6 @@ class PinManager(commands.Cog):
 
         # content の末尾に時間指定があるか判定（最後のトークン）
         parts = content.strip().split()
-        duration = None
         expires_iso = None
 
         # check last token like '24h' or '30m'
@@ -441,7 +439,6 @@ class PinManager(commands.Cog):
         delta = parse_duration_string(last_token)
         if delta:
             # 時間指定があった場合、content を切り詰める
-            duration = delta
             parts = parts[:-1]
             content_text = " ".join(parts)
             expires_iso = (datetime.datetime.utcnow() + delta).isoformat()

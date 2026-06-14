@@ -178,8 +178,7 @@ class WorldClock(commands.Cog):
             "Sao_Paulo": "America/Sao_Paulo",
             "サンパウロ": "America/Sao_Paulo",
             "ブラジル": "America/Sao_Paulo",
-            "Brazil": "America/Sao_Paulo",
-            "São_Paulo": "America/Sao_Paulo",  # ポルトガル語
+            "Brazil": "America/Sao_Paulo",  # ポルトガル語
             # メキシコ（Mexico City）
             "Mexico City": "America/Mexico_City",
             "メキシコシティ": "America/Mexico_City",

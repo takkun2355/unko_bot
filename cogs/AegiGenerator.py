@@ -805,7 +805,7 @@ class DisablePageButton(discord.ui.Button):
         if not cog:
             return
 
-        words = await get_category_words_async(self.guild_id, self.category, cog.db)
+        await get_category_words_async(self.guild_id, self.category, cog.db)
         new_page = max(0, self.page + self.direction)
         view = await DisableWordView.create(
             self.guild_id, self.category, self.disable_mode, new_page, cog.db
@@ -832,7 +832,7 @@ class CustomPageButton(discord.ui.Button):
         if not cog:
             return
 
-        words = await get_category_words_async(self.guild_id, self.category, cog.db)
+        await get_category_words_async(self.guild_id, self.category, cog.db)
         new_page = max(0, self.page + self.direction)
         view = await CustomWordView.create(
             self.guild_id, self.user_id, self.category, new_page, cog.db
@@ -873,7 +873,7 @@ class DisableCategorySelect(CategorySelectBase):
             return
 
         category = self.values[0]
-        words = await get_category_words_async(self.guild_id, category, cog.db)
+        await get_category_words_async(self.guild_id, category, cog.db)
         view = await DisableWordView.create(
             self.guild_id, category, self.disable_mode, 0, cog.db
         )
@@ -895,7 +895,7 @@ class CustomCategorySelect(CategorySelectBase):
             return
 
         category = self.values[0]
-        words = await get_category_words_async(self.guild_id, category, cog.db)
+        await get_category_words_async(self.guild_id, category, cog.db)
         view = await CustomWordView.create(
             self.guild_id, self.user_id, category, 0, cog.db
         )

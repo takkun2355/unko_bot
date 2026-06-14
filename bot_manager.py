@@ -463,7 +463,7 @@ def show_menu():
     print(" " * 17 + "Bot Control Menu v2.0.0")
     print("▣" + "=" * 58 + "▣")
 
-    if lde_enabled == False:
+    if not lde_enabled:
         print(f"Bot name: {bot_name}")
         print(
             "Bot version: Dev-Python inlog-SP\n" + " " * 12 + "MCDB-UNMN-JP v5.82.11 "
@@ -487,7 +487,7 @@ def show_menu():
         print("help     - ヘルプ")
         print("exit     - 閉じる")
         print("-" * 60)
-        if ls_enabled == True:
+        if ls_enabled:
             print(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
 
         elif not ls_enabled:
@@ -499,8 +499,8 @@ def show_menu():
 
         print("-" * 60)
 
-    if lde_enabled == True:
-        if ls_enabled == True:
+    if lde_enabled:
+        if ls_enabled:
             print(" " * 20 + f"Bot Log ({MAX_LOG_LINES} lines) ")
 
         elif not ls_enabled:
@@ -587,7 +587,7 @@ def run_gui():
 
     root = tk.Tk()
 
-    app = bot_gui.BotManagerGUI(
+    bot_gui.BotManagerGUI(
         root=root,
         callbacks=callbacks,
         log_lines=log_lines,
