@@ -5,6 +5,7 @@ import json
 import re
 from pathlib import Path
 from typing import Any
+from typing import self 
 
 import discord
 from discord.ext import commands
@@ -14,6 +15,8 @@ SEARCH_PATHS = [
     Path(__file__).parent.parent / "command_help.json",
     Path.cwd() / "command_help.json",
 ]
+
+DEFAULT_PREFIX = "^^"
 
 commands_found = []
 
@@ -120,7 +123,7 @@ class HelpView(discord.ui.View):
 
 
 class HelpCog(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, PER_PAGE=50):
         self.bot = bot
         self.prefix = DEFAULT_PREFIX
         self.per_page = PER_PAGE

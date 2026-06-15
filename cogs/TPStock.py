@@ -1,8 +1,7 @@
-from discord.ext import logging
+from discord.ext import commands
+import logging
 
 logger = logging.getLogger(__name__)
-import commands
-
 
 class TPStock(commands.Cog):
     """トイレットペーパー在庫シミュレーターCog"""

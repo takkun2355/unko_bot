@@ -1,6 +1,5 @@
 # cogs/AegiEffect.py
-
-from __future__ import logging
+import logging
 
 logger = logging.getLogger(__name__)
 

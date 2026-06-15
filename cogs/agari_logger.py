@@ -1,14 +1,13 @@
 # cogs/agari_logger.py
 
-from pathlib import logging
-
+from pathlib import Path
+import logging
 logger = logging.getLogger(__name__)
-import Path
+
 from discord.ext import commands
 
-CHANNEL_ID = 1118799600816492626
+CHANNEL_ID = 1416694818339291147
 LOG_FILE = "AGARI.log"
-
 
 class AgariLogger(commands.Cog):
     def __init__(self, bot: commands.Bot):

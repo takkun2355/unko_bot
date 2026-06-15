@@ -6,7 +6,7 @@
 ファイル名例: cogs/icon_cog.py
 """
 
-from __future__ import logging
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -187,9 +187,6 @@ class IconCog(commands.Cog):
             if self.guild_obj:
                 await self.bot.tree.sync(guild=self.guild_obj)
                 logger.info(f"[IconCog] Synced commands to guild {self.guild_obj.id}")
-            else:
-                await self.bot.tree.sync()
-                logger.info("[IconCog] Synced global commands")
         except Exception as e:
             logger.info("[IconCog] Command sync failed:", e)
 

@@ -1,8 +1,8 @@
 # cogs/not_find_command.py
-from discord.ext import logging
+from discord.ext import commands
+import logging
 
 logger = logging.getLogger(__name__)
-import commands
 
 
 class CommandCheckerCog(commands.Cog):

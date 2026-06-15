@@ -1,4 +1,4 @@
-from __future__ import logging
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -11,10 +11,10 @@ from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands, tasks, any
 
 JST = timezone(timedelta(hours=9))
-
+VoteCog = any
 
 # =========================
 #  Utility

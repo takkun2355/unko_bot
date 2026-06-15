@@ -134,7 +134,7 @@ class Achievements(commands.Cog):
         user_id = str(member.id)
         titles = self.data.get(user_id, {}).get("titles", [])
         if titles:
-            await ctx.send(f"🏅 {member.name} の称号↴ \n・{'\n・'.join(titles)}")
+            await ctx.send(f"🏅 {member.name} の称号↴ {'\n・'.join(titles)}")
         else:
             await ctx.send(f"{member.name} はまだ称号を持っていません。")
 
