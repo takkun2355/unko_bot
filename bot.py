@@ -2,7 +2,6 @@ import asyncio
 import logging
 import os
 import sys
-import traceback
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -10,7 +9,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-import cogs.bot_markov as mu
+import cogs.chat.bot_markov as mu
 
 # =========================================
 # Logging 設定
@@ -148,18 +147,21 @@ async def main():
 
         # cogsフォルダ内の .py ファイルをすべて自動検出
         cogs_dir = Path("cogs")
-        cogs = [f"cogs.{f.stem}" for f in sorted(cogs_dir.glob("*.py")) if f.stem != "__init__"]
 
-        for cog in cogs:
+        for path in sorted(cogs_dir.rglob("*.py")):
+            if path.stem == "__init__":
+                continue
+
+            module = path.relative_to(cogs_dir).with_suffix("")
+            module = str(module).replace("\\", ".").replace("/", ".")
+            module = f"cogs.{module}"
+
             try:
-                await bot.load_extension(cog)
-                logger.info(f"Loaded cog: {cog}")
+                await bot.load_extension(module)
+                logger.info(f"Loaded cog: {module}")
             except Exception as e:
-                FAILED_COGS.append((
-                    cog,
-                    "".join(traceback.format_exception(type(e), e, e.__traceback__)),
-                ))
-                logger.error(f"Failed to load cog {cog}")
+                FAILED_COGS.append((module, str(e)))
+                logger.error(f"Failed to load cog {module}: {e}")
 
         # Docker 環境変数からトークン取得
         BASE_DIR = Path(__file__).parent

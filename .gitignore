@@ -48,3 +48,4 @@ choices.txt
 custom_words.txt
 valorant_agent.txt
 valorant_map.txt
+cogs/chat/LLM/data/corpus/
